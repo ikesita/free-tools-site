@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FPS感度コンバーター｜cm/360・eDPI計算とゲーム間感度変換（OW2 / Valorant / CS2 / Apex）</title>
+<meta name="description" content="DPIとゲーム内感度から cm/360 と eDPI を計算し、Overwatch 2・Valorant・CS2・Apex Legends の間で同じ振り向き距離になる感度へ変換できる無料ツールです。">
+<style>
+  :root{ --bg:#0f1420; --card:#171e2e; --ink:#e8ecf4; --sub:#94a0b8; --line:#2a3350; --acc:#f59e0b; --good:#34d399; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;background:#0f1420;color:var(--ink)}
+  .big{font-size:30px;font-weight:800;color:var(--acc)}
+  .big small{font-size:13px;color:var(--sub);font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+  @media(max-width:700px){.stats{grid-template-columns:1fr}}
+  .stat{background:#0f1420;border:1px solid var(--line);border-radius:10px;padding:12px}
+  .stat .v{font-size:22px;font-weight:800}
+  .stat .k{font-size:12.5px;color:var(--sub)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}
+  td.v{text-align:right;font-weight:700}
+  th{color:var(--sub);font-size:13px}
+  .note{font-size:13px;color:var(--sub)}
+  h3{margin:16px 0 6px;font-size:16px}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+  code{background:#232c47;padding:1px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>FPS感度コンバーター（cm/360）</h1>
+    <p>DPIとゲーム内感度を入れると、360度振り向くのに必要なマウス移動距離（cm/360）と eDPI を計算し、他のゲームで「同じ振り向き」になる感度を一覧表示します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>いま遊んでいるゲーム</label>
+        <select id="game">
+          <option value="ow2">Overwatch 2</option>
+          <option value="valo">Valorant</option>
+          <option value="cs2">CS2</option>
+          <option value="apex">Apex Legends</option>
+        </select>
+      </div>
+      <div class="f"><label>DPI</label><input id="dpi" type="number" min="50" step="50" value="800"></div>
+      <div class="f"><label>ゲーム内感度</label><input id="sens" type="number" min="0.01" step="0.01" value="5.00"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><div class="v" id="cm360">-</div><div class="k">cm / 360°（振り向き距離）</div></div>
+      <div class="stat"><div class="v" id="edpi">-</div><div class="k">eDPI（DPI × 感度）</div></div>
+      <div class="stat"><div class="v" id="cm180">-</div><div class="k">cm / 180°</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:2px">同じ振り向きになる他ゲームの感度（同じDPIの場合）</h3>
+    <table>
+      <tr><th>ゲーム</th><th style="text-align:right">感度</th></tr>
+      <tr><td>Overwatch 2</td><td class="v" id="s-ow2">-</td></tr>
+      <tr><td>Valorant</td><td class="v" id="s-valo">-</td></tr>
+      <tr><td>CS2</td><td class="v" id="s-cs2">-</td></tr>
+      <tr><td>Apex Legends</td><td class="v" id="s-apex">-</td></tr>
+    </table>
+    <p class="note">DPIを変えた場合は、そのゲームの感度に（旧DPI÷新DPI）を掛けると同じ振り向きになります。</p>
+  </div>
+
+  <div class="card">
+    <h3>計算の仕組み</h3>
+    <p class="note">
+      各ゲームは「マウス1カウントあたり何度回転するか（ヨー）」が決まっています。本ツールでは感度1のときのヨーを OW2＝0.0066°、Valorant＝0.07°、CS2＝0.022°、Apex Legends＝0.022° として計算しています。<br>
+      <code>cm/360 ＝ 360 ÷（ヨー × 感度）÷ DPI × 2.54</code><br>
+      ゲーム側のアップデートで仕様が変わる場合があります。最終確認は各ゲーム内の感度テストで行ってください。
+    </p>
+    <h3>振り向き距離の目安</h3>
+    <p class="note">一般に、20cm未満はハイセンシ、20〜35cmはミドル、35cm以上はローセンシと呼ばれることが多いです。目安であり、正解はプレイスタイルとマウスパッドの広さで変わります。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const YAW = { ow2: 0.0066, valo: 0.07, cs2: 0.022, apex: 0.022 };
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+
+function calc(){
+  const g = document.getElementById("game").value;
+  const dpi = Math.max(1, num(document.getElementById("dpi").value));
+  const sens = Math.max(0.0001, num(document.getElementById("sens").value));
+  const counts360 = 360 / (YAW[g] * sens);
+  const cm360 = counts360 / dpi * 2.54;
+  document.getElementById("cm360").textContent = cm360.toFixed(1) + " cm";
+  document.getElementById("cm180").textContent = (cm360 / 2).toFixed(1) + " cm";
+  document.getElementById("edpi").textContent = Math.round(dpi * sens).toLocaleString("ja-JP");
+  for(const k in YAW){
+    const s2 = sens * YAW[g] / YAW[k];
+    document.getElementById("s-" + k).textContent = s2.toFixed(k === "valo" ? 3 : 2);
+  }
+}
+["game","dpi","sens"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

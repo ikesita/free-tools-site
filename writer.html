@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ライター実質時給計算機｜文字単価・記事単価から時給と必要本数を計算</title>
+<meta name="description" content="Webライター向け。文字単価や記事単価と作業時間から実質時給を計算し、目標月収に必要な本数・時間も逆算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#db2777; --good:#059669; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+  @media(max-width:640px){.stats{grid-template-columns:1fr}}
+  .stat{background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:12px}
+  .stat .v{font-size:22px;font-weight:800;color:var(--acc)}
+  .stat .k{font-size:12.5px;color:var(--sub)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  td{padding:5px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:700}
+  .note{font-size:13px;color:var(--sub)}
+  h3{margin:16px 0 6px;font-size:16px}
+  .judge{font-weight:700}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ライター実質時給計算機</h1>
+    <p>「文字単価2円」は時給にするといくらなのか。案件を受ける前に、実質時給と、目標月収に必要な本数を計算できます。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>報酬の形式</label>
+        <select id="mode">
+          <option value="char">文字単価</option>
+          <option value="article">記事単価</option>
+        </select>
+      </div>
+      <div class="f" id="f-rate"><label>文字単価（円／字）</label><input id="rate" type="number" min="0" step="0.1" value="2"></div>
+      <div class="f" id="f-chars"><label>1記事の文字数</label><input id="chars" type="number" min="0" step="100" value="5000"></div>
+      <div class="f" id="f-fee" style="display:none"><label>1記事の報酬（円）</label><input id="fee" type="number" min="0" step="100" value="5500"></div>
+      <div class="f"><label>1記事にかかる時間（分）※構成・執筆・画像・入稿すべて込み</label><input id="minutes" type="number" min="1" step="10" value="180"></div>
+      <div class="f"><label>目標月収（円）</label><input id="goal" type="number" min="0" step="10000" value="100000"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><div class="v" id="per">-</div><div class="k">1記事の報酬</div></div>
+      <div class="stat"><div class="v" id="hourly">-</div><div class="k">実質時給</div></div>
+      <div class="stat"><div class="v" id="judge">-</div><div class="k">目安判定</div></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>目標月収に必要な本数</td><td class="v" id="need-count">-</td></tr>
+      <tr><td>目標月収に必要な作業時間（月）</td><td class="v" id="need-hours">-</td></tr>
+      <tr><td>週あたりの作業時間に直すと</td><td class="v" id="need-week">-</td></tr>
+      <tr><td>平日だけ（月20日）で割ると1日あたり</td><td class="v" id="need-day">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">判定の目安：実質時給1,500円未満は「積み上げても目標に届きにくい」、1,500〜2,500円は「本数を確保できれば成立」、2,500円以上は「優先して受ける価値あり」という考え方です。あくまで目安としてご利用ください。</p>
+  </div>
+
+  <div class="card">
+    <h3>よくある落とし穴</h3>
+    <p class="note">
+      ・作業時間には、構成・リサーチ・画像作成・入稿・修正対応まで全部入れてください。執筆だけの時間で計算すると、実質時給は実際より高く出ます。<br>
+      ・テストライティングの無償・低単価や、採用されなかった応募の時間は、長期的には時給を押し下げます。<br>
+      ・時給制の案件でも、連絡対応や会議の時間が無給なら、その分を作業時間に足すのが実態に合います。
+    </p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+
+function calc(){
+  const mode = document.getElementById("mode").value;
+  document.getElementById("f-rate").style.display = mode === "char" ? "" : "none";
+  document.getElementById("f-chars").style.display = mode === "char" ? "" : "none";
+  document.getElementById("f-fee").style.display = mode === "article" ? "" : "none";
+  const per = mode === "char" ? num(document.getElementById("rate").value) * num(document.getElementById("chars").value)
+                               : num(document.getElementById("fee").value);
+  const minutes = Math.max(1, num(document.getElementById("minutes").value));
+  const goal = num(document.getElementById("goal").value);
+  const hourly = per / (minutes / 60);
+  document.getElementById("per").textContent = yen(per);
+  document.getElementById("hourly").textContent = yen(hourly);
+  const j = document.getElementById("judge");
+  j.textContent = hourly < 1500 ? "厳しめ" : (hourly < 2500 ? "本数しだい" : "優先候補");
+  j.style.color = hourly < 1500 ? "#dc2626" : (hourly < 2500 ? "#d97706" : "#059669");
+  const count = per > 0 ? Math.ceil(goal / per) : 0;
+  const hours = count * minutes / 60;
+  document.getElementById("need-count").textContent = count.toLocaleString("ja-JP") + " 本";
+  document.getElementById("need-hours").textContent = hours.toFixed(1) + " 時間";
+  document.getElementById("need-week").textContent = (hours / 4.33).toFixed(1) + " 時間";
+  document.getElementById("need-day").textContent = (hours / 20).toFixed(1) + " 時間";
+}
+["mode","rate","chars","fee","minutes","goal"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

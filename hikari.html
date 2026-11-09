@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>光回線 実質月額計算機｜キャッシュバック・工事費込みで3プラン比較</title>
+<meta name="description" content="光回線の月額料金だけでなく、工事費・初期費用・キャッシュバック・割引をすべて入れて「実質月額」を計算し、最大3プランを比較できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#2563eb; --acc2:#0ea5e9; --good:#059669; --warn:#f59e0b; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:26px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .period{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .period label{font-weight:700}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14px}
+  .chip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+  .period input{width:90px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.plans{grid-template-columns:1fr}}
+  .plan h2{font-size:17px;margin:2px 0 10px;display:flex;justify-content:space-between;align-items:center}
+  .badge{display:none;background:var(--good);color:#fff;font-size:12px;border-radius:999px;padding:2px 10px}
+  .plan.best{border-color:var(--good);box-shadow:0 0 0 2px rgba(5,150,105,.25)}
+  .plan.best .badge{display:inline-block}
+  .f{margin-bottom:9px}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:3px}
+  .f input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .f input[type=text]{font-weight:600}
+  .result{border-top:1px dashed var(--line);margin-top:10px;padding-top:10px}
+  .big{font-size:24px;font-weight:800;color:var(--acc)}
+  .big small{font-size:13px;color:var(--sub);font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  td{padding:3px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  h3{margin:18px 0 6px;font-size:16px}
+  code{background:#eef2ff;padding:1px 6px;border-radius:6px}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>光回線 実質月額計算機</h1>
+    <p>月額料金の安さだけでは、本当の安さは分かりません。工事費・初期費用・キャッシュバック・期間限定割引まで全部入れて、最大3プランの「実質月額」を比べられます。</p>
+  </header>
+
+  <div class="card">
+    <div class="period">
+      <label for="months">使う期間（全プラン共通）</label>
+      <button class="chip" data-m="12">1年</button>
+      <button class="chip on" data-m="24">2年</button>
+      <button class="chip" data-m="36">3年</button>
+      <button class="chip" data-m="48">4年</button>
+      <button class="chip" data-m="60">5年</button>
+      <input id="months" type="number" min="1" max="120" value="24"> か月
+    </div>
+    <p class="note">キャッシュバックや工事費は「使う期間」で割るため、期間が長いプランほど実質月額は下がります。乗り換えサイクルに合わせて期間を変えて比べてください。</p>
+  </div>
+
+  <div class="plans" id="plans"></div>
+
+  <div class="card">
+    <h3>実質月額の計算式</h3>
+    <p><code>実質月額 ＝（月額料金×期間 ＋ オプション×期間 ＋ 初期費用 ＋ 工事費 ＋ 解約時費用 − 月額割引の合計 − キャッシュバック）÷ 期間</code></p>
+    <h3>使い方のコツ</h3>
+    <p class="note">
+      ・金額はすべて税込でそろえて入力してください。<br>
+      ・工事費が「実質無料」の場合は、工事費に総額を入れ、同額をキャッシュバック欄ではなく「月額割引」ではなく、工事費と相殺される割引として扱うため、工事費に0を入れるのが簡単です（分割割引で相殺される形式の場合は、工事費に総額を入れ、割引総額相当を月額割引欄に月数で分けて入れてください）。<br>
+      ・「解約時費用」は、期間の最後に解約する前提で、違約金や撤去費がかかる場合だけ入れてください。かからない場合は0のままで大丈夫です。<br>
+      ・キャッシュバックには受け取り条件（申請時期・方法）がある場合があります。受け取り忘れが心配な場合は、キャッシュバックを0にして計算すると安全側の比較ができます。
+    </p>
+  </div>
+
+  <footer>本ツールは入力された条件での単純計算です。実際の料金・キャンペーン内容は各事業者の公式情報をご確認ください。入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const PLANS = [
+  {name:"プランA（入力例）", monthly:5280, initial:3300, construction:26400, cashback:40000, discount:0, discountMonths:0, option:0, cancel:0},
+  {name:"プランB（入力例）", monthly:4378, initial:3300, construction:0, cashback:30000, discount:1100, discountMonths:12, option:0, cancel:0},
+  {name:"プランC", monthly:0, initial:0, construction:0, cashback:0, discount:0, discountMonths:0, option:0, cancel:0}
+];
+const FIELDS = [
+  ["monthly","月額料金（円）"],["option","オプション月額（円）"],["initial","初期費用（円）"],
+  ["construction","工事費（円）"],["cashback","キャッシュバック（円）"],
+  ["discount","月額割引額（円）"],["discountMonths","割引が適用される月数"],["cancel","解約時費用（円）"]
+];
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+
+function build(){
+  const wrap = document.getElementById("plans");
+  PLANS.forEach((p,i)=>{
+    const d = document.createElement("div");
+    d.className = "card plan"; d.id = "plan"+i;
+    let h = `<h2><span id="pname${i}">${p.name}</span><span class="badge">実質最安</span></h2>`;
+    h += `<div class="f"><label>プラン名</label><input type="text" data-i="${i}" data-k="name" value="${p.name}"></div>`;
+    FIELDS.forEach(([k,label])=>{
+      h += `<div class="f"><label>${label}</label><input type="number" min="0" data-i="${i}" data-k="${k}" value="${p[k]}"></div>`;
+    });
+    h += `<div class="result">
+            <div class="big"><span id="eff${i}">-</span> <small>／月（実質）</small></div>
+            <table>
+              <tr><td>期間中の総支払額</td><td class="v" id="tot${i}">-</td></tr>
+              <tr><td>うち月額料金の合計</td><td class="v" id="mon${i}">-</td></tr>
+              <tr><td>初期費用＋工事費＋解約時費用</td><td class="v" id="one${i}">-</td></tr>
+              <tr><td>割引＋キャッシュバック</td><td class="v" id="off${i}">-</td></tr>
+              <tr><td>名目月額との差</td><td class="v" id="dif${i}">-</td></tr>
+            </table>
+          </div>`;
+    d.innerHTML = h;
+    wrap.appendChild(d);
+  });
+  wrap.addEventListener("input", e=>{
+    const t = e.target, i = t.dataset.i, k = t.dataset.k;
+    if(i === undefined) return;
+    PLANS[i][k] = (k === "name") ? t.value : num(t.value);
+    if(k === "name") document.getElementById("pname"+i).textContent = t.value || ("プラン"+(i+1));
+    calc();
+  });
+}
+
+function calc(){
+  const months = Math.max(1, num(document.getElementById("months").value));
+  let best = -1, bestVal = Infinity;
+  PLANS.forEach((p,i)=>{
+    const mon = (num(p.monthly) + num(p.option)) * months;
+    const one = num(p.initial) + num(p.construction) + num(p.cancel);
+    const off = num(p.discount) * Math.min(num(p.discountMonths), months) + num(p.cashback);
+    const tot = mon + one - off;
+    const eff = tot / months;
+    document.getElementById("eff"+i).textContent = yen(eff);
+    document.getElementById("tot"+i).textContent = yen(tot);
+    document.getElementById("mon"+i).textContent = yen(mon);
+    document.getElementById("one"+i).textContent = yen(one);
+    document.getElementById("off"+i).textContent = "−" + yen(off);
+    const dif = eff - num(p.monthly);
+    document.getElementById("dif"+i).textContent = (dif >= 0 ? "+" : "−") + yen(Math.abs(dif)).slice(0) + "";
+    document.getElementById("dif"+i).textContent = (dif >= 0 ? "+" : "−") + Math.round(Math.abs(dif)).toLocaleString("ja-JP") + "円";
+    if(num(p.monthly) > 0 && eff < bestVal){ bestVal = eff; best = i; }
+  });
+  PLANS.forEach((p,i)=> document.getElementById("plan"+i).classList.toggle("best", i === best));
+}
+
+document.querySelectorAll(".chip").forEach(c=>{
+  c.addEventListener("click", ()=>{
+    document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+    c.classList.add("on");
+    document.getElementById("months").value = c.dataset.m;
+    calc();
+  });
+});
+document.getElementById("months").addEventListener("input", ()=>{
+  document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on", num(x.dataset.m) === num(document.getElementById("months").value)));
+  calc();
+});
+build(); calc();
+</script>
+</body>
+</html>
