@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あと何日カウンター｜目標日まで何日か、過ぎてから何日かを計算</title>
+<meta name="description" content="試験・記念日・締め切りなどの目標日まで「あと何日」か、過ぎたイベントから「何日経った」かを計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#9333ea; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:32px;font-weight:900;text-align:center;margin:10px 0 2px}
+  .sub2{text-align:center;color:var(--sub);font-size:14px}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>あと何日カウンター</h1>
+    <p>目標の日まで何日あるか、過ぎた日から何日経ったかを、今日を基準に計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>目標の日</label><input id="target" type="date" value="2027-01-01"></div>
+    <div class="big" id="out">-</div>
+    <div class="sub2" id="sub">-</div>
+  </div>
+
+  <div class="card">
+    <p style="color:var(--sub);font-size:13.5px;margin:0">数え方：今日そのものは「あと0日」として数えます。試験まで「残り何日勉強できるか」を数える場合は、今日を含めるかどうかで1日ずれる点にご注意ください。日付同士の差は「<a href="days.html">日数計算機</a>」もご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const WD = ["日","月","火","水","木","金","土"];
+function calc(){
+  const v = document.getElementById("target").value;
+  if(!v) return;
+  const [y, m, d] = v.split("-").map(Number);
+  const t = new Date(y, m - 1, d);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.round((t - now) / 86400000);
+  const label = y + "年" + m + "月" + d + "日（" + WD[t.getDay()] + "）";
+  if(diff > 0){ outEl.textContent = label + " まで あと " + diff.toLocaleString("ja-JP") + " 日"; subEl.textContent = "週に直すと約 " + (diff / 7).toFixed(1) + " 週間です"; }
+  else if(diff === 0){ outEl.textContent = label + " は 今日です"; subEl.textContent = ""; }
+  else { outEl.textContent = label + " から " + Math.abs(diff).toLocaleString("ja-JP") + " 日が経ちました"; subEl.textContent = ""; }
+}
+const outEl = document.getElementById("out"), subEl = document.getElementById("sub");
+document.getElementById("target").addEventListener("input", calc);
+calc();
+</script>
+</body>
+</html>
