@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>単位換算ツール｜長さ・重さ・温度をまとめて変換</title>
+<meta name="description" content="長さ（cm・m・インチ・フィート・マイル）、重さ（g・kg・ポンド・オンス）、温度（℃・°F・K）の単位を相互に変換できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:16px;margin:0 0 12px}
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .row input{width:140px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .row select{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .ans{font-size:20px;font-weight:800;color:var(--acc)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>単位換算ツール</h1>
+    <p>長さ・重さ・温度の単位変換です。数値と単位を選ぶと自動で変換します。</p>
+  </header>
+
+  <div class="card">
+    <h2>長さ</h2>
+    <div class="row"><input id="lv" type="number" value="1">
+      <select id="lf"></select><span>→</span><select id="lt"></select><span class="ans" id="lOut">-</span></div>
+  </div>
+
+  <div class="card">
+    <h2>重さ</h2>
+    <div class="row"><input id="wv" type="number" value="1">
+      <select id="wf"></select><span>→</span><select id="wt"></select><span class="ans" id="wOut">-</span></div>
+  </div>
+
+  <div class="card">
+    <h2>温度</h2>
+    <div class="row"><input id="tv" type="number" value="100">
+      <select id="tf"><option value="c">℃（摂氏）</option><option value="f">°F（華氏）</option><option value="k">K（ケルビン）</option></select>
+      <span>→</span>
+      <select id="tt"><option value="c">℃（摂氏）</option><option value="f" selected>°F（華氏）</option><option value="k">K（ケルビン）</option></select>
+      <span class="ans" id="tOut">-</span></div>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。モニターのインチ計算は「<a href="monitor.html">モニターサイズ計算機</a>」もご利用ください。</footer>
+</div>
+
+<script>
+const LENGTH = { mm:0.001, cm:0.01, m:1, km:1000, inch:0.0254, foot:0.3048, yard:0.9144, mile:1609.344 };
+const WEIGHT = { g:1, kg:1000, t:1000000, oz:28.349523125, lb:453.59237 };
+const LABEL = { mm:"mm", cm:"cm", m:"m", km:"km", inch:"インチ", foot:"フィート", yard:"ヤード", mile:"マイル", g:"g", kg:"kg", t:"t", oz:"オンス", lb:"ポンド" };
+function fill(sel, table, defFrom, defTo){
+  Object.keys(table).forEach(k => { const o = document.createElement("option"); o.value = k; o.textContent = LABEL[k]; sel.appendChild(o); });
+  sel.former = defFrom; sel.value = defFrom;
+}
+const lf = document.getElementById("lf"), lt = document.getElementById("lt"), wf = document.getElementById("wf"), wt = document.getElementById("wt");
+fill(lf, LENGTH); lf.value = "inch"; fill(lt, LENGTH); lt.value = "cm";
+fill(wf, WEIGHT); wf.value = "lb"; fill(wt, WEIGHT); wt.value = "kg";
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const fmt = n => { const r = Math.round(n * 10000) / 10000; return r.toLocaleString("ja-JP", {maximumFractionDigits:4}); };
+function calc(){
+  lOut.textContent = fmt(num(lv.value) * LENGTH[lf.value] / LENGTH[lt.value]) + " " + LABEL[lt.value];
+  wOut.textContent = fmt(num(wv.value) * WEIGHT[wf.value] / WEIGHT[wt.value]) + " " + LABEL[wt.value];
+  const v = num(tv.value); let c;
+  if(tf.value === "c") c = v; else if(tf.value === "f") c = (v - 32) * 5 / 9; else c = v - 273.15;
+  let out; if(tt.value === "c") out = c; else if(tt.value === "f") out = c * 9 / 5 + 32; else out = c + 273.15;
+  tOut.textContent = fmt(out) + (tt.value === "k" ? " K" : tt.value === "f" ? " °F" : " ℃");
+}
+const [lv, wv, tv, tf, tt, lOut, wOut, tOut] = ["lv","wv","tv","tf","tt","lOut","wOut","tOut"].map(id => document.getElementById(id));
+[lv, lf, lt, wv, wf, wt, tv, tf, tt].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

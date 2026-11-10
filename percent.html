@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>パーセント計算機｜割合・％増減・何％かを簡単計算</title>
+<meta name="description" content="「200の15％はいくつ？」「80は200の何％？」「10％増し・10％引きはいくら？」をまとめて計算できる無料のパーセント計算機です。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0891b2; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:16px;margin:0 0 12px}
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .row input{width:120px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .row select{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  .ans{font-size:20px;font-weight:800;color:var(--acc)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>パーセント計算機</h1>
+    <p>割合の計算を3パターンまとめて行えます。数字を入れると自動で計算します。</p>
+  </header>
+
+  <div class="card">
+    <h2>① ○○の ×％ はいくつ？</h2>
+    <div class="row"><input id="a1" type="number" value="200"><span>の</span><input id="a2" type="number" value="15"><span>％ =</span><span class="ans" id="aOut">-</span></div>
+  </div>
+
+  <div class="card">
+    <h2>② ○○は △△の 何％？</h2>
+    <div class="row"><input id="b1" type="number" value="80"><span>は</span><input id="b2" type="number" value="200"><span>の</span><span class="ans" id="bOut">-</span></div>
+  </div>
+
+  <div class="card">
+    <h2>③ ○○の ×％ 増し／引き はいくつ？</h2>
+    <div class="row"><input id="c1" type="number" value="1000"><span>の</span><input id="c2" type="number" value="10"><span>％</span>
+      <select id="c3"><option value="up">増し</option><option value="down">引き</option></select><span>=</span><span class="ans" id="cOut">-</span></div>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const fmt = n => Math.abs(n) >= 100 ? n.toLocaleString("ja-JP",{maximumFractionDigits:2}) : String(Math.round(n * 100) / 100);
+function calc(){
+  const a = num(a1.value) * num(a2.value) / 100;
+  aOut.textContent = fmt(a);
+  const b2v = num(b2.value);
+  bOut.textContent = b2v !== 0 ? fmt(num(b1.value) / b2v * 100) + " ％" : "-";
+  const c = num(c1.value) * (1 + (c3.value === "up" ? 1 : -1) * num(c2.value) / 100);
+  cOut.textContent = fmt(c);
+}
+const [a1,a2,b1,b2,c1,c2,c3,aOut,bOut,cOut] = ["a1","a2","b1","b2","c1","c2","c3","aOut","bOut","cOut"].map(id => document.getElementById(id));
+[a1,a2,b1,b2,c1,c2,c3].forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

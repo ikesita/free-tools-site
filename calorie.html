@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基礎代謝・消費カロリー計算機｜TDEE（1日の総消費カロリー）の目安</title>
+<meta name="description" content="性別・年齢・身長・体重と活動量から、基礎代謝量（BMR）と1日の総消費カロリー（TDEE）の目安を計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#dc2626; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>基礎代謝・消費カロリー計算機</h1>
+    <p>基礎代謝量（BMR）と、活動量を入れた1日の総消費カロリー（TDEE）の目安を計算します。推定式はMifflin-St Jeor式です。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>性別</label><select id="sex"><option value="m">男性</option><option value="f">女性</option></select></div>
+      <div class="f"><label>年齢（歳）</label><input id="age" type="number" min="1" max="120" value="30"></div>
+      <div class="f"><label>身長（cm）</label><input id="height" type="number" min="50" max="250" step="0.1" value="170"></div>
+      <div class="f"><label>体重（kg）</label><input id="weight" type="number" min="10" max="400" step="0.1" value="70"></div>
+      <div class="f" style="grid-column:1/-1"><label>活動量</label>
+        <select id="act">
+          <option value="1.2">ほぼ運動なし（デスクワーク中心）</option>
+          <option value="1.375">軽い運動（週1〜3回）</option>
+          <option value="1.55" selected>中程度の運動（週3〜5回）</option>
+          <option value="1.725">激しい運動（週6〜7回）</option>
+          <option value="1.9">非常に激しい運動・肉体労働</option>
+        </select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>基礎代謝量（BMR）</td><td class="v" id="bmr">-</td></tr>
+      <tr><td>1日の総消費カロリー（TDEE）</td><td class="v" id="tdee">-</td></tr>
+      <tr><td>減量の目安（TDEE − 500kcal）</td><td class="v" id="cut">-</td></tr>
+      <tr><td>増量の目安（TDEE ＋ 300kcal）</td><td class="v" id="bulk">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">これらは統計的な推定式による目安で、実際の代謝には個人差があります。健康状態に不安がある場合や、極端な食事制限を考えている場合は、医療機関や専門家にご相談ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const kcal = n => Math.round(n).toLocaleString("ja-JP") + " kcal";
+function calc(){
+  const w = num(weight.value), h = num(height.value), a = num(age.value);
+  let bmr = 10 * w + 6.25 * h - 5 * a + (sex.value === "m" ? 5 : -161);
+  const tdee = bmr * num(act.value);
+  document.getElementById("bmr").textContent = kcal(bmr);
+  document.getElementById("tdee").textContent = kcal(tdee);
+  document.getElementById("cut").textContent = kcal(tdee - 500);
+  document.getElementById("bulk").textContent = kcal(tdee + 300);
+}
+const [sex, age, height, weight, act] = ["sex","age","height","weight","act"].map(id => document.getElementById(id));
+[sex, age, height, weight, act].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

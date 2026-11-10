@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日数計算機｜日付の差・何日後・何日前を計算</title>
+<meta name="description" content="2つの日付の間の日数、今日から何日後の日付（曜日つき）、何日前の日付を計算できる無料ツールです。締め切りや記念日の計算に。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#059669; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:16px;margin:0 0 12px}
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .row input{padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .row input[type=number]{width:110px}
+  .ans{font-size:20px;font-weight:800;color:var(--acc)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>日数計算機</h1>
+    <p>日付の間の日数と、「何日後・何日前」の日付を計算します。</p>
+  </header>
+
+  <div class="card">
+    <h2>① 2つの日付の間は何日？</h2>
+    <div class="row"><input id="d1" type="date" value="2026-11-10"><span>から</span><input id="d2" type="date" value="2026-12-31"><span>まで</span><span class="ans" id="diffOut">-</span></div>
+  </div>
+
+  <div class="card">
+    <h2>② ○日後は 何月何日？</h2>
+    <div class="row"><input id="base" type="date" value="2026-11-10"><span>の</span><input id="n" type="number" value="30"><span>日後 =</span><span class="ans" id="addOut">-</span></div>
+    <p style="color:var(--sub);font-size:13px;margin:10px 0 0">マイナスの数を入れると「○日前」も計算できます。基準日そのものは0日後として数えます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const WD = ["日","月","火","水","木","金","土"];
+const parse = v => { const [y,m,d] = v.split("-").map(Number); return new Date(y, m - 1, d); };
+const fmtD = dt => dt.getFullYear() + "年" + (dt.getMonth() + 1) + "月" + dt.getDate() + "日（" + WD[dt.getDay()] + "）";
+function calc(){
+  if(d1.value && d2.value){
+    const diff = Math.round((parse(d2.value) - parse(d1.value)) / 86400000);
+    diffOut.textContent = diff.toLocaleString("ja-JP") + " 日";
+  }
+  if(base.value){
+    const t = parse(base.value); t.setDate(t.getDate() + (parseInt(n.value) || 0));
+    addOut.textContent = fmtD(t);
+  }
+}
+const [d1,d2,base,n,diffOut,addOut] = ["d1","d2","base","n","diffOut","addOut"].map(id => document.getElementById(id));
+[d1,d2,base,n].forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
