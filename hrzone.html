@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心拍ゾーン計算機｜カルボーネン法で目標心拍数を表示</title>
+<meta name="description" content="年齢と安静時心拍数から、最大心拍数とカルボーネン法による運動強度ゾーン（Z1〜Z5）の目標心拍数を計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#be123c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>心拍ゾーン計算機</h1>
+    <p>年齢と安静時心拍数から、最大心拍数と運動強度ごとの目標心拍ゾーンを計算します。目標心拍数は安静時心拍数を考慮するカルボーネン法で求めています。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>年齢（歳）</label><input id="age" type="number" min="0" step="1" value="40"></div>
+      <div class="f"><label>安静時心拍数（bpm）</label><input id="rest" type="number" min="0" step="1" value="60"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <table>
+      <tr><td>最大心拍数の目安（220 − 年齢）</td><td class="v" id="maxOut">-</td></tr>
+      <tr><td>Z1（50〜60％・回復・ウォームアップ）</td><td class="v" id="z1Out">-</td></tr>
+      <tr><td>Z2（60〜70％・脂肪燃焼・基礎持久力）</td><td class="v" id="z2Out">-</td></tr>
+      <tr><td>Z3（70〜80％・有酸素運動）</td><td class="v" id="z3Out">-</td></tr>
+      <tr><td>Z4（80〜90％・無酸素運動・閾値）</td><td class="v" id="z4Out">-</td></tr>
+      <tr><td>Z5（90〜100％・最大強度）</td><td class="v" id="z5Out">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">最大心拍数は「220 − 年齢」の簡易式による目安で、個人差が大きい値です。目標心拍数はカルボーネン法（安静時心拍数 ＋（最大心拍数 − 安静時心拍数）× 強度）で計算しています。実際の運動強度の感じ方には体力や体調による差がありますので、体調が悪いときは無理をせず、心臓に持病のある方は医師の指示に従ってください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function zone(rest, hrr, lo, hi){
+  return Math.round(rest + hrr * lo) + " 〜 " + Math.round(rest + hrr * hi) + " bpm";
+}
+function calc(){
+  const age = num(ageEl.value);
+  const rest = num(restEl.value);
+  const maxHr = 220 - age;
+  const hrr = maxHr - rest;
+  maxOutEl.textContent = maxHr + " bpm";
+  z1OutEl.textContent = zone(rest, hrr, 0.50, 0.60);
+  z2OutEl.textContent = zone(rest, hrr, 0.60, 0.70);
+  z3OutEl.textContent = zone(rest, hrr, 0.70, 0.80);
+  z4OutEl.textContent = zone(rest, hrr, 0.80, 0.90);
+  z5OutEl.textContent = zone(rest, hrr, 0.90, 1.00);
+}
+const ageEl = document.getElementById("age"), restEl = document.getElementById("rest");
+const maxOutEl = document.getElementById("maxOut"), z1OutEl = document.getElementById("z1Out"),
+      z2OutEl = document.getElementById("z2Out"), z3OutEl = document.getElementById("z3Out"),
+      z4OutEl = document.getElementById("z4Out"), z5OutEl = document.getElementById("z5Out");
+[ageEl, restEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>
+</p>
+</div>
+</body>
+</html>
