@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>食費の見方｜1食単価で比べる外食・自炊・食材宅配</title>
+<meta name="description" content="食費は「1食あたりいくらか」で比べると見え方が変わります。外食・自炊・食材宅配の単価の考え方と、月の食費を計算できるミニ計算機のページです。">
+<style>
+  body{font-family:-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#f6f7f9;color:#222;margin:0;padding:24px 16px 48px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:24px;margin:8px 0 4px}
+  h2{font-size:18px;margin:28px 0 8px}
+  p,li{line-height:1.8;font-size:15px}
+  .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:16px}
+  label{display:block;font-size:13px;color:#555;margin-top:12px}
+  input{width:100%;padding:10px;font-size:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;margin-top:4px}
+  .result{font-size:22px;font-weight:700;margin-top:16px}
+  .sub{color:#555;font-size:13px}
+  .pr{border:1px dashed #c9a227;background:#fffdf3}
+  .pr .label{font-size:11px;color:#8a6d1a;letter-spacing:.1em}
+  a{color:#0b62d6}
+  .back{font-size:13px}
+  footer{margin-top:32px;color:#888;font-size:12px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="back"><a href="index.html">← ツール一覧へ戻る</a></p>
+<h1>食費の見方：1食単価で比べる</h1>
+<p>月の食費は「なんとなく使いすぎた」で終わりがちですが、<strong>1食あたりの単価 × 1日の食数 × 30日</strong>に分解すると、どこに無駄があるかが見えてきます。外食は1食800〜1,200円、自炊は材料費だけなら1食300〜500円程度が目安と言われますが、調味料や光熱費、買い物の手間まで含めるかどうかで見え方は変わります。</p>
+
+<div class="card">
+<h2 style="margin-top:0">月の食費シミュレーション</h2>
+<label>1食あたりの単価（円）</label>
+<input type="number" id="unit" value="800" min="0">
+<label>1日の食数</label>
+<input type="number" id="meals" value="3" min="0">
+<div class="result" id="total">月の食費 約72,000円</div>
+<p class="sub">1食の単価を100円下げると、3食×30日で月9,000円の差になります。全部を自炊に変える必要はなく、「週に数回だけ単価の低い食事に置き換える」だけでも効きます。</p>
+</div>
+
+<h2>比べるときの観点</h2>
+<ul>
+<li><strong>手間もコストに入れる</strong>：自炊の単価には買い物と調理の時間が含まれていません。時給換算すると、食材宅配やミールキットが割高とは限らない場面もあります。</li>
+<li><strong>廃棄ロスを見る</strong>：安く買っても使い切れずに捨てれば単価は上がります。少量から試せるサービスはロスの面で有利です。</li>
+<li><strong>置き換えは一部から</strong>：忙しい日の夕食だけ、など部分的な置き換えが続きやすく、効果の測定もしやすい方法です。</li>
+</ul>
+
+<div class="card pr">
+<p class="label">PR</p>
+<p>食材宅配のおためしセットの例です。内容と価格は公式サイトでご確認ください。</p>
+<!--A8:OISIX-->
+</div>
+
+<footer>
+※ 単価の目安は一般的な例示であり、地域や家庭の状況で変わります。各サービスの内容・価格は公式サイトでご確認ください。<br>
+入力内容はブラウザ内でのみ処理され、送信されません。
+</footer>
+</div>
+<script>
+function calc(){
+  var u=parseFloat(document.getElementById('unit').value)||0;
+  var m=parseFloat(document.getElementById('meals').value)||0;
+  document.getElementById('total').textContent='月の食費 約'+Math.round(u*m*30).toLocaleString()+'円';
+}
+document.getElementById('unit').addEventListener('input',calc);
+document.getElementById('meals').addEventListener('input',calc);
+calc();
+</script>
+</body>
+</html>
