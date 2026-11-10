@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>引っ越し費用の見方｜見積もりの比べ方</title>
+<meta name="description" content="引っ越し費用は世帯の規模と距離、時期で大きく変わります。相場の目安の見方、繁忙期に高くなる理由、見積もり比較のポイント、費用に含まれるもの・含まれないものをまとめ、条件から相場レンジを出せるミニツールを付けました。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#7c3aed; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:24px;margin:8px 0 4px;line-height:1.4}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 10px}
+  .card p{margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;background:#fff}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  .ad{border:1px dashed var(--acc);border-radius:12px;padding:14px;margin-top:12px;background:#f7f3ff}
+  .ad .pr{font-size:11px;color:var(--sub);letter-spacing:.08em}
+  .ad a{font-weight:800}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>引っ越し費用の見方：見積もりの比べ方</h1>
+    <p>世帯の規模と距離で相場の当たりを付け、見積もりを正しく比べるためのガイドです。</p>
+  </header>
+
+  <div class="card">
+    <h2>条件から相場の目安を出す</h2>
+    <div class="grid">
+      <div class="f"><label>世帯</label>
+        <select id="household">
+          <option value="single" selected>単身</option>
+          <option value="couple">2人</option>
+          <option value="family">家族</option>
+        </select>
+      </div>
+      <div class="f"><label>距離</label>
+        <select id="distance">
+          <option value="city" selected>同一市内</option>
+          <option value="near">県内・近県</option>
+          <option value="far">長距離</option>
+        </select>
+      </div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>相場の目安（範囲）</td><td class="v" id="range">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">※ ここでの金額はあくまで相場の目安です。荷物の量、時期、曜日、オプションの有無などで変わり、実際の費用は見積もりで確認してください。</p>
+  </div>
+
+  <div class="card">
+    <h2>繁忙期（3〜4月）は高くなる</h2>
+    <p>進学・就職・転勤が集中する3〜4月は引っ越しの需要が跳ね上がり、同じ条件でも通常期より料金が高くなりがちです。日程に余裕があるなら、繁忙期を避ける、平日や午後便・フリー便を選ぶ、といった工夫で見積もりが下がることがあります。逆に繁忙期に動かせない場合は、早めに見積もりを取ることが重要です。</p>
+  </div>
+
+  <div class="card">
+    <h2>見積もり比較のポイント</h2>
+    <p>・<strong>条件をそろえて比べる</strong>：荷物量、距離、日時、オプションが会社ごとに違うと金額は比べられません。同じ条件で複数社の見積もりを取りましょう。</p>
+    <p>・<strong>総額で見る</strong>：基本料金が安くても、オプションや追加料金で逆転することがあります。「当日いくら払うのか」の総額で比較します。</p>
+    <p>・<strong>荷物量を正確に伝える</strong>：見積もり後に荷物が増えると追加料金の原因になります。大型家具・家電は寸法まで伝えるのが安全です。</p>
+    <p>・<strong>値引き交渉は最後に</strong>：複数社の見積もりが出そろってから希望額を伝えると、根拠のある交渉になります。</p>
+  </div>
+
+  <div class="card">
+    <h2>費用に含まれるもの・含まれないもの</h2>
+    <table>
+      <tr><td>基本料金に含まれやすい</td><td class="v">トラック・作業員の人件費、基本的な養生、家具の梱包補助</td></tr>
+      <tr><td>オプションになりやすい</td><td class="v">荷造り・梱包の代行、エアコンの取り外し・取り付け工事</td></tr>
+      <tr><td>別途手配が多い</td><td class="v">不用品の処分、ピアノなど特殊な荷物の運搬、車両の陸送</td></tr>
+    </table>
+    <p style="margin-top:10px">「梱包は自分でやるプラン」と「すべておまかせのプラン」では金額も手間も大きく変わります。見積もり書では、どこまでが料金内なのかを項目ごとに確認してください。</p>
+
+    <div class="ad">
+      <div class="pr">PR（アフィリエイト広告）</div>
+      <!--A8:HAKOBU-->
+    </div>
+    <p class="note" style="margin-top:10px">料金やサービス内容は各社の公式情報が最新です。契約前に、追加料金の条件とキャンセル規定も合わせてご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const RANGES = {
+  single: { city: [40000, 70000],  near: [50000, 90000],   far: [70000, 150000] },
+  couple: { city: [60000, 100000], near: [80000, 140000],  far: [120000, 250000] },
+  family: { city: [90000, 150000], near: [120000, 200000], far: [200000, 400000] }
+};
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const r = RANGES[householdEl.value][distanceEl.value];
+  rangeEl.textContent = yen(r[0]) + " 〜 " + yen(r[1]);
+}
+const householdEl = document.getElementById("household"), distanceEl = document.getElementById("distance");
+const rangeEl = document.getElementById("range");
+[householdEl, distanceEl].forEach(e => e.addEventListener("change", calc));
+calc();
+</script>
+</body>
+</html>

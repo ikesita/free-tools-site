@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>取り崩しシミュレーション｜資産があと何年持つか計算</title>
+<meta name="description" content="元本と毎月の取り崩し額、想定利回りから、資産が何年何ヶ月持つかと枯渇する年月をシミュレーションできる無料ツールです。老後資金の計画の目安に。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#1d4ed8; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:4px 0}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>取り崩しシミュレーション</h1>
+    <p>ためた資産を毎月一定額ずつ取り崩した場合に、あと何年何ヶ月持つかと、枯渇する年月を試算します。運用しながら取り崩す場合の目安にもどうぞ。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>元本（円）</label><input id="principal" type="number" min="0" step="100000" value="10000000"></div>
+      <div class="f"><label>毎月の取り崩し額（円）</label><input id="withdraw" type="number" min="0" step="10000" value="100000"></div>
+      <div class="f"><label>想定利回り（年率・％）</label><input id="rate" type="number" min="0" step="0.1" value="0"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>試算結果</h2>
+    <div class="big" id="mainOut">-</div>
+    <table>
+      <tr><td>持つ期間</td><td class="v" id="durOut">-</td></tr>
+      <tr><td>枯渇する年月（今月から取り崩す場合）</td><td class="v" id="endOut">-</td></tr>
+      <tr><td>取り崩し総額の目安（利息込み）</td><td class="v" id="totalOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">毎月、残高に月利（年率 ÷ 12）の利息がついたあと、月末に取り崩し額を引く想定で計算しています。最後の月は残高分のみの取り崩しになるため、総額は目安です。実際の資産寿命は、利回りの変動・物価・税金・手数料・年金などの収入で大きく変わります。長期の資金計画は専門家への相談もご検討ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.floor(n).toLocaleString("ja-JP");
+function simulate(P, W, annual){
+  const mr = annual / 100 / 12;
+  if (W <= 0) return { never: true };
+  if (mr > 0 && P * mr >= W) return { never: true };
+  let bal = P, months = 0, total = 0;
+  while (bal > 0 && months < 1200){
+    bal += bal * mr;
+    months++;
+    if (bal <= W){ total += bal; bal = 0; break; }
+    bal -= W; total += W;
+  }
+  if (bal > 0) return { never: true };
+  return { never: false, months, total };
+}
+function calc(){
+  const P = num(principalEl.value), W = num(withdrawEl.value), r = num(rateEl.value);
+  const res = simulate(P, W, r);
+  if (res.never){
+    mainOutEl.textContent = "現在の条件では減りません";
+    durOutEl.textContent = "利息が取り崩し額を上回るため、元本は減りません";
+    endOutEl.textContent = "—";
+    totalOutEl.textContent = "—";
+    return;
+  }
+  const y = Math.floor(res.months / 12), m = res.months % 12;
+  const dur = y + "年" + (m ? m + "ヶ月" : "ちょうど");
+  const now = new Date();
+  const end = new Date(now.getFullYear(), now.getMonth() + res.months, 1);
+  mainOutEl.textContent = "約 " + dur + "持ちます";
+  durOutEl.textContent = dur + "（全" + res.months + "ヶ月）";
+  endOutEl.textContent = end.getFullYear() + "年" + (end.getMonth() + 1) + "月ごろ";
+  totalOutEl.textContent = yen(res.total);
+}
+const principalEl = document.getElementById("principal"), withdrawEl = document.getElementById("withdraw"), rateEl = document.getElementById("rate");
+const mainOutEl = document.getElementById("mainOut"), durOutEl = document.getElementById("durOut"),
+      endOutEl = document.getElementById("endOut"), totalOutEl = document.getElementById("totalOut");
+[principalEl, withdrawEl, rateEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>
+</p>
+</div>
+</body>
+</html>

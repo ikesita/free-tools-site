@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運動の消費カロリー計算機｜METsで種目別の消費カロリーを試算</title>
+<meta name="description" content="ウォーキング・ランニング・サイクリング・水泳などの運動で消費するカロリーを、METs（メッツ）と体重・時間から計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#059669; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:4px 0}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>運動の消費カロリー計算機</h1>
+    <p>運動の種類（METs）・体重・運動時間から、消費カロリーの目安を計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>運動の種類</label>
+        <select id="act">
+          <option value="3.5">ウォーキング（普通の速さ）</option>
+          <option value="4.3">ウォーキング（早歩き）</option>
+          <option value="8.3" selected>ランニング</option>
+          <option value="6.8">サイクリング</option>
+          <option value="6.0">水泳</option>
+          <option value="2.5">ヨガ</option>
+          <option value="6.0">筋トレ</option>
+        </select>
+      </div>
+      <div class="f"><label>体重（kg）</label><input id="weight" type="number" min="0" step="0.5" value="65"></div>
+      <div class="f"><label>運動時間（分）</label><input id="mins" type="number" min="0" step="1" value="30"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <div class="big" id="kcalOut">-</div>
+    <table>
+      <tr><td>1時間あたりの消費カロリー</td><td class="v" id="perHour">-</td></tr>
+      <tr><td>使用したMETs値</td><td class="v" id="metsOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算式：消費カロリー（kcal）＝ METs × 体重（kg）× 運動時間（時間）× 1.05。METsは運動の強さを表す単位で、安静時を1として何倍のエネルギーを消費するかを示します。同じ運動でもペースやフォームで実際の消費量は変わりますので、目安としてご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function calc(){
+  const mets = num(actEl.value);
+  const w = num(weightEl.value);
+  const hours = num(minsEl.value) / 60;
+  const kcal = mets * w * hours * 1.05;
+  kcalOutEl.textContent = "約 " + Math.round(kcal).toLocaleString("ja-JP") + " kcal";
+  perHourEl.textContent = "約 " + Math.round(mets * w * 1.05).toLocaleString("ja-JP") + " kcal";
+  metsOutEl.textContent = mets + " METs";
+}
+const actEl = document.getElementById("act"), weightEl = document.getElementById("weight"), minsEl = document.getElementById("mins");
+const kcalOutEl = document.getElementById("kcalOut"), perHourEl = document.getElementById("perHour"), metsOutEl = document.getElementById("metsOut");
+[actEl, weightEl, minsEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>
+</p>
+</div>
+</body>
+</html>

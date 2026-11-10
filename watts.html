@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電力・オームの法則計算機｜電圧・電流・電力・抵抗を相互計算</title>
+<meta name="description" content="電圧（V）・電流（A）・電力（W）・抵抗（Ω）をオームの法則で相互に計算できる無料ツールです。家電の消費電力や電気代の目安の確認に。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#d97706; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:4px 0}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>電力・オームの法則計算機</h1>
+    <p>電圧・電流・電力・抵抗のうち2つを入れると、残りをオームの法則（V＝I×R、W＝V×I）で計算します。計算モードを選んでください。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>計算モード</label>
+        <select id="mode">
+          <option value="va">電圧と電流から計算</option>
+          <option value="wv">電力と電圧から計算</option>
+          <option value="wa">電力と電流から計算</option>
+        </select>
+      </div>
+      <div class="f"></div>
+      <div class="f"><label id="lab1">電圧（V）</label><input id="in1" type="number" min="0" step="any" value="100"></div>
+      <div class="f"><label id="lab2">電流（A）</label><input id="in2" type="number" min="0" step="any" value="10"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果</h2>
+    <div class="big" id="mainOut">-</div>
+    <table>
+      <tr><td>電圧（V）</td><td class="v" id="outV">-</td></tr>
+      <tr><td>電流（A）</td><td class="v" id="outA">-</td></tr>
+      <tr><td>電力（W）</td><td class="v" id="outW">-</td></tr>
+      <tr><td>抵抗（Ω）</td><td class="v" id="outR">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算式：電力 W ＝ 電圧 V × 電流 A／電流 A ＝ 電力 W ÷ 電圧 V／抵抗 Ω ＝ 電圧 V ÷ 電流 A。家庭用コンセントは100Vが基本で、ブレーカーの上限（例：20A）を超えると落ちます。1,500W級の家電を複数同時に使う場合は合計ワット数にご注意ください。交流機器の実際の消費電力は力率などで変わるため、ここでの値は目安です。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const fmt = n => (Math.round(n * 100) / 100).toLocaleString("ja-JP");
+const MODES = {
+  va: { l1: "電圧（V）", l2: "電流（A）", d1: 100, d2: 10, main: "W" },
+  wv: { l1: "電力（W）", l2: "電圧（V）", d1: 1500, d2: 100, main: "A" },
+  wa: { l1: "電力（W）", l2: "電流（A）", d1: 1000, d2: 10, main: "V" }
+};
+function applyMode(){
+  const m = MODES[modeEl.value];
+  lab1El.textContent = m.l1;
+  lab2El.textContent = m.l2;
+  in1El.value = m.d1;
+  in2El.value = m.d2;
+  calc();
+}
+function calc(){
+  const mode = modeEl.value;
+  const x = num(in1El.value), y = num(in2El.value);
+  let V = 0, A = 0, W = 0, R = 0;
+  if (mode === "va"){ V = x; A = y; W = V * A; R = A > 0 ? V / A : 0; }
+  if (mode === "wv"){ W = x; V = y; A = V > 0 ? W / V : 0; R = A > 0 ? V / A : 0; }
+  if (mode === "wa"){ W = x; A = y; V = A > 0 ? W / A : 0; R = A > 0 ? V / A : 0; }
+  outVEl.textContent = fmt(V) + " V";
+  outAEl.textContent = fmt(A) + " A";
+  outWEl.textContent = fmt(W) + " W";
+  outREl.textContent = fmt(R) + " Ω";
+  const m = MODES[mode];
+  mainOutEl.textContent = m.main === "W" ? "電力 " + fmt(W) + " W"
+    : m.main === "A" ? "電流 " + fmt(A) + " A"
+    : "電圧 " + fmt(V) + " V";
+}
+const modeEl = document.getElementById("mode");
+const lab1El = document.getElementById("lab1"), lab2El = document.getElementById("lab2");
+const in1El = document.getElementById("in1"), in2El = document.getElementById("in2");
+const outVEl = document.getElementById("outV"), outAEl = document.getElementById("outA"),
+      outWEl = document.getElementById("outW"), outREl = document.getElementById("outR"),
+      mainOutEl = document.getElementById("mainOut");
+modeEl.addEventListener("change", applyMode);
+[in1El, in2El].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>
+</p>
+</div>
+</body>
+</html>

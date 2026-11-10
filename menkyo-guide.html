@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運転免許の費用の見方｜通いと合宿の比べ方</title>
+<meta name="description" content="運転免許の取得費用は、教習料金だけでなく交通費や検定料まで含めた合計で比べることが大切です。通い（通学）と合宿の費用の違い、含まれるもの・含まれないもの、期間の違いと、合計を比べられる簡単な計算ツールをまとめました。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#15803d; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:24px;margin:8px 0 4px;line-height:1.4}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 10px}
+  .card p{margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  .ad{border:1px dashed var(--acc);border-radius:12px;padding:14px;margin-top:12px;background:#f2fbf5}
+  .ad .pr{font-size:11px;color:var(--sub);letter-spacing:.08em}
+  .ad a{font-weight:800}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>運転免許の費用の見方：通いと合宿の比べ方</h1>
+    <p>教習料金の表示価格だけでは比べられない、交通費なども含めた合計で比べるためのガイドです。</p>
+  </header>
+
+  <div class="card">
+    <h2>通い（通学）と合宿の違い</h2>
+    <p>免許の取り方には、自宅などから教習所へ通う「通い」と、教習所の近くの宿泊施設に泊まり込んで短期集中で進める「合宿」があります。どちらも取得できる免許は同じですが、費用の組み立てと期間が大きく違います。</p>
+    <table>
+      <tr><td>通い</td><td class="v">自分のペースで通える／交通費が別途かかる</td></tr>
+      <tr><td>合宿</td><td class="v">宿泊・食費込みのセット料金が多い／短期集中</td></tr>
+    </table>
+    <p style="margin-top:10px">通いは「教習料金」だけを見ると安く見えることがありますが、通学のたびにかかる交通費を足すと合計が膨らみます。合宿は宿泊・食費込みの総額表示が多いため、比べるときは「最後までにかかる合計」でそろえることが大切です。</p>
+  </div>
+
+  <div class="card">
+    <h2>費用に含まれるもの・含まれないもの</h2>
+    <p>プランによって範囲が違うため、表示価格に何が入っているかを確認します。特に次の項目は、別途費用になりやすい代表例です。</p>
+    <table>
+      <tr><td>含まれやすい</td><td class="v">入所金・学科/技能教習料・教材費</td></tr>
+      <tr><td>別途になりやすい</td><td class="v">修了検定・卒業検定の検定料、写真代、仮免許の手数料</td></tr>
+      <tr><td>通いで忘れがち</td><td class="v">通学の交通費、効果測定や補習の追加料金</td></tr>
+      <tr><td>合宿で確認したい</td><td class="v">延泊時の追加料金、帰省・移動の交通費</td></tr>
+    </table>
+    <p style="margin-top:10px">検定に落ちた場合の再受検料や補習料が無料になる「保証付き」プランもあります。保証の範囲と上限回数はプランごとに違うので、合計額とあわせて確認してください。</p>
+  </div>
+
+  <div class="card">
+    <h2>期間の違い</h2>
+    <p>合宿は最短で2週間前後で卒業を目指す集中型が一般的です。通いは予約の取り方や通う頻度によって数か月かかることも珍しくありません。「費用」だけでなく「いつまでに免許が必要か」（就職・進学の期限など）も、選び方を左右します。</p>
+  </div>
+
+  <div class="card">
+    <h2>通いと合宿の合計を比べる</h2>
+    <p class="note">入力欄の初期値はすべて「例」です。実際の料金は各教習所の公式情報でご確認ください。</p>
+    <div class="grid">
+      <div class="f"><label>通い：教習料金（円）※例</label><input id="fee" type="number" min="0" step="1000" value="300000"></div>
+      <div class="f"><label>通い：通学回数（回）※例</label><input id="trips" type="number" min="0" step="1" value="20"></div>
+      <div class="f"><label>通い：1回あたり交通費・往復（円）※例</label><input id="fare" type="number" min="0" step="50" value="1000"></div>
+      <div class="f"><label>合宿：合宿料金（円・宿泊・食費込みが前提）※例</label><input id="camp" type="number" min="0" step="1000" value="250000"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>通いの合計（教習料金＋交通費）</td><td class="v" id="totalCommute">-</td></tr>
+      <tr><td>合宿の合計</td><td class="v" id="totalCamp">-</td></tr>
+      <tr><td>差額</td><td class="v" id="diff">-</td></tr>
+    </table>
+    <p style="margin-top:10px" id="verdict"></p>
+
+    <div class="ad">
+      <div class="pr">PR（アフィリエイト広告）</div>
+      <!--A8:MENKYO-->
+    </div>
+    <p class="note" style="margin-top:10px">料金やキャンペーン、空き状況は各サービスの公式情報が最新です。申し込み前に、保証内容と追加料金の条件も合わせてご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const commute = num(fee.value) + num(trips.value) * num(fare.value);
+  const campFee = num(camp.value);
+  totalCommuteEl.textContent = yen(commute);
+  totalCampEl.textContent = yen(campFee);
+  const d = commute - campFee;
+  if (d > 0) {
+    diffEl.textContent = yen(d);
+    verdictEl.textContent = "この条件では、合宿のほうが " + yen(d) + " 安くなります。";
+  } else if (d < 0) {
+    diffEl.textContent = yen(-d);
+    verdictEl.textContent = "この条件では、通いのほうが " + yen(-d) + " 安くなります。";
+  } else {
+    diffEl.textContent = yen(0);
+    verdictEl.textContent = "この条件では、通いと合宿の合計は同額です。";
+  }
+}
+const fee = document.getElementById("fee"), trips = document.getElementById("trips"),
+      fare = document.getElementById("fare"), camp = document.getElementById("camp");
+const totalCommuteEl = document.getElementById("totalCommute"), totalCampEl = document.getElementById("totalCamp"),
+      diffEl = document.getElementById("diff"), verdictEl = document.getElementById("verdict");
+[fee, trips, fare, camp].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
