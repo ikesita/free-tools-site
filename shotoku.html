@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>所得税・住民税の目安計算機｜年収から税額と手取りを試算</title>
+<meta name="description" content="給与年収から所得税・住民税の目安と手取り額を試算できる無料ツールです。給与所得控除・基礎控除・配偶者控除・扶養控除を反映した簡易計算です。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0369a1; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .check{display:flex;align-items:center;gap:8px;font-size:15px;padding-top:22px}
+  .check input{width:18px;height:18px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>所得税・住民税の目安計算機</h1>
+    <p>給与年収から、所得税・住民税のおおよその額と手取りの目安を試算します（簡易計算）。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>年収（給与収入・円）</label><input id="income" type="number" min="0" step="10000" value="6000000"></div>
+      <div class="f"><label>扶養親族の人数（配偶者以外）</label><input id="dependents" type="number" min="0" max="20" step="1" value="0"></div>
+      <div class="check"><input id="spouse" type="checkbox"><label for="spouse">配偶者控除あり</label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>給与所得（給与所得控除を差し引いた後）</td><td class="v" id="shotoku">-</td></tr>
+      <tr><td>社会保険料（年収の14.5％と仮定）</td><td class="v" id="shaho">-</td></tr>
+      <tr><td>課税所得（所得税）</td><td class="v" id="kazei">-</td></tr>
+      <tr><td>所得税（復興特別所得税込み）</td><td class="v" id="incomeTax">-</td></tr>
+      <tr><td>住民税（所得割10％＋均等割5,000円の目安）</td><td class="v" id="residentTax">-</td></tr>
+      <tr><td>税金の合計</td><td class="v" id="totalTax">-</td></tr>
+      <tr><td>手取りの目安（社保・税金を差し引いた後）</td><td class="v" id="net">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算の前提：社会保険料は年収の14.5％と仮定しています。基礎控除は所得税480,000円・住民税430,000円（合計所得2,400万円以下の前提）。配偶者控除は所得税380,000円・住民税330,000円（配偶者の所得が48万円以下の場合）、扶養控除は1人あたり所得税380,000円・住民税330,000円（一般の扶養親族の額で、特定扶養親族・老人扶養等では異なります）。住宅ローン控除や生命保険料控除、ふるさと納税等は含まない概算です。正確な税額は源泉徴収票や確定申告でご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。手取りだけを計算したい場合は「<a href="tedori.html">手取り計算機</a>」もご利用ください。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.floor(n).toLocaleString("ja-JP");
+function salaryDeduction(inc){
+  if(inc <= 1625000) return 550000;
+  if(inc <= 1800000) return inc * 0.4 - 100000;
+  if(inc <= 3600000) return inc * 0.3 + 80000;
+  if(inc <= 6600000) return inc * 0.2 + 440000;
+  if(inc <= 8500000) return inc * 0.1 + 1100000;
+  return 1950000;
+}
+function incomeTaxOf(taxable){
+  const T = [[1950000,0.05,0],[3300000,0.10,97500],[6950000,0.20,427500],[9000000,0.23,636000],[18000000,0.33,1536000],[40000000,0.40,2796000],[Infinity,0.45,4796000]];
+  for(const [cap, rate, ded] of T) if(taxable <= cap) return Math.floor((taxable * rate - ded) * 1.021);
+  return 0;
+}
+function calc(){
+  const inc = num(incomeEl.value);
+  const dep = Math.min(20, Math.floor(num(depEl.value)));
+  const hasSpouse = spouseEl.checked;
+  const shotoku = Math.max(0, inc - salaryDeduction(inc));
+  const shaho = inc * 0.145;
+  const roundK = x => Math.floor(Math.max(0, x) / 1000) * 1000;
+  const kazeiShotoku = roundK(shotoku - shaho - 480000 - (hasSpouse ? 380000 : 0) - dep * 380000);
+  const kazeiJumin = roundK(shotoku - shaho - 430000 - (hasSpouse ? 330000 : 0) - dep * 330000);
+  const itax = incomeTaxOf(kazeiShotoku);
+  const rtax = Math.floor(kazeiJumin * 0.10) + 5000;
+  shotokuEl.textContent = yen(shotoku);
+  shahoEl.textContent = yen(shaho);
+  kazeiEl.textContent = yen(kazeiShotoku);
+  incomeTaxEl.textContent = yen(itax);
+  residentTaxEl.textContent = yen(rtax);
+  totalTaxEl.textContent = yen(itax + rtax);
+  netEl.textContent = yen(inc - shaho - itax - rtax);
+}
+const incomeEl = document.getElementById("income"), depEl = document.getElementById("dependents"), spouseEl = document.getElementById("spouse");
+const shotokuEl = document.getElementById("shotoku"), shahoEl = document.getElementById("shaho"), kazeiEl = document.getElementById("kazei"),
+      incomeTaxEl = document.getElementById("incomeTax"), residentTaxEl = document.getElementById("residentTax"),
+      totalTaxEl = document.getElementById("totalTax"), netEl = document.getElementById("net");
+[incomeEl, depEl, spouseEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

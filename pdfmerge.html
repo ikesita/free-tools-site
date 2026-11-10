@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF結合ツール｜複数のPDFを1つにまとめる（ファイルは送信されません）</title>
+<meta name="description" content="複数のPDFファイルをブラウザ上で1つに結合できる無料ツールです。ファイルはお使いの端末の中だけで処理され、サーバーに送信されることはありません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#dc2626; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  input[type=file]{font-size:15px;max-width:100%}
+  ul.files{list-style:none;margin:14px 0 0;padding:0}
+  ul.files li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:#fbfcfe}
+  ul.files .no{font-weight:800;color:var(--sub);min-width:22px;text-align:right}
+  ul.files .name{flex:1;word-break:break-all;font-size:14.5px}
+  ul.files button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 9px;cursor:pointer;font-size:13px}
+  button.main{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:12px 20px;font-size:16px;cursor:pointer;width:100%}
+  button.main:disabled{background:#c3c9d4;cursor:default}
+  .msg{font-size:14px;margin-top:12px;text-align:center}
+  .msg.err{color:#b91c1c}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>PDF結合ツール</h1>
+    <p>複数のPDFを、並べた順番で1つのPDFにまとめます。ファイルは端末の中だけで処理され、送信されません。</p>
+  </header>
+
+  <div class="card">
+    <input id="picker" type="file" accept="application/pdf,.pdf" multiple>
+    <ul class="files" id="list"></ul>
+    <button class="main" id="merge" disabled style="margin-top:8px">結合してダウンロード</button>
+    <p class="msg" id="msg">PDFファイルを選んでください（複数選択可）。</p>
+    <p class="note">使い方：ファイルを選ぶと一覧に表示されます。▲▼ボタンで順番を入れ替え、×で取り除けます。パスワード付きPDFや壊れたファイルは結合できません。大きなファイルは処理に時間がかかる場合があります。</p>
+  </div>
+
+  <footer>選択したファイルはブラウザ内でのみ処理され、サーバーに送信されません（PDF処理ライブラリのみ外部から読み込みます）。</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+(function(){
+  const picker = document.getElementById("picker"), listEl = document.getElementById("list"),
+        mergeBtn = document.getElementById("merge"), msg = document.getElementById("msg");
+  let files = []; // array of File, in merge order
+
+  function setMsg(text, isErr){
+    msg.textContent = text;
+    msg.className = "msg" + (isErr ? " err" : "");
+  }
+  function render(){
+    listEl.innerHTML = "";
+    files.forEach((f, i) => {
+      const li = document.createElement("li");
+      const no = document.createElement("span"); no.className = "no"; no.textContent = (i + 1) + ".";
+      const name = document.createElement("span"); name.className = "name";
+      name.textContent = f.name + "（" + (f.size / 1024).toFixed(0) + " KB）";
+      const up = document.createElement("button"); up.textContent = "▲"; up.title = "上へ";
+      const down = document.createElement("button"); down.textContent = "▼"; down.title = "下へ";
+      const del = document.createElement("button"); del.textContent = "×"; del.title = "削除";
+      up.disabled = i === 0; down.disabled = i === files.length - 1;
+      up.addEventListener("click", () => { [files[i - 1], files[i]] = [files[i], files[i - 1]]; render(); });
+      down.addEventListener("click", () => { [files[i + 1], files[i]] = [files[i], files[i + 1]]; render(); });
+      del.addEventListener("click", () => { files.splice(i, 1); render(); });
+      li.append(no, name, up, down, del);
+      listEl.appendChild(li);
+    });
+    mergeBtn.disabled = files.length < 1;
+    if(files.length) setMsg(files.length + " 件のPDFを結合できます。", false);
+  }
+
+  picker.addEventListener("change", () => {
+    const added = Array.from(picker.files || []);
+    const pdfs = added.filter(f => /\.pdf$/i.test(f.name) || f.type === "application/pdf");
+    if(pdfs.length < added.length) setMsg("PDF以外のファイルは除きました。", true);
+    files = files.concat(pdfs);
+    picker.value = "";
+    render();
+  });
+
+  mergeBtn.addEventListener("click", async () => {
+    if(typeof PDFLib === "undefined"){
+      setMsg("PDFライブラリの読み込みに失敗しました。通信環境をご確認のうえ、ページを再読み込みしてください。", true);
+      return;
+    }
+    mergeBtn.disabled = true;
+    setMsg("結合中です…", false);
+    try{
+      const merged = await PDFLib.PDFDocument.create();
+      for(const f of files){
+        const buf = await f.arrayBuffer();
+        let src;
+        try{
+          src = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: false });
+        }catch(e){
+          throw new Error("「" + f.name + "」を開けませんでした。パスワード付き、または壊れている可能性があります。");
+        }
+        const pages = await merged.copyPages(src, src.getPageIndices());
+        pages.forEach(p => merged.addPage(p));
+      }
+      if(merged.getPageCount() === 0) throw new Error("結合できるページがありませんでした。");
+      const bytes = await merged.save();
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "merged.pdf";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      setMsg("結合が完了しました（全 " + merged.getPageCount() + " ページ）。merged.pdf をダウンロードしています。", false);
+    }catch(e){
+      setMsg(e && e.message ? e.message : "結合に失敗しました。ファイルをご確認ください。", true);
+    }finally{
+      mergeBtn.disabled = files.length < 1;
+    }
+  });
+})();
+</script>
+</body>
+</html>

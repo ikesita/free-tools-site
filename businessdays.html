@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業日計算機｜期間内の営業日数（土日祝を除く）を数える</title>
+<meta name="description" content="開始日と終了日の間の営業日数（月〜金、祝日を除く）を計算できる無料ツールです。2025〜2027年の日本の祝日に対応しています。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#2563eb; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .row input{padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:32px;font-weight:900;text-align:center;margin:12px 0 2px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:#b45309;text-align:center}
+  .note2{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>営業日計算機</h1>
+    <p>期間内の営業日数（月〜金、祝日を除く）を数えます。開始日・終了日の両方を含みます。</p>
+  </header>
+
+  <div class="card">
+    <div class="row"><input id="start" type="date" value="2026-11-02"><span>〜</span><input id="end" type="date" value="2026-11-06"></div>
+    <div class="big" id="bizOut">-</div>
+    <p class="note" id="warn"></p>
+    <table>
+      <tr><td>カレンダー日数（総日数）</td><td class="v" id="calOut">-</td></tr>
+      <tr><td>土日の日数</td><td class="v" id="weekendOut">-</td></tr>
+      <tr><td>祝日（平日）の日数</td><td class="v" id="holidayOut">-</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <p class="note2">祝日データは2025年・2026年・2027年分を内蔵しています（振替休日・国民の休日を含む）。この範囲外の期間は、祝日を除かず土日だけで数えていますのでご注意ください。会社独自の休業日（年末年始など）は含まれません。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const HOLIDAYS = new Set([
+  // 2025
+  "2025-01-01","2025-01-13","2025-02-11","2025-02-23","2025-02-24","2025-03-20","2025-04-29","2025-05-03","2025-05-04","2025-05-05","2025-05-06","2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13","2025-11-03","2025-11-23","2025-11-24",
+  // 2026
+  "2026-01-01","2026-01-12","2026-02-11","2026-02-23","2026-03-20","2026-04-29","2026-05-03","2026-05-04","2026-05-05","2026-05-06","2026-07-20","2026-08-11","2026-09-21","2026-09-22","2026-09-23","2026-10-12","2026-11-03","2026-11-23",
+  // 2027
+  "2027-01-01","2027-01-11","2027-02-11","2027-02-23","2027-03-21","2027-03-22","2027-04-29","2027-05-03","2027-05-04","2027-05-05","2027-07-19","2027-08-11","2027-09-20","2027-09-23","2027-10-11","2027-11-03","2027-11-23"
+]);
+const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const parse = v => { const [y, m, d] = v.split("-").map(Number); return new Date(y, m - 1, d); };
+function calc(){
+  if(!startEl.value || !endEl.value) return;
+  let s = parse(startEl.value), e = parse(endEl.value);
+  if(s > e){ const t = s; s = e; e = t; }
+  let biz = 0, weekend = 0, holiday = 0, total = 0, outside = false;
+  for(let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)){
+    total++;
+    const y = d.getFullYear();
+    if(y < 2025 || y > 2027) outside = true;
+    const dow = d.getDay();
+    if(dow === 0 || dow === 6){ weekend++; continue; }
+    if(HOLIDAYS.has(key(d))){ holiday++; continue; }
+    biz++;
+  }
+  bizOutEl.textContent = "営業日 " + biz.toLocaleString("ja-JP") + " 日";
+  calOutEl.textContent = total.toLocaleString("ja-JP") + " 日";
+  weekendOutEl.textContent = weekend.toLocaleString("ja-JP") + " 日";
+  holidayOutEl.textContent = holiday.toLocaleString("ja-JP") + " 日";
+  warnEl.textContent = outside ? "※ 期間に2025〜2027年以外の年が含まれるため、その部分の祝日は考慮されていません。" : "";
+}
+const startEl = document.getElementById("start"), endEl = document.getElementById("end");
+const bizOutEl = document.getElementById("bizOut"), calOutEl = document.getElementById("calOut"),
+      weekendOutEl = document.getElementById("weekendOut"), holidayOutEl = document.getElementById("holidayOut"), warnEl = document.getElementById("warn");
+[startEl, endEl].forEach(el => el.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
