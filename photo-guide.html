@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写真プリントの料金の見方｜1枚単価と送料で比べる</title>
+<meta name="description" content="ネットの写真プリントは1枚単価と送料の合計で比べるのが基本です。L版の単価の考え方と、枚数と送料から合計を計算できるミニ計算機のページです。">
+<style>
+  body{font-family:-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#f6f7f9;color:#222;margin:0;padding:24px 16px 48px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:24px;margin:8px 0 4px}
+  h2{font-size:18px;margin:28px 0 8px}
+  p,li{line-height:1.8;font-size:15px}
+  .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:16px}
+  label{display:block;font-size:13px;color:#555;margin-top:12px}
+  input{width:100%;padding:10px;font-size:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;margin-top:4px}
+  .result{font-size:22px;font-weight:700;margin-top:16px}
+  .sub{color:#555;font-size:13px}
+  .pr{border:1px dashed #c9a227;background:#fffdf3}
+  .pr .label{font-size:11px;color:#8a6d1a;letter-spacing:.1em}
+  a{color:#0b62d6}
+  .back{font-size:13px}
+  footer{margin-top:32px;color:#888;font-size:12px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="back"><a href="index.html">← ツール一覧へ戻る</a></p>
+<h1>写真プリントの料金の見方</h1>
+<p>スマホに眠った写真をプリントするとき、料金は<strong>1枚単価 × 枚数 ＋ 送料</strong>で決まります。1枚単価が安くても、少ない枚数では送料の比率が高くなります。逆に、家族分やアルバム用にまとめて注文すると1枚あたりの実質単価は下がります。</p>
+
+<div class="card">
+<h2 style="margin-top:0">プリント代の合計シミュレーション</h2>
+<label>1枚単価（円）</label>
+<input type="number" id="unit" value="30" min="0">
+<label>枚数</label>
+<input type="number" id="count" value="50" min="0">
+<label>送料（円）</label>
+<input type="number" id="ship" value="200" min="0">
+<div class="result" id="total">合計 約1,700円（実質 1枚34円）</div>
+<p class="sub">送料込みの「実質1枚単価」で比べると、サービスの差が見えやすくなります。何枚以上で送料無料になるかもチェックポイントです。</p>
+</div>
+
+<h2>比べるときの観点</h2>
+<ul>
+<li><strong>サイズで単価が変わる</strong>：L版が最も一般的で安く、2L版やA4は単価が上がります。用途に合うサイズを選ぶことが前提です。</li>
+<li><strong>仕上がりと色味</strong>：自動補正の有無で印象が変わります。記念写真は補正あり、作品としての写真は補正なしが向く場合もあります。</li>
+<li><strong>フォトブックという選択</strong>：枚数が多いなら、バラのプリントよりフォトブックのほうが1冊にまとまって安く済むことがあります。</li>
+</ul>
+
+<div class="card pr">
+<p class="label">PR</p>
+<p>写真プリント・フォトブックのサービス例です。料金は公式サイトでご確認ください。</p>
+<!--A8:PHOTOJOY-->
+</div>
+
+<footer>
+※ 料金の例は一般的な目安です。各サービスの料金・送料は変更されることがあります。最新の内容は各公式サイトでご確認ください。<br>
+入力内容はブラウザ内でのみ処理され、送信されません。
+</footer>
+</div>
+<script>
+function calc(){
+  var u=parseFloat(document.getElementById('unit').value)||0;
+  var c=parseFloat(document.getElementById('count').value)||0;
+  var s=parseFloat(document.getElementById('ship').value)||0;
+  var t=u*c+s;
+  var per=c>0?Math.round(t/c):0;
+  document.getElementById('total').textContent='合計 約'+t.toLocaleString()+'円（実質 1枚'+per+'円）';
+}
+['unit','count','ship'].forEach(function(id){document.getElementById(id).addEventListener('input',calc);});
+calc();
+</script>
+</body>
+</html>

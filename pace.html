@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ランニングペース計算機｜1kmペース・時速・距離別換算タイム</title>
+<meta name="description" content="距離とタイムから1kmあたりのペースと時速を計算し、5km・10km・ハーフ・フルマラソンの換算タイムを表示できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0f766e; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ランニングペース計算機</h1>
+    <p>距離とタイムから、1kmあたりのペースと時速を計算します。同じペースで走り続けた場合の、距離別の換算タイムも表示します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>距離（km）</label><input id="distKm" type="number" min="0" step="0.1" value="10"></div>
+      <div class="f"><label>時間（時）</label><input id="tH" type="number" min="0" step="1" value="0"></div>
+      <div class="f"><label>時間（分）</label><input id="tM" type="number" min="0" step="1" value="50"></div>
+      <div class="f"><label>時間（秒）</label><input id="tS" type="number" min="0" step="1" value="0"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ペースと換算タイム</h2>
+    <table>
+      <tr><td>1kmペース</td><td class="v" id="paceOut">-</td></tr>
+      <tr><td>時速</td><td class="v" id="speedOut">-</td></tr>
+      <tr><td>5km 換算</td><td class="v" id="s5">-</td></tr>
+      <tr><td>10km 換算</td><td class="v" id="s10">-</td></tr>
+      <tr><td>ハーフ（21.0975km）換算</td><td class="v" id="sHalf">-</td></tr>
+      <tr><td>フル（42.195km）換算</td><td class="v" id="sFull">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">換算タイムは、入力したペースをそのまま維持した場合の単純計算です。実際のレースでは距離が長くなるほどペースは落ちる傾向があるため、特にハーフ・フルの換算は「このペースで走り切れた場合」の目安としてご覧ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function fmtDuration(totalSec){
+  const s = Math.floor(totalSec);
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  if (h > 0) return h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+  return m + ":" + String(sec).padStart(2, "0");
+}
+function calc(){
+  const dist = num(distKmEl.value);
+  const totalSec = num(tHEl.value) * 3600 + num(tMEl.value) * 60 + num(tSEl.value);
+  if (dist <= 0 || totalSec <= 0){
+    paceOutEl.textContent = speedOutEl.textContent = "-";
+    s5El.textContent = s10El.textContent = sHalfEl.textContent = sFullEl.textContent = "-";
+    return;
+  }
+  const paceSec = totalSec / dist;
+  const speed = dist / (totalSec / 3600);
+  paceOutEl.textContent = fmtDuration(paceSec) + " /km";
+  speedOutEl.textContent = speed.toFixed(1) + " km/h";
+  s5El.textContent = fmtDuration(paceSec * 5);
+  s10El.textContent = fmtDuration(paceSec * 10);
+  sHalfEl.textContent = fmtDuration(paceSec * 21.0975);
+  sFullEl.textContent = fmtDuration(paceSec * 42.195);
+}
+const distKmEl = document.getElementById("distKm"), tHEl = document.getElementById("tH"),
+      tMEl = document.getElementById("tM"), tSEl = document.getElementById("tS");
+const paceOutEl = document.getElementById("paceOut"), speedOutEl = document.getElementById("speedOut"),
+      s5El = document.getElementById("s5"), s10El = document.getElementById("s10"),
+      sHalfEl = document.getElementById("sHalf"), sFullEl = document.getElementById("sFull");
+[distKmEl, tHEl, tMEl, tSEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

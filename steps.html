@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歩数から距離・消費カロリー計算機｜歩幅の目安も表示</title>
+<meta name="description" content="歩数と身長・体重から、歩いた距離（km）と消費カロリーの目安を計算できる無料ツールです。歩幅は身長×0.45で推定します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0f766e; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>歩数から距離・消費カロリー計算機</h1>
+    <p>歩数と身長・体重から、歩いた距離と消費カロリーの目安を計算します。歩幅は「身長×0.45」で推定しています。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>歩数（歩）</label><input id="steps" type="number" min="0" step="100" value="10000"></div>
+      <div class="f"><label>身長（cm）</label><input id="height" type="number" min="0" step="1" value="170"></div>
+      <div class="f"><label>体重（kg）</label><input id="weight" type="number" min="0" step="1" value="65"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <table>
+      <tr><td>歩幅の目安（身長 × 0.45）</td><td class="v" id="strideOut">-</td></tr>
+      <tr><td>距離</td><td class="v" id="distOut">-</td></tr>
+      <tr class="total"><td>消費カロリーの目安</td><td class="v" id="kcalOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">歩幅は一般的な目安として「身長×0.45」で推定しています（歩く速度や体格で変わります）。消費カロリーは「体重（kg）×距離（km）×1.05」の簡易式による大まかな目安です。歩く速度・坂道・体格・歩行の効率によって実際の消費量は前後しますので、日常の運動量を把握するための参考値としてご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function calc(){
+  const steps = num(stepsEl.value);
+  const height = num(heightEl.value);
+  const weight = num(weightEl.value);
+  const strideM = height * 0.45 / 100;
+  const distKm = steps * strideM / 1000;
+  const kcal = weight * distKm * 1.05;
+  strideOutEl.textContent = strideM.toFixed(3) + " m（約" + (strideM * 100).toFixed(1) + " cm）";
+  distOutEl.textContent = distKm.toFixed(2) + " km";
+  kcalOutEl.textContent = "約 " + Math.round(kcal).toLocaleString("ja-JP") + " kcal";
+}
+const stepsEl = document.getElementById("steps"), heightEl = document.getElementById("height"),
+      weightEl = document.getElementById("weight");
+const strideOutEl = document.getElementById("strideOut"), distOutEl = document.getElementById("distOut"),
+      kcalOutEl = document.getElementById("kcalOut");
+[stepsEl, heightEl, weightEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
