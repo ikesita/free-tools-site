@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燃費・ガソリン代計算機｜走行距離と給油量から燃費、旅行の燃料代を計算</title>
+<meta name="description" content="走行距離と給油量から実燃費（km/L）を計算し、ドライブ・旅行に必要なガソリン量とガソリン代を試算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#15803d; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .big{font-size:26px;font-weight:800;text-align:center;margin-top:14px}
+  .big span{color:var(--acc)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>燃費・ガソリン代計算機</h1>
+    <p>給油の記録から実燃費を出す計算と、ドライブ・旅行にかかるガソリン代の試算ができます。</p>
+  </header>
+
+  <div class="card">
+    <h2>燃費を計算する</h2>
+    <div class="grid">
+      <div class="f"><label>走行距離（km）</label><input id="distA" type="number" min="0" step="1" value="450"></div>
+      <div class="f"><label>給油量（L）</label><input id="fuelA" type="number" min="0" step="0.1" value="30"></div>
+    </div>
+    <div class="big">燃費 <span id="nenpiOut">-</span> km/L</div>
+    <p class="note" style="margin-top:10px">満タン給油のたびに「前回満タンからの走行距離」と「今回の給油量」を記録すると、実燃費が正確に出せます（満タン法）。</p>
+  </div>
+
+  <div class="card">
+    <h2>旅行のガソリン代を試算する</h2>
+    <div class="grid">
+      <div class="f"><label>移動距離（km）</label><input id="distB" type="number" min="0" step="1" value="300"></div>
+      <div class="f"><label>燃費（km/L）</label><input id="nenpiB" type="number" min="0" step="0.1" value="15"></div>
+      <div class="f"><label>ガソリン単価（円/L）</label><input id="priceB" type="number" min="0" step="1" value="170"></div>
+    </div>
+    <table style="margin-top:14px">
+      <tr><td>必要なガソリン量</td><td class="v" id="needOut">-</td></tr>
+      <tr><td>ガソリン代</td><td class="v" id="costOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">高速道路の料金や駐車料金は含みません。燃費は道路状況やエアコンの使用で変わるため、少し余裕を見た計画をおすすめします。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function calcA(){
+  const d = num(distAEl.value), f = num(fuelAEl.value);
+  nenpiOutEl.textContent = f > 0 ? (d / f).toFixed(1) : "-";
+}
+function calcB(){
+  const d = num(distBEl.value), n = num(nenpiBEl.value), p = num(priceBEl.value);
+  if(n <= 0){ needOutEl.textContent = "-"; costOutEl.textContent = "-"; return; }
+  const liters = d / n;
+  needOutEl.textContent = liters.toFixed(1) + " L";
+  costOutEl.textContent = "¥" + Math.round(liters * p).toLocaleString("ja-JP");
+}
+const distAEl = document.getElementById("distA"), fuelAEl = document.getElementById("fuelA"), nenpiOutEl = document.getElementById("nenpiOut");
+const distBEl = document.getElementById("distB"), nenpiBEl = document.getElementById("nenpiB"), priceBEl = document.getElementById("priceB"),
+      needOutEl = document.getElementById("needOut"), costOutEl = document.getElementById("costOut");
+[distAEl, fuelAEl].forEach(e => e.addEventListener("input", calcA));
+[distBEl, nenpiBEl, priceBEl].forEach(e => e.addEventListener("input", calcB));
+calcA(); calcB();
+</script>
+</body>
+</html>

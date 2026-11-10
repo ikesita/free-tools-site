@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社会保険料 内訳計算機｜健康保険・厚生年金・雇用保険・介護保険の目安</title>
+<meta name="description" content="月給から社会保険料（健康保険・介護保険・厚生年金・雇用保険）の本人負担分の内訳と合計を試算できる無料ツールです。協会けんぽ全国平均の目安で計算します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0f766e; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>社会保険料 内訳計算機</h1>
+    <p>月給から、社会保険料の本人負担分（給与から引かれる分）の内訳と合計の目安を試算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>月給（円）</label><input id="salary" type="number" min="0" step="1000" value="300000"></div>
+      <div class="f"><label>年齢</label><input id="age" type="number" min="0" max="120" step="1" value="35"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>健康保険料（5.0％）</td><td class="v" id="kenko">-</td></tr>
+      <tr><td>介護保険料（0.795％、40〜64歳のみ）</td><td class="v" id="kaigo">-</td></tr>
+      <tr><td>厚生年金保険料（9.15％）</td><td class="v" id="nenkin">-</td></tr>
+      <tr><td>雇用保険料（0.6％）</td><td class="v" id="koyou">-</td></tr>
+      <tr><td>合計（月額）</td><td class="v" id="totalM">-</td></tr>
+      <tr><td>合計（年額）</td><td class="v" id="totalY">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">料率はいずれも令和7年度の目安で、本人負担分です。健康保険は協会けんぽの全国平均（都道府県で区別しない計算）、介護保険は40〜64歳の方のみ、雇用保険は一般の事業の料率で計算しています。実際の保険料は、標準報酬月額（給与を等級に当てはめた金額）やお住まいの都道府県・加入する健康保険組合によって変わります。正確な金額は給与明細や勤務先でご確認ください。65歳以上の方の介護保険料は、原則として年金などから別途徴収されるため、この計算には含めていません。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。税金まで含めた手取りは「<a href="tedori.html">手取り計算機</a>」もご利用ください。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const s = num(salaryEl.value);
+  const age = Math.floor(num(ageEl.value));
+  const kenko = Math.round(s * 0.05);
+  const kaigoOn = age >= 40 && age < 65;
+  const kaigo = kaigoOn ? Math.round(s * 0.00795) : 0;
+  const nenkin = Math.round(s * 0.0915);
+  const koyou = Math.round(s * 0.006);
+  const total = kenko + kaigo + nenkin + koyou;
+  kenkoEl.textContent = yen(kenko);
+  kaigoEl.textContent = kaigoOn ? yen(kaigo) : "対象外";
+  nenkinEl.textContent = yen(nenkin);
+  koyouEl.textContent = yen(koyou);
+  totalMEl.textContent = yen(total);
+  totalYEl.textContent = yen(total * 12);
+}
+const salaryEl = document.getElementById("salary"), ageEl = document.getElementById("age");
+const kenkoEl = document.getElementById("kenko"), kaigoEl = document.getElementById("kaigo"), nenkinEl = document.getElementById("nenkin"),
+      koyouEl = document.getElementById("koyou"), totalMEl = document.getElementById("totalM"), totalYEl = document.getElementById("totalY");
+[salaryEl, ageEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

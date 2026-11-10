@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>割り勘計算機｜端数の丸め・1人だけ多め払いにも対応</title>
+<meta name="description" content="合計金額と人数から1人あたりの割り勘金額を計算できる無料ツールです。10円・100円・1,000円単位への切り上げ丸めや、幹事など1人だけ金額を指定する割り勘にも対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#b45309; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input[type=number],.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .check{display:flex;align-items:center;gap:8px;font-size:15px;padding-top:22px}
+  .check input{width:18px;height:18px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>割り勘計算機</h1>
+    <p>合計金額を人数で割り、端数を切り上げて「1人あたりいくら集めればよいか」を計算します。幹事など1人だけ金額を指定することもできます。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>合計金額（円）</label><input id="total" type="number" min="0" step="100" value="10000"></div>
+      <div class="f"><label>人数</label><input id="people" type="number" min="1" max="1000" step="1" value="4"></div>
+      <div class="f"><label>端数の丸め単位（切り上げ）</label><select id="unit">
+        <option value="1">1円</option>
+        <option value="10">10円</option>
+        <option value="100" selected>100円</option>
+        <option value="1000">1,000円</option>
+      </select></div>
+      <div class="check"><input id="specialOn" type="checkbox"><label for="specialOn">1人だけ金額を指定する</label></div>
+      <div class="f" id="specialWrap" style="display:none"><label>指定する人の金額（円）</label><input id="specialAmt" type="number" min="0" step="100" value="5000"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr id="rowSpecial" style="display:none"><td>指定した人の金額</td><td class="v" id="specialOut">-</td></tr>
+      <tr><td id="perLabel">1人あたりの金額</td><td class="v" id="perOut">-</td></tr>
+      <tr><td>集金総額</td><td class="v" id="collectedOut">-</td></tr>
+      <tr><td>余り（集金総額 − 合計金額）</td><td class="v" id="surplusOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">1人あたりの金額は、不足が出ないよう丸め単位へ切り上げています。そのため集金総額が合計金額を少し上回ることがあり、差額が「余り」です。余りは幹事が預かる、次回の支払いに回すなど、集まりごとに取り決めてください。「1人だけ金額を指定する」を使うと、その人の分を差し引いた残額を、残りの人数で割り勘します。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function ceilUnit(x, u){ return u <= 1 ? Math.ceil(x) : Math.ceil(x / u) * u; }
+function calc(){
+  const total = num(totalEl.value);
+  const n = Math.max(1, Math.floor(num(peopleEl.value)));
+  const unit = parseInt(unitEl.value, 10);
+  const useSpecial = specialOnEl.checked && n >= 2;
+  specialWrapEl.style.display = specialOnEl.checked ? "block" : "none";
+  rowSpecialEl.style.display = useSpecial ? "" : "none";
+  if(useSpecial){
+    const sp = Math.min(num(specialAmtEl.value), total);
+    const rest = total - sp;
+    const per = rest > 0 ? ceilUnit(rest / (n - 1), unit) : 0;
+    const collected = sp + per * (n - 1);
+    perLabelEl.textContent = "その他の人の1人あたり（" + (n - 1) + "人）";
+    specialOutEl.textContent = yen(sp);
+    perOutEl.textContent = yen(per);
+    collectedOutEl.textContent = yen(collected);
+    surplusOutEl.textContent = yen(collected - total);
+  } else {
+    const per = total > 0 ? ceilUnit(total / n, unit) : 0;
+    const collected = per * n;
+    perLabelEl.textContent = "1人あたりの金額";
+    perOutEl.textContent = yen(per);
+    collectedOutEl.textContent = yen(collected);
+    surplusOutEl.textContent = yen(collected - total);
+  }
+}
+const totalEl = document.getElementById("total"), peopleEl = document.getElementById("people"), unitEl = document.getElementById("unit"),
+      specialOnEl = document.getElementById("specialOn"), specialAmtEl = document.getElementById("specialAmt"), specialWrapEl = document.getElementById("specialWrap");
+const specialOutEl = document.getElementById("specialOut"), perOutEl = document.getElementById("perOut"),
+      collectedOutEl = document.getElementById("collectedOut"), surplusOutEl = document.getElementById("surplusOut"),
+      perLabelEl = document.getElementById("perLabel"), rowSpecialEl = document.getElementById("rowSpecial");
+[totalEl, peopleEl, unitEl, specialOnEl, specialAmtEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
