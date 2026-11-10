@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>年齢計算機｜生年月日から現在の年齢・和暦・干支を計算</title>
+<meta name="description" content="生年月日を入れるだけで、現在の年齢、和暦（令和・平成・昭和）、干支、誕生日まで何日かを計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#b45309; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;max-width:280px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>年齢計算機</h1>
+    <p>生年月日から、現在の年齢・和暦・干支・次の誕生日まで何日かを計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>生年月日</label><input id="dob" type="date" value="1990-08-07"></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>現在の年齢</td><td class="v" id="age">-</td></tr>
+      <tr><td>生まれた年の和暦</td><td class="v" id="wareki">-</td></tr>
+      <tr><td>干支</td><td class="v" id="eto">-</td></tr>
+      <tr><td>生まれてから</td><td class="v" id="days">-</td></tr>
+      <tr><td>次の誕生日まで</td><td class="v" id="next">-</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <p class="note">年齢は、誕生日の前日に1歳加わる日本の年齢計算（年齢計算二関スル法律）の考え方ではなく、一般的な「誕生日を迎えたら1歳増える」満年齢で計算しています。履歴書などの公式書類では、提出先の指定に従ってください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const ETO = ["子（ね）","丑（うし）","寅（とら）","卯（う）","辰（たつ）","巳（み）","午（うま）","未（ひつじ）","申（さる）","酉（とり）","戌（いぬ）","亥（い）"];
+function wareki(y, m, d){
+  const t = y * 10000 + m * 100 + d;
+  if(t >= 20190501) return "令和" + (y - 2018) + "年";
+  if(t >= 19890108) return "平成" + (y - 1988) + "年";
+  if(t >= 19261225) return "昭和" + (y - 1925) + "年";
+  if(t >= 19120730) return "大正" + (y - 1911) + "年";
+  return "明治" + (y - 1867) + "年";
+}
+function calc(){
+  const v = document.getElementById("dob").value;
+  if(!v) return;
+  const [y, m, d] = v.split("-").map(Number);
+  const birth = new Date(y, m - 1, d);
+  const now = new Date(); now.setHours(0,0,0,0);
+  let age = now.getFullYear() - y;
+  const thisBday = new Date(now.getFullYear(), m - 1, d);
+  if(now < thisBday) age--;
+  const nextBday = now >= thisBday ? new Date(now.getFullYear() + 1, m - 1, d) : thisBday;
+  const daysLived = Math.floor((now - birth) / 86400000);
+  const daysNext = Math.floor((nextBday - now) / 86400000);
+  document.getElementById("age").textContent = age + " 歳";
+  document.getElementById("wareki").textContent = wareki(y, m, d);
+  document.getElementById("eto").textContent = ETO[(y - 4) % 12];
+  document.getElementById("days").textContent = daysLived.toLocaleString("ja-JP") + " 日";
+  document.getElementById("next").textContent = daysNext === 0 ? "今日が誕生日です" : "あと " + daysNext.toLocaleString("ja-JP") + " 日";
+}
+document.getElementById("dob").addEventListener("input", calc);
+calc();
+</script>
+</body>
+</html>

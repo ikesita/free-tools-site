@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>割引計算機｜％オフ・割引後の価格とポイント込み実質価格</title>
+<meta name="description" content="価格と割引率を入れるだけで、割引後の価格と割引額、さらにポイント還元まで入れた実質価格を計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#dc2626; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>割引計算機</h1>
+    <p>「30％オフ」はいくらになるのか。割引後の価格と、ポイント還元まで含めた実質価格を計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>元の価格（円）</label><input id="price" type="number" min="0" step="1" value="10000"></div>
+      <div class="f"><label>割引率（％オフ）</label><input id="off" type="number" min="0" max="100" step="1" value="30"></div>
+      <div class="f"><label>ポイント還元率（％）</label><input id="point" type="number" min="0" max="100" step="0.5" value="0"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>割引額</td><td class="v" id="offamt">-</td></tr>
+      <tr><td>割引後の価格（支払額）</td><td class="v" id="after">-</td></tr>
+      <tr><td>もらえるポイント</td><td class="v" id="pt">-</td></tr>
+      <tr><td>実質価格（支払額 − ポイント）</td><td class="v" id="real">-</td></tr>
+      <tr><td>実質の割引率</td><td class="v" id="realrate">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">ポイントは「割引後の支払額 × 還元率」で計算し、1ポイント＝1円として実質価格から引いています。実際の還元条件（対象外商品・上限など）は各店舗のルールに従います。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const price = num(document.getElementById("price").value);
+  const off = num(document.getElementById("off").value) / 100;
+  const pt = num(document.getElementById("point").value) / 100;
+  const after = price * (1 - off);
+  const points = after * pt;
+  const real = after - points;
+  document.getElementById("offamt").textContent = yen(price - after);
+  document.getElementById("after").textContent = yen(after);
+  document.getElementById("pt").textContent = Math.round(points).toLocaleString("ja-JP") + " pt";
+  document.getElementById("real").textContent = yen(real);
+  document.getElementById("realrate").textContent = price > 0 ? ((1 - real / price) * 100).toFixed(1) + " ％オフ相当" : "-";
+}
+["price","off","point"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

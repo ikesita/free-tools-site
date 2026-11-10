@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モニターサイズ計算機｜インチから画面の幅・高さ（cm）を計算</title>
+<meta name="description" content="モニターのインチ数とアスペクト比から、実際の画面幅・高さ（cm）と表示面積を計算できる無料ツールです。デュアルディスプレイの設置検討にも。">
+<style>
+  :root{ --bg:#0f1420; --card:#171e2e; --ink:#e8ecf4; --sub:#94a0b8; --line:#2a3350; --acc:#38bdf8; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;background:#0f1420;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .screen{margin:14px auto 4px;background:#0ea5e9;border-radius:4px;box-shadow:0 0 0 3px #334155}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>モニターサイズ計算機</h1>
+    <p>「27インチって、横幅は何cm？」モニターのインチ数（対角線）から、画面そのものの幅・高さを計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>インチ数（対角線）</label><input id="inch" type="number" min="1" step="0.1" value="27"></div>
+      <div class="f"><label>アスペクト比</label>
+        <select id="aspect">
+          <option value="1.7778">16:9</option>
+          <option value="1.6">16:10</option>
+          <option value="2.3889">21:9（ウルトラワイド）</option>
+          <option value="3.5556">32:9（スーパーウルトラワイド）</option>
+          <option value="1.3333">4:3</option>
+        </select>
+      </div>
+    </div>
+    <div class="screen" id="screen"></div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>画面の幅</td><td class="v" id="w">-</td></tr>
+      <tr><td>画面の高さ</td><td class="v" id="h">-</td></tr>
+      <tr><td>対角線</td><td class="v" id="d">-</td></tr>
+      <tr><td>表示面積</td><td class="v" id="area">-</td></tr>
+      <tr><td>横に2枚並べたときの総幅</td><td class="v" id="dual">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算しているのは「画面（表示領域）」のサイズです。実際の製品の外寸は、ベゼル（枠）やスタンドの分だけ大きくなります。設置スペースの確認では、メーカー公表の外寸も合わせてご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。視野角の計算は「<a href="fov.html" style="color:#38bdf8">FOV変換ツール</a>」もご利用ください。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+function calc(){
+  const inch = num(document.getElementById("inch").value);
+  const a = num(document.getElementById("aspect").value);
+  const diagCm = inch * 2.54;
+  const hCm = diagCm / Math.sqrt(a * a + 1);
+  const wCm = hCm * a;
+  document.getElementById("w").textContent = wCm.toFixed(1) + " cm";
+  document.getElementById("h").textContent = hCm.toFixed(1) + " cm";
+  document.getElementById("d").textContent = diagCm.toFixed(1) + " cm（" + inch + "インチ）";
+  document.getElementById("area").textContent = Math.round(wCm * hCm).toLocaleString("ja-JP") + " cm²";
+  document.getElementById("dual").textContent = (wCm * 2).toFixed(1) + " cm";
+  const s = document.getElementById("screen");
+  const maxW = 320, wpx = Math.min(maxW, wCm * 5), hpx = wpx / a;
+  s.style.width = wpx + "px"; s.style.height = hpx + "px";
+}
+["inch","aspect"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

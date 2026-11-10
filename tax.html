@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消費税計算機｜税込・税抜を10％／8％で簡単計算</title>
+<meta name="description" content="金額を入れるだけで、消費税10％・8％（軽減税率）の税込価格と税抜価格、税額そのものを計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>消費税計算機</h1>
+    <p>税込・税抜の変換と、税額そのものを計算します。標準税率10％と軽減税率8％に対応しています。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>金額（円）</label><input id="amount" type="number" min="0" step="1" value="10000"></div>
+      <div class="f"><label>入力した金額は</label>
+        <select id="kind"><option value="excl">税抜価格</option><option value="incl">税込価格</option></select>
+      </div>
+      <div class="f"><label>税率</label>
+        <select id="rate"><option value="0.10">10％（標準）</option><option value="0.08">8％（軽減）</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>税抜価格</td><td class="v" id="excl">-</td></tr>
+      <tr><td>消費税額</td><td class="v" id="tax">-</td></tr>
+      <tr><td>税込価格</td><td class="v" id="incl">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">端数は切り捨てで表示しています。請求書などの実務では、事業者の端数処理ルール（切り捨て・切り上げ・四捨五入）に従ってください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const yen = n => "¥" + Math.floor(n).toLocaleString("ja-JP");
+function calc(){
+  const a = num(document.getElementById("amount").value);
+  const kind = document.getElementById("kind").value;
+  const r = num(document.getElementById("rate").value);
+  let excl, tax, incl;
+  if(kind === "excl"){ excl = a; tax = Math.floor(a * r); incl = excl + tax; }
+  else { incl = a; excl = Math.floor(a / (1 + r)); tax = incl - excl; }
+  document.getElementById("excl").textContent = yen(excl);
+  document.getElementById("tax").textContent = yen(tax);
+  document.getElementById("incl").textContent = yen(incl);
+}
+["amount","kind","rate"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
