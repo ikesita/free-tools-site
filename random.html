@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乱数生成・ルーレット｜ランダム数字と抽選ツール</title>
+<meta name="description" content="範囲を指定してランダムな数字を生成する乱数ツールと、項目から1つを抽選するルーレットが使える無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#db2777; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  .result{font-size:22px;font-weight:900;word-break:break-all;margin-top:12px}
+  .spin{font-size:26px;font-weight:900;text-align:center;min-height:40px;margin-top:8px}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>乱数生成・ルーレット</h1>
+    <p>抽選や順番決めなどに使える、ランダムツールのセットです。</p>
+  </header>
+
+  <div class="card">
+    <h2>乱数生成</h2>
+    <div class="grid">
+      <div class="f"><label>最小値</label><input id="min" type="number" value="1"></div>
+      <div class="f"><label>最大値</label><input id="max" type="number" value="100"></div>
+      <div class="f"><label>個数</label><input id="count" type="number" min="1" max="1000" value="5"></div>
+      <div class="f"><label>重複</label><select id="dup"><option value="no">なし</option><option value="yes">あり</option></select></div>
+    </div>
+    <button id="gen">乱数を生成</button>
+    <div class="result" id="nums">-</div>
+  </div>
+
+  <div class="card">
+    <h2>ルーレット（1つ抽選）</h2>
+    <textarea id="items">Aさん
+Bさん
+Cさん
+Dさん</textarea>
+    <button id="spin">ルーレットを回す</button>
+    <div class="spin" id="picked">　</div>
+  </div>
+
+  <footer>乱数はブラウザの乱数機能で生成しています。入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const rnd = n => Math.floor(Math.random() * n);
+document.getElementById("gen").addEventListener("click", () => {
+  const min = parseInt(document.getElementById("min").value) || 0;
+  const max = parseInt(document.getElementById("max").value) || 0;
+  let count = Math.min(1000, Math.max(1, parseInt(document.getElementById("count").value) || 1));
+  const dup = document.getElementById("dup").value === "yes";
+  const out = document.getElementById("nums");
+  if(max < min){ out.textContent = "最大値は最小値以上にしてください。"; return; }
+  const range = max - min + 1;
+  if(!dup && count > range) count = range;
+  const res = [];
+  if(dup){ for(let i = 0; i < count; i++) res.push(min + rnd(range)); }
+  else {
+    const pool = new Set();
+    while(pool.size < count) pool.add(min + rnd(range));
+    res.push(...pool);
+  }
+  out.textContent = res.join("、 ");
+});
+let timer = null;
+document.getElementById("spin").addEventListener("click", () => {
+  const items = document.getElementById("items").value.split("\n").map(s => s.trim()).filter(Boolean);
+  const el = document.getElementById("picked");
+  if(items.length === 0){ el.textContent = "項目を入力してください。"; return; }
+  if(timer) clearInterval(timer);
+  let ticks = 0;
+  timer = setInterval(() => {
+    el.textContent = items[rnd(items.length)];
+    ticks++;
+    if(ticks > 24){ clearInterval(timer); timer = null; el.textContent = "🎉 " + items[rnd(items.length)]; }
+  }, 60);
+});
+</script>
+</body>
+</html>

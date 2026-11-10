@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRコード作成ツール｜URLやテキストから無料で作成・PNG保存</title>
+<meta name="description" content="URLやテキストを入力するだけでQRコードを作成できる無料ツールです。PNG画像として保存もできます。入力内容は外部に送信されません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#111827; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:16px;min-height:76px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  select{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 18px;font-size:15px;cursor:pointer}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  #out{display:flex;justify-content:center;padding:10px}
+  canvas{background:#fff;max-width:100%;height:auto}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>QRコード作成ツール</h1>
+    <p>URLやテキストからQRコードを作成します。作成したQRコードはPNG画像として保存できます。</p>
+  </header>
+
+  <div class="card">
+    <textarea id="text" placeholder="URLやテキストを入力してください">https://example.com/</textarea>
+    <div class="row">
+      <label style="font-size:14px;color:var(--sub)">サイズ
+        <select id="size"><option value="256">256px</option><option value="512" selected>512px</option><option value="1024">1024px</option></select>
+      </label>
+      <button id="make">QRコードを作成</button>
+      <button id="dl" class="sub">PNGで保存</button>
+    </div>
+    <p class="note" id="msg" style="margin-top:10px">文字数が多すぎるとQRコードに収まりません。その場合は短いURLなどをご利用ください。</p>
+  </div>
+
+  <div class="card"><div id="out"><canvas id="cv" width="512" height="512"></canvas></div></div>
+
+  <footer>QRコードの生成はブラウザ内で行われ、入力内容が外部サーバーへ送信されることはありません（生成ライブラリの読み込みのみ通信します）。QRコードはデンソーウェーブの登録商標です。</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+  const textEl = document.getElementById("text"), sizeEl = document.getElementById("size"),
+        cv = document.getElementById("cv"), msg = document.getElementById("msg");
+  let lastQr = null;
+  function draw(){
+    const text = textEl.value;
+    if(!text){ msg.textContent = "テキストを入力してください。"; return; }
+    if(typeof qrcode === "undefined"){ msg.textContent = "ライブラリの読み込みに失敗しました。通信環境をご確認のうえ再読み込みしてください。"; return; }
+    try{
+      const qr = qrcode(0, "M"); qr.addData(text); qr.make();
+      lastQr = qr;
+      const size = parseInt(sizeEl.value), count = qr.getModuleCount(), cell = Math.floor(size / count), actual = cell * count;
+      cv.width = actual; cv.height = actual;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, actual, actual);
+      ctx.fillStyle = "#000000";
+      for(let r = 0; r < count; r++) for(let c = 0; c < count; c++)
+        if(qr.isDark(r, c)) ctx.fillRect(c * cell, r * cell, cell, cell);
+      msg.textContent = "作成しました（" + count + "×" + count + " モジュール）。";
+    }catch(e){
+      msg.textContent = "作成できませんでした。入力が長すぎる可能性があります。";
+    }
+  }
+  document.getElementById("make").addEventListener("click", draw);
+  document.getElementById("dl").addEventListener("click", () => {
+    if(!lastQr) draw();
+    const a = document.createElement("a");
+    a.download = "qrcode.png"; a.href = cv.toDataURL("image/png"); a.click();
+  });
+  draw();
+})();
+</script>
+</body>
+</html>

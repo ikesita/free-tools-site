@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バイト給与計算機｜勤務時間と時給から日給・月収を計算（深夜割増対応）</title>
+<meta name="description" content="開始・終了時刻、休憩、時給から、1日の給与と月収の目安を計算できる無料ツールです。22時〜5時の深夜割増（25％）にも対応しています。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#ea580c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>バイト給与計算機</h1>
+    <p>勤務時間と時給から、1日の給与と月収の目安を計算します。深夜割増の有無も選べます。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>時給（円）</label><input id="wage" type="number" min="0" step="10" value="1100"></div>
+      <div class="f"><label>開始時刻</label><input id="start" type="time" value="10:00"></div>
+      <div class="f"><label>終了時刻</label><input id="end" type="time" value="19:00"></div>
+      <div class="f"><label>休憩（分）</label><input id="brk" type="number" min="0" step="5" value="60"></div>
+      <div class="f"><label>週の勤務日数</label><input id="days" type="number" min="0" max="7" step="0.5" value="4"></div>
+      <div class="f"><label>深夜割増（22時〜5時 ＋25％）</label>
+        <select id="night"><option value="1">あり</option><option value="0">なし</option></select></div>
+    </div>
+    <p class="note" style="margin-top:10px">終了時刻が開始時刻より早い場合は、日をまたぐ勤務として計算します。休憩時間は勤務時間の先頭から引くのではなく合計時間から差し引いています（深夜帯に休憩が重なる場合は概算になります）。</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>実働時間</td><td class="v" id="work">-</td></tr>
+      <tr><td>うち深夜時間</td><td class="v" id="nightH">-</td></tr>
+      <tr><td>1日の給与</td><td class="v" id="day">-</td></tr>
+      <tr><td>週給の目安</td><td class="v" id="week">-</td></tr>
+      <tr><td>月収の目安（週給 × 52 ÷ 12）</td><td class="v" id="month">-</td></tr>
+      <tr><td>年収の目安</td><td class="v" id="year">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">残業割増（1日8時間・週40時間超の25％）や交通費、税金・社会保険料は含まない概算です。実際の給与は勤務先の規定でご確認ください。手取りの目安は「<a href="tedori.html">手取り計算機</a>」もご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function toMin(t){ const [h, m] = t.split(":").map(Number); return h * 60 + m; }
+function nightMinutes(start, totalMin){
+  let night = 0;
+  for(let i = 0; i < totalMin; i++){
+    const t = (start + i) % 1440;
+    if(t >= 1320 || t < 300) night++;
+  }
+  return night;
+}
+function calc(){
+  const wage = num(wageEl.value);
+  let s = toMin(startEl.value), e = toMin(endEl.value);
+  let total = e - s; if(total <= 0) total += 1440;
+  const workMin = Math.max(0, total - num(brkEl.value));
+  let nightMin = 0;
+  if(nightEl.value === "1"){
+    nightMin = Math.min(workMin, nightMinutes(s, total));
+    nightMin = Math.max(0, nightMin - Math.max(0, num(brkEl.value) - (total - nightMinutes(s, total))));
+  }
+  const normalMin = workMin - nightMin;
+  const pay = (normalMin / 60) * wage + (nightMin / 60) * wage * 1.25;
+  workEl.textContent = (workMin / 60).toFixed(2).replace(/\.?0+$/, "") + " 時間（" + workMin + "分）";
+  nightHEl.textContent = nightMin > 0 ? (nightMin / 60).toFixed(2).replace(/\.?0+$/, "") + " 時間" : "0 時間";
+  dayEl.textContent = yen(pay);
+  const week = pay * num(daysEl.value);
+  weekEl.textContent = yen(week);
+  monthEl.textContent = yen(week * 52 / 12);
+  yearEl.textContent = yen(week * 52);
+}
+const wageEl = document.getElementById("wage"), startEl = document.getElementById("start"), endEl = document.getElementById("end"),
+      brkEl = document.getElementById("brk"), daysEl = document.getElementById("days"), nightEl = document.getElementById("night");
+const workEl = document.getElementById("work"), nightHEl = document.getElementById("nightH"), dayEl = document.getElementById("day"),
+      weekEl = document.getElementById("week"), monthEl = document.getElementById("month"), yearEl = document.getElementById("year");
+[wageEl, startEl, endEl, brkEl, daysEl, nightEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
