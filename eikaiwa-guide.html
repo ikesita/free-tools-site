@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オンライン英会話の料金の見方｜1レッスン単価で比べる方法</title>
+<meta name="description" content="月額だけで比べないオンライン英会話の料金の見方。1レッスン単価、受けられる回数、続けやすさの観点から解説し、月額と回数からレッスン単価を計算できます。">
+<style>
+  body{font-family:-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#f6f7f9;color:#222;margin:0;padding:24px 16px 48px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:24px;margin:8px 0 4px}
+  h2{font-size:18px;margin:28px 0 8px}
+  p,li{line-height:1.8;font-size:15px}
+  .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-top:16px}
+  label{display:block;font-size:13px;color:#555;margin-top:12px}
+  input{width:100%;padding:10px;font-size:16px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;margin-top:4px}
+  .result{font-size:22px;font-weight:700;margin-top:16px}
+  .sub{color:#555;font-size:13px}
+  .pr{border:1px dashed #c9a227;background:#fffdf3}
+  .pr .label{font-size:11px;color:#8a6d1a;letter-spacing:.1em}
+  a{color:#0b62d6}
+  .back{font-size:13px}
+  footer{margin-top:32px;color:#888;font-size:12px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="back"><a href="index.html">← ツール一覧へ戻る</a></p>
+<h1>オンライン英会話の料金の見方</h1>
+<p>オンライン英会話は「月額いくら」だけでは比べられません。月に何回受けられるかで1レッスンの単価が大きく変わるため、<strong>月額 ÷ 実際に受けられる回数</strong>で見るのが基本です。週に2回しか受けられないなら、毎日プランの単価はその分高くなります。</p>
+
+<div class="card">
+<h2 style="margin-top:0">1レッスン単価の計算</h2>
+<label>月額料金（円）</label>
+<input type="number" id="price" value="7000" min="0">
+<label>月に実際に受けられる回数</label>
+<input type="number" id="times" value="12" min="1">
+<div class="result" id="per">1レッスン 約583円</div>
+<p class="sub">同じ月額7,000円でも、月12回なら1回約583円、月4回なら1回1,750円です。続けられる回数で計算するのがポイントです。</p>
+</div>
+
+<h2>見るべき3つの観点</h2>
+<ul>
+<li><strong>単価は「受けられる回数」で割る</strong>：毎日プランを週3回しか使わない場合、受け放題の割安感は消えます。自分の生活リズムで無理なく受けられる回数が基準です。</li>
+<li><strong>レッスン時間と予約のしやすさ</strong>：1回25分が標準です。受けたい時間帯に予約が取れないサービスは、実質の回数が減ります。</li>
+<li><strong>続けやすさが総額を決める</strong>：英会話は数か月単位で効果が出るため、安さよりも「続けられるか」で選ぶほうが、結果的に支払総額は小さくなります。</li>
+</ul>
+
+<div class="card pr">
+<p class="label">PR</p>
+<p>毎日受けられるプランがあるオンライン英会話の例です。料金とプラン内容は公式サイトでご確認ください。</p>
+<!--A8:NC-->
+</div>
+
+<footer>
+※ このページの計算は目安です。各サービスの料金・プランは変更されることがあります。最新の内容は各公式サイトでご確認ください。<br>
+入力内容はブラウザ内でのみ処理され、送信されません。
+</footer>
+</div>
+<script>
+function calc(){
+  var p=parseFloat(document.getElementById('price').value)||0;
+  var t=parseFloat(document.getElementById('times').value)||0;
+  var el=document.getElementById('per');
+  if(t>0){ el.textContent='1レッスン 約'+Math.round(p/t).toLocaleString()+'円'; }
+  else{ el.textContent='回数を入力してください'; }
+}
+document.getElementById('price').addEventListener('input',calc);
+document.getElementById('times').addEventListener('input',calc);
+calc();
+</script>
+</body>
+</html>
