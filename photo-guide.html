@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>写真プリントの料金の見方｜1枚単価と送料で比べる</title>
-<meta name="description" content="ネットの写真プリントは1枚単価と送料の合計で比べるのが基本です。L版の単価の考え方と、枚数と送料から合計を計算できるミニ計算機のページです。">
+<title>プロフィール写真の撮影料金の見方｜プランの中身で比べる</title>
+<meta name="description" content="マッチングアプリ用のプロフィール写真撮影サービスの料金の見方。基本プラン・納品カット数・オプションで合計がどう変わるかと、合計を計算できるミニ計算機のページです。">
 <style>
   body{font-family:-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#f6f7f9;color:#222;margin:0;padding:24px 16px 48px}
   .wrap{max-width:760px;margin:0 auto}
@@ -26,50 +26,50 @@
 <body>
 <div class="wrap">
 <p class="back"><a href="index.html">← ツール一覧へ戻る</a></p>
-<h1>写真プリントの料金の見方</h1>
-<p>スマホに眠った写真をプリントするとき、料金は<strong>1枚単価 × 枚数 ＋ 送料</strong>で決まります。1枚単価が安くても、少ない枚数では送料の比率が高くなります。逆に、家族分やアルバム用にまとめて注文すると1枚あたりの実質単価は下がります。</p>
+<h1>プロフィール写真の撮影料金の見方</h1>
+<p>マッチングアプリのプロフィール写真をプロに撮ってもらうサービスでは、料金は<strong>基本プラン ＋ 追加カット ＋ オプション</strong>で決まります。表示価格だけを見ると安く見えても、納品されるカット数やヘアメイクの有無で中身が大きく違うため、合計と中身をセットで比べるのが基本です。</p>
 
 <div class="card">
-<h2 style="margin-top:0">プリント代の合計シミュレーション</h2>
-<label>1枚単価（円）</label>
-<input type="number" id="unit" value="30" min="0">
-<label>枚数</label>
-<input type="number" id="count" value="50" min="0">
-<label>送料（円）</label>
-<input type="number" id="ship" value="200" min="0">
-<div class="result" id="total">合計 約1,700円（実質 1枚34円）</div>
-<p class="sub">送料込みの「実質1枚単価」で比べると、サービスの差が見えやすくなります。何枚以上で送料無料になるかもチェックポイントです。</p>
+<h2 style="margin-top:0">撮影料金の合計シミュレーション</h2>
+<label>基本プラン料金（円）</label>
+<input type="number" id="base" value="15000" min="0">
+<label>追加カット数</label>
+<input type="number" id="cuts" value="0" min="0">
+<label>1カット追加単価（円）</label>
+<input type="number" id="cutprice" value="1000" min="0">
+<label>オプション料金（ヘアメイク等・円）</label>
+<input type="number" id="opt" value="0" min="0">
+<div class="result" id="total">合計 約15,000円</div>
+<p class="sub">プランに含まれる納品カット数を超える分が追加料金になる形式が一般的です。必要なカット数を先に決めておくと、比較がぶれません。</p>
 </div>
 
 <h2>比べるときの観点</h2>
 <ul>
-<li><strong>サイズで単価が変わる</strong>：L版が最も一般的で安く、2L版やA4は単価が上がります。用途に合うサイズを選ぶことが前提です。</li>
-<li><strong>仕上がりと色味</strong>：自動補正の有無で印象が変わります。記念写真は補正あり、作品としての写真は補正なしが向く場合もあります。</li>
-<li><strong>フォトブックという選択</strong>：枚数が多いなら、バラのプリントよりフォトブックのほうが1冊にまとまって安く済むことがあります。</li>
+<li><strong>納品カット数と形式</strong>：何枚もらえるか、データ納品か、レタッチ済みかどうかで価値が変わります。</li>
+<li><strong>撮影時間と場所</strong>：30分か90分か、スタジオか屋外かで撮れるバリエーションが変わります。複数パターンの衣装に対応するかも確認点です。</li>
+<li><strong>ヘアメイク・衣装の扱い</strong>：含まれているプランと、別料金のプランがあります。合計で比べることが大切です。</li>
 </ul>
 
 <div class="card pr">
 <p class="label">PR</p>
-<p>写真プリント・フォトブックのサービス例です。料金は公式サイトでご確認ください。</p>
-<a href="https://px.a8.net/svt/ejp?a8mat=4BGHVN+79DBCI+4HMW+5YJRM" rel="nofollow">Photojoy</a>
-  <img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4BGHVN+79DBCI+4HMW+5YJRM" alt="">
+<p>マッチングアプリ専門のプロフィール写真撮影サービスの例です。プラン内容と料金は公式サイトでご確認ください。</p>
+<p><a href="https://px.a8.net/svt/ejp?a8mat=4BGHVN+79DBCI+4HMW+5YJRM" rel="nofollow">Photojoy</a><img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4BGHVN+79DBCI+4HMW+5YJRM" alt=""></p>
 </div>
 
 <footer>
-※ 料金の例は一般的な目安です。各サービスの料金・送料は変更されることがあります。最新の内容は各公式サイトでご確認ください。<br>
+※ 料金構成は一般的な例示です。各サービスのプラン・料金は公式サイトでご確認ください。<br>
 入力内容はブラウザ内でのみ処理され、送信されません。
 </footer>
 </div>
 <script>
 function calc(){
-  var u=parseFloat(document.getElementById('unit').value)||0;
-  var c=parseFloat(document.getElementById('count').value)||0;
-  var s=parseFloat(document.getElementById('ship').value)||0;
-  var t=u*c+s;
-  var per=c>0?Math.round(t/c):0;
-  document.getElementById('total').textContent='合計 約'+t.toLocaleString()+'円（実質 1枚'+per+'円）';
+  var b=parseFloat(document.getElementById('base').value)||0;
+  var c=parseFloat(document.getElementById('cuts').value)||0;
+  var p=parseFloat(document.getElementById('cutprice').value)||0;
+  var o=parseFloat(document.getElementById('opt').value)||0;
+  document.getElementById('total').textContent='合計 約'+(b+c*p+o).toLocaleString()+'円';
 }
-['unit','count','ship'].forEach(function(id){document.getElementById(id).addEventListener('input',calc);});
+['base','cuts','cutprice','opt'].forEach(function(id){document.getElementById(id).addEventListener('input',calc);});
 calc();
 </script>
 </body>
