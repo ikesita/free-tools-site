@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ウォーターサーバーの料金の見方｜水代・レンタル料・電気代の合計で比べる</title>
+<meta name="description" content="ウォーターサーバーの料金は水の値段だけでは比べられません。レンタル料・配送料・電気代まで入れた月の合計で比べる方法と、簡単な合計計算ツールをまとめました。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0369a1; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:24px;margin:8px 0 4px;line-height:1.4}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 10px}
+  .card p{margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  .ad{border:1px dashed var(--acc);border-radius:12px;padding:14px;margin-top:12px;background:#f0f7ff}
+  .ad .pr{font-size:11px;color:var(--sub);letter-spacing:.08em}
+  .ad a{font-weight:800}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ウォーターサーバーの料金の見方</h1>
+    <p>水の値段だけでは比べられない、月の合計金額で比べるためのガイドです。</p>
+  </header>
+
+  <div class="card">
+    <h2>月の料金は4つの合計</h2>
+    <p>ウォーターサーバーの月額は、だいたい次の4つで決まります。</p>
+    <table>
+      <tr><td>水の代金（使う量で変動）</td><td class="v">月 2,000〜5,000円ほど</td></tr>
+      <tr><td>サーバーのレンタル料</td><td class="v">無料〜月 1,000円台</td></tr>
+      <tr><td>配送料</td><td class="v">無料〜1回数百円</td></tr>
+      <tr><td>電気代（冷温水の維持）</td><td class="v">月 400〜1,000円ほど</td></tr>
+    </table>
+    <p style="margin-top:10px">「水が安い」プランでも、レンタル料と電気代を入れると合計では逆転することがあります。乗り換えキャンペーンのキャッシュバックは一時金なので、月額の比較とは分けて考えるのが安全です。電気代の目安は「<a href="https://ikesita.github.io/money-tools/denki.html">電気料金の目安計算</a>」でも確認できます。</p>
+  </div>
+
+  <div class="card">
+    <h2>月の合計を計算する</h2>
+    <div class="grid">
+      <div class="f"><label>水の代金（月・円）</label><input id="water" type="number" min="0" step="100" value="3500"></div>
+      <div class="f"><label>レンタル料（月・円）</label><input id="rental" type="number" min="0" step="100" value="0"></div>
+      <div class="f"><label>配送料（月・円）</label><input id="ship" type="number" min="0" step="50" value="0"></div>
+      <div class="f"><label>電気代の目安（月・円）</label><input id="elec" type="number" min="0" step="50" value="600"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>月の合計</td><td class="v" id="total">-</td></tr>
+      <tr><td>1日あたり</td><td class="v" id="perday">-</td></tr>
+    </table>
+
+    <div class="ad">
+      <div class="pr">PR（アフィリエイト広告）</div>
+      <!--A8:AQUABANK1-->
+      <!--A8:AQUABANK2-->
+      <!--A8:OKEN-->
+    </div>
+    <p class="note" style="margin-top:10px">料金やキャンペーンは各社の公式情報が最新です。契約前に解約条件と最低利用期間も合わせてご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const t = num(water.value) + num(rental.value) + num(ship.value) + num(elec.value);
+  totalEl.textContent = yen(t);
+  perdayEl.textContent = yen(t / 30) + " ほど";
+}
+const water = document.getElementById("water"), rental = document.getElementById("rental"),
+      ship = document.getElementById("ship"), elec = document.getElementById("elec");
+const totalEl = document.getElementById("total"), perdayEl = document.getElementById("perday");
+[water, rental, ship, elec].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
