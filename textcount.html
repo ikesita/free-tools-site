@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字数カウント｜読了時間・原稿用紙換算・行数もその場で計算</title>
+<meta name="description" content="貼り付けた文章の文字数（空白・改行のありなし切替）、行数、原稿用紙換算、読了時間の目安をリアルタイムで数える無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#16a34a; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  textarea{width:100%;min-height:220px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1.7;resize:vertical}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;text-align:center}
+  .stat .v{font-size:21px;font-weight:800;color:var(--acc)}
+  .stat .k{font-size:12.5px;color:var(--sub)}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>文字数カウント</h1>
+    <p>文章を貼り付けるだけで、文字数・行数・原稿用紙換算・読了時間の目安を数えます。</p>
+  </header>
+
+  <div class="card">
+    <textarea id="text" placeholder="ここに文章を貼り付けてください"></textarea>
+    <div class="stats" style="margin-top:14px">
+      <div class="stat"><div class="v" id="all">0</div><div class="k">文字数（すべて）</div></div>
+      <div class="stat"><div class="v" id="nospace">0</div><div class="k">文字数（空白・改行なし）</div></div>
+      <div class="stat"><div class="v" id="noline">0</div><div class="k">文字数（改行なし）</div></div>
+      <div class="stat"><div class="v" id="lines">0</div><div class="k">行数</div></div>
+      <div class="stat"><div class="v" id="genko">0</div><div class="k">原稿用紙（400字）換算・枚</div></div>
+      <div class="stat"><div class="v" id="read">0分</div><div class="k">読了時間の目安</div></div>
+    </div>
+    <p class="note" style="margin-top:12px">読了時間は、黙読速度の目安として毎分500字で計算しています。音読・朗読の目安は毎分300字ほどです（この文章の場合は約 <span id="speak">0</span> 分）。</p>
+  </div>
+
+  <div class="card">
+    <p class="note">
+      ・「文字数（すべて）」は、改行・空白・記号を含めた全体の文字数です。SNSや応募フォームの字数制限チェックにはこちらが近いです。<br>
+      ・「空白・改行なし」は、半角・全角スペースと改行を取り除いた文字数です。原稿料の文字単価計算などでよく使われます。<br>
+      ・入力した文章はブラウザ内でのみ処理され、外部に送信されることはありません。
+    </p>
+  </div>
+
+  <footer>文字単価から実質時給も知りたい場合は「<a href="writer.html">ライター実質時給計算機</a>」もご利用ください。</footer>
+</div>
+
+<script>
+function fmt(n){ return n.toLocaleString("ja-JP"); }
+function calc(){
+  const t = document.getElementById("text").value;
+  const chars = [...t];
+  const all = chars.length;
+  const noline = [...t.replace(/\r?\n/g, "")].length;
+  const nospace = [...t.replace(/[\s　]/g, "")].length;
+  const lines = t === "" ? 0 : t.split(/\r?\n/).length;
+  document.getElementById("all").textContent = fmt(all);
+  document.getElementById("nospace").textContent = fmt(nospace);
+  document.getElementById("noline").textContent = fmt(noline);
+  document.getElementById("lines").textContent = fmt(lines);
+  document.getElementById("genko").textContent = fmt(Math.ceil(nospace / 400));
+  const read = nospace / 500;
+  document.getElementById("read").textContent = read < 1 ? "1分未満" : Math.round(read) + "分";
+  document.getElementById("speak").textContent = fmt(Math.max(0, Math.round(nospace / 300)));
+}
+document.getElementById("text").addEventListener("input", calc);
+calc();
+</script>
+</body>
+</html>
