@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV充電コスト計算機｜満充電の電気代・航続距離・100kmあたりコスト</title>
+<meta name="description" content="バッテリー容量（kWh）・電気単価・電費から、満充電にかかる電気代、満充電での航続距離、100kmあたりの充電コストを計算できる無料ツールです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#059669; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>EV充電コスト計算機</h1>
+    <p>電気自動車のバッテリー容量と電気単価・電費から、満充電の電気代と走れる距離、距離あたりのコストを計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>バッテリー容量（kWh）</label><input id="kwh" type="number" min="0" step="1" value="40"></div>
+      <div class="f"><label>電気単価（円／kWh）</label><input id="price" type="number" min="0" step="1" value="31"></div>
+      <div class="f"><label>電費（km／kWh）</label><input id="eff" type="number" min="0" step="0.1" value="6"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <table>
+      <tr><td>満充電での航続距離</td><td class="v" id="rangeOut">-</td></tr>
+      <tr><td>100kmあたりの充電コスト</td><td class="v" id="per100Out">-</td></tr>
+      <tr><td>1kmあたりの充電コスト</td><td class="v" id="perKmOut">-</td></tr>
+      <tr class="total"><td>満充電のコスト</td><td class="v" id="fullOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">電気単価は契約プランや時間帯（夜間料金など）で変わります。初期値の31円/kWhは目安単価です。充電時のロス（1〜2割程度）は含んでいないため、実際の電気代はやや多めにかかる場合があります。航続距離は電費の条件（エアコン使用・速度・気温）で変動します。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "約 ¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const kwh = num(kwhEl.value);
+  const price = num(priceEl.value);
+  const eff = num(effEl.value);
+  fullOutEl.textContent = yen(kwh * price);
+  rangeOutEl.textContent = "約 " + (kwh * eff).toLocaleString("ja-JP", {maximumFractionDigits: 0}) + " km";
+  if(eff <= 0){
+    per100OutEl.textContent = "-";
+    perKmOutEl.textContent = "-";
+    return;
+  }
+  per100OutEl.textContent = yen(price / eff * 100);
+  perKmOutEl.textContent = "約 " + (price / eff).toLocaleString("ja-JP", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " 円";
+}
+const kwhEl = document.getElementById("kwh"), priceEl = document.getElementById("price"), effEl = document.getElementById("eff");
+const fullOutEl = document.getElementById("fullOut"), rangeOutEl = document.getElementById("rangeOut"),
+      per100OutEl = document.getElementById("per100Out"), perKmOutEl = document.getElementById("perKmOut");
+[kwhEl, priceEl, effEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>
+</p>
+</div>
+</body>
+</html>

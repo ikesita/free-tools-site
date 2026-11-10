@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バッテリーの持ち時間計算機｜容量mAhと消費電力から使用可能時間を計算</title>
+<meta name="description" content="バッテリー容量（mAh）・電圧・消費電力から、Wh換算と使用可能時間の目安を計算できる無料ツールです。モバイルバッテリーやポータブル電源の持ち時間の確認に。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#d97706; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>バッテリーの持ち時間計算機</h1>
+    <p>バッテリーの容量（mAh）と電圧から電力量（Wh）を求め、機器の消費電力に対して何時間使えるかの目安を計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>バッテリー容量（mAh）</label><input id="mah" type="number" min="0" step="100" value="10000"></div>
+      <div class="f"><label>電圧（V）</label><input id="volt" type="number" min="0" step="0.1" value="3.7"></div>
+      <div class="f"><label>機器の消費電力（W）</label><input id="watt" type="number" min="0" step="0.5" value="5"></div>
+      <div class="f"><label>効率（変換ロスなど）</label>
+        <select id="eff">
+          <option value="100">100％（ロスなし・理論値）</option>
+          <option value="90">90％</option>
+          <option value="85" selected>85％（モバイルバッテリーの目安）</option>
+          <option value="80">80％</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <table>
+      <tr><td>電力量（容量 × 電圧）</td><td class="v" id="whOut">-</td></tr>
+      <tr><td>使用可能時間（時間・小数）</td><td class="v" id="hoursOut">-</td></tr>
+      <tr class="total"><td>使用可能時間の目安</td><td class="v" id="hmOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">電力量（Wh）は「容量（Ah）× 電圧（V）」で求めています。モバイルバッテリーの容量表示は内部電池（3.7V）基準のことが多く、5V出力では変換ロスが発生するため、効率85％程度で見積もるのが一般的です。実際の持ち時間は機器の使い方・バッテリーの劣化・温度でも変わります。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function calc(){
+  const mah = num(mahEl.value);
+  const volt = num(voltEl.value);
+  const watt = num(wattEl.value);
+  const eff = num(effEl.value) / 100;
+  const wh = mah / 1000 * volt;
+  whOutEl.textContent = wh.toLocaleString("ja-JP", {maximumFractionDigits: 2}) + " Wh";
+  if(watt <= 0){
+    hoursOutEl.textContent = "-";
+    hmOutEl.textContent = "-";
+    return;
+  }
+  const hours = wh * eff / watt;
+  hoursOutEl.textContent = "約 " + hours.toFixed(2) + " 時間";
+  const totalMin = Math.round(hours * 60);
+  hmOutEl.textContent = "約 " + Math.floor(totalMin / 60) + " 時間 " + (totalMin % 60) + " 分";
+}
+const mahEl = document.getElementById("mah"), voltEl = document.getElementById("volt"),
+      wattEl = document.getElementById("watt"), effEl = document.getElementById("eff");
+const whOutEl = document.getElementById("whOut"), hoursOutEl = document.getElementById("hoursOut"),
+      hmOutEl = document.getElementById("hmOut");
+[mahEl, voltEl, wattEl, effEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>
+</p>
+</div>
+</body>
+</html>

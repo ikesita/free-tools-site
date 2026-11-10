@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アルコール分解時間の目安計算機｜純アルコール量と分解にかかる時間</title>
+<meta name="description" content="飲んだ量・アルコール度数・体重から、純アルコール量と分解にかかる時間の目安を計算できる無料ツールです。あくまで目安であり、飲酒運転の可否の判断には使えません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#b91c1c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  .warn{border:1px solid #f0b4b4;background:#fdf2f2}
+  .warn p{font-size:14px;line-height:1.8;margin:0}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>アルコールの分解時間の目安計算機</h1>
+    <p>飲んだお酒の量と度数、体重から、純アルコール量と体から分解されるまでの時間の目安を計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>飲んだ量（ml）</label><input id="ml" type="number" min="0" step="10" value="500"></div>
+      <div class="f"><label>アルコール度数（％）</label><input id="abv" type="number" min="0" step="0.5" value="5"></div>
+      <div class="f"><label>体重（kg）</label><input id="kg" type="number" min="0" step="1" value="65"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>計算結果の目安</h2>
+    <table>
+      <tr><td>純アルコール量</td><td class="v" id="gramOut">-</td></tr>
+      <tr><td>分解速度の目安（体重 × 0.1g／時）</td><td class="v" id="rateOut">-</td></tr>
+      <tr class="total"><td>分解にかかる時間の目安</td><td class="v" id="timeOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算式：純アルコール量（g）＝ 飲んだ量（ml）× 度数（％）÷ 100 × 0.8（アルコールの比重）。分解時間は「純アルコール量 ÷（体重 × 0.1g）」で求めた単純な目安です。</p>
+  </div>
+
+  <div class="card warn">
+    <h2>必ずお読みください</h2>
+    <p>この計算結果は<strong>あくまで目安</strong>です。アルコールの分解速度には体質・体調・食事の有無・性別・年齢などで<strong>大きな個人差</strong>があり、実際にかかる時間はこの結果より長くなることも珍しくありません。<br>
+    <strong>この計算を「運転できるかどうか」の判断に絶対に使わないでください。</strong>飲酒運転は法律で固く禁止されており、少量の飲酒でも、また時間が経っても、体にアルコールが残っている可能性がある限り運転は厳禁です。「抜けた気がする」という感覚と、実際に分解が終わっていることは別物です。飲酒した日は運転せず、公共交通機関や運転代行を利用してください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function calc(){
+  const ml = num(mlEl.value);
+  const abv = num(abvEl.value);
+  const kg = num(kgEl.value);
+  const gram = ml * abv / 100 * 0.8;
+  const rate = kg * 0.1;
+  gramOutEl.textContent = "約 " + gram.toLocaleString("ja-JP", {maximumFractionDigits: 1}) + " g";
+  rateOutEl.textContent = rate > 0 ? "約 " + rate.toLocaleString("ja-JP", {maximumFractionDigits: 1}) + " g／時" : "-";
+  if(rate <= 0){
+    timeOutEl.textContent = "-";
+    return;
+  }
+  const hours = gram / rate;
+  const totalMin = Math.round(hours * 60);
+  timeOutEl.textContent = "約 " + hours.toFixed(2) + " 時間（約 " + Math.floor(totalMin / 60) + " 時間 " + (totalMin % 60) + " 分）";
+}
+const mlEl = document.getElementById("ml"), abvEl = document.getElementById("abv"), kgEl = document.getElementById("kg");
+const gramOutEl = document.getElementById("gramOut"), rateOutEl = document.getElementById("rateOut"),
+      timeOutEl = document.getElementById("timeOut");
+[mlEl, abvEl, kgEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>
+</p>
+</div>
+</body>
+</html>
