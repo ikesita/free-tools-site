@@ -22,6 +22,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "文字数カウント",
+  "url": "https://ikesita.github.io/free-tools-site/textcount.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "貼り付けた文章の文字数（空白・改行のありなし切替）、行数、原稿用紙換算、読了時間の目安をリアルタイムで数える無料ツールです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "文字数はどう数えていますか？空白や改行は含まれますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「文字数（すべて）」は改行・空白・記号を含めた全体の文字数を数えます。あわせて「空白・改行なし」（半角・全角スペースと改行を除いた数）と「改行なし」の3種類を同時に表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "原稿用紙換算や読了時間も分かりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。「空白・改行なし」の文字数をもとに、400字詰め原稿用紙の枚数と、黙読を毎分500字として計算した読了時間の目安を表示します。音読の目安（毎分300字）も併記しています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力した文章は送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "いいえ。計算はお使いのブラウザ内でのみ行われ、入力した文章が外部に送信されることはありません。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -49,6 +99,15 @@
       ・「空白・改行なし」は、半角・全角スペースと改行を取り除いた文字数です。原稿料の文字単価計算などでよく使われます。<br>
       ・入力した文章はブラウザ内でのみ処理され、外部に送信されることはありません。
     </p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 文字数はどう数えていますか？空白や改行は含まれますか？</b></p>
+    <p class="note" style="margin:0 0 12px">「文字数（すべて）」は改行・空白・記号を含めた全体の文字数を数えます。あわせて「空白・改行なし」（半角・全角スペースと改行を除いた数）と「改行なし」の3種類を同時に表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 原稿用紙換算や読了時間も分かりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。「空白・改行なし」の文字数をもとに、400字詰め原稿用紙の枚数と、黙読を毎分500字として計算した読了時間の目安を表示します。音読の目安（毎分300字）も併記しています。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力した文章は送信されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">いいえ。計算はお使いのブラウザ内でのみ行われ、入力した文章が外部に送信されることはありません。</p>
   </div>
 
   <footer>文字単価から実質時給も知りたい場合は「<a href="writer.html">ライター実質時給計算機</a>」もご利用ください。</footer>

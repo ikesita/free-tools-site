@@ -23,6 +23,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "QRコード作成ツール",
+  "url": "https://ikesita.github.io/free-tools-site/qr.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "URLやテキストを入力するだけでQRコードを作成できる無料ツールです。PNG画像として保存もできます。入力内容は外部に送信されません。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "作成したQRコードはどうやって保存できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「QRコードを作成」ボタンで生成したあと、「PNGで保存」ボタンからPNG画像として保存できます。サイズは256px／512px／1024pxから選べます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したURLやテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "いいえ。QRコードの生成はブラウザ内で行われ、入力内容が外部サーバーへ送信されることはありません（生成ライブラリの読み込みのみ通信します）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "QRコードが作成できないことがありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "文字数が多すぎるとQRコードに収まりきりません。その場合は短いURLなど、より短い内容でお試しください。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -44,6 +94,15 @@
   </div>
 
   <div class="card"><div id="out"><canvas id="cv" width="512" height="512"></canvas></div></div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 作成したQRコードはどうやって保存できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">「QRコードを作成」ボタンで生成したあと、「PNGで保存」ボタンからPNG画像として保存できます。サイズは256px／512px／1024pxから選べます。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したURLやテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">いいえ。QRコードの生成はブラウザ内で行われ、入力内容が外部サーバーへ送信されることはありません（生成ライブラリの読み込みのみ通信します）。</p>
+    <p style="margin:0 0 4px"><b>Q. QRコードが作成できないことがありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">文字数が多すぎるとQRコードに収まりきりません。その場合は短いURLなど、より短い内容でお試しください。</p>
+  </div>
 
   <footer>QRコードの生成はブラウザ内で行われ、入力内容が外部サーバーへ送信されることはありません（生成ライブラリの読み込みのみ通信します）。QRコードはデンソーウェーブの登録商標です。</footer>
 </div>

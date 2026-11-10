@@ -23,6 +23,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "消費税計算機",
+  "url": "https://ikesita.github.io/free-tools-site/tax.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "金額を入れるだけで、消費税10％・8％（軽減税率）の税込価格と税抜価格、税額そのものを計算できる無料ツールです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "税込価格と税抜価格のどちらからでも計算できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。金額を入力し、「入力した金額は」で税抜価格か税込価格かを選ぶと、税抜価格・消費税額・税込価格の3つを表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "軽減税率8％にも対応していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。税率は標準税率10％と軽減税率8％から選べます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "端数はどう処理されていますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "端数は切り捨てで表示しています。請求書などの実務では、事業者の端数処理ルール（切り捨て・切り上げ・四捨五入）に従ってください。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -50,6 +100,15 @@
       <tr><td>税込価格</td><td class="v" id="incl">-</td></tr>
     </table>
     <p class="note" style="margin-top:10px">端数は切り捨てで表示しています。請求書などの実務では、事業者の端数処理ルール（切り捨て・切り上げ・四捨五入）に従ってください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 税込価格と税抜価格のどちらからでも計算できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。金額を入力し、「入力した金額は」で税抜価格か税込価格かを選ぶと、税抜価格・消費税額・税込価格の3つを表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 軽減税率8％にも対応していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。税率は標準税率10％と軽減税率8％から選べます。</p>
+    <p style="margin:0 0 4px"><b>Q. 端数はどう処理されていますか？</b></p>
+    <p class="note" style="margin:0 0 12px">端数は切り捨てで表示しています。請求書などの実務では、事業者の端数処理ルール（切り捨て・切り上げ・四捨五入）に従ってください。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

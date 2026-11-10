@@ -23,6 +23,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "BMI計算機",
+  "url": "https://ikesita.github.io/free-tools-site/bmi.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "身長と体重を入れるだけで、BMI、肥満度の判定、適正体重と普通体重の範囲を計算できる無料ツールです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "BMIはどう計算していますか？判定基準は何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "身長と体重からBMI（体格指数）を計算し、判定は日本肥満学会の基準（18.5未満＝低体重、18.5〜25未満＝普通体重、25以上＝肥満）で表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "適正体重も分かりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。BMI 22にあたる適正体重、適正体重まであと何kgか、普通体重（BMI 18.5〜25）の範囲をあわせて表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "BMIだけで健康状態を判断できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BMIは身長と体重だけの指標で、筋肉量や体脂肪率は反映されません。健康状態の判断は、健診結果などとあわせて医療機関でご確認ください。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -55,6 +105,15 @@
       <tr><td>40以上</td><td class="v">肥満（4度）</td></tr>
     </table>
     <p class="note" style="margin-top:10px">BMIは身長と体重だけの指標で、筋肉量や体脂肪率は反映されません。健康状態の判断は、健診結果などとあわせて医療機関でご確認ください。基礎代謝の目安は「<a href="calorie.html">基礎代謝・消費カロリー計算機</a>」もご利用ください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. BMIはどう計算していますか？判定基準は何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">身長と体重からBMI（体格指数）を計算し、判定は日本肥満学会の基準（18.5未満＝低体重、18.5〜25未満＝普通体重、25以上＝肥満）で表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 適正体重も分かりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。BMI 22にあたる適正体重、適正体重まであと何kgか、普通体重（BMI 18.5〜25）の範囲をあわせて表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. BMIだけで健康状態を判断できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">BMIは身長と体重だけの指標で、筋肉量や体脂肪率は反映されません。健康状態の判断は、健診結果などとあわせて医療機関でご確認ください。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

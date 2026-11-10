@@ -21,6 +21,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "年齢計算機",
+  "url": "https://ikesita.github.io/free-tools-site/age.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "生年月日を入れるだけで、現在の年齢、和暦（令和・平成・昭和）、干支、誕生日まで何日かを計算できる無料ツールです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "何が計算できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "生年月日から、現在の年齢、生まれた年の和暦、干支、生まれてからの日数、次の誕生日まで何日かを表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "年齢の数え方はどうなっていますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "一般的な「誕生日を迎えたら1歳増える」満年齢で計算しています。履歴書などの公式書類では、提出先の指定に従ってください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力した生年月日は送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "いいえ。計算はブラウザ内でのみ処理され、送信されません。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -45,6 +95,15 @@
 
   <div class="card">
     <p class="note">年齢は、誕生日の前日に1歳加わる日本の年齢計算（年齢計算二関スル法律）の考え方ではなく、一般的な「誕生日を迎えたら1歳増える」満年齢で計算しています。履歴書などの公式書類では、提出先の指定に従ってください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 何が計算できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">生年月日から、現在の年齢、生まれた年の和暦、干支、生まれてからの日数、次の誕生日まで何日かを表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 年齢の数え方はどうなっていますか？</b></p>
+    <p class="note" style="margin:0 0 12px">一般的な「誕生日を迎えたら1歳増える」満年齢で計算しています。履歴書などの公式書類では、提出先の指定に従ってください。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力した生年月日は送信されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">いいえ。計算はブラウザ内でのみ処理され、送信されません。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

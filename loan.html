@@ -22,6 +22,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ローン返済 試算計算機",
+  "url": "https://ikesita.github.io/free-tools-site/loan.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "借入額・金利・返済期間から、元利均等返済の毎月返済額、総返済額、利息の合計を試算できる無料ツールです。住宅ローンなどの目安に。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "どのような返済方式の計算ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "元利均等返済（毎月の返済額が一定）の試算です。ボーナス返済なしで計算し、毎月の返済額・総返済額・利息の合計・返済回数を表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "何を入力すればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "借入額（円）、金利（年率％）、返済期間（年）の3つを入力すると、その場で試算結果が表示されます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "計算結果どおりの返済額になりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "あくまで概算の試算です。実際の返済額は、金利の見直し時期、手数料・保証料、端数処理などにより変わります。契約前には金融機関の正式な返済計画表でご確認ください。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -46,6 +96,15 @@
       <tr><td>返済回数</td><td class="v" id="count">-</td></tr>
     </table>
     <p class="note" style="margin-top:10px">これは概算の試算です。実際の返済額は、金利の見直し時期、手数料・保証料、端数処理などにより変わります。契約前には金融機関の正式な返済計画表でご確認ください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. どのような返済方式の計算ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">元利均等返済（毎月の返済額が一定）の試算です。ボーナス返済なしで計算し、毎月の返済額・総返済額・利息の合計・返済回数を表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 何を入力すればいいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">借入額（円）、金利（年率％）、返済期間（年）の3つを入力すると、その場で試算結果が表示されます。</p>
+    <p style="margin:0 0 4px"><b>Q. 計算結果どおりの返済額になりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">あくまで概算の試算です。実際の返済額は、金利の見直し時期、手数料・保証料、端数処理などにより変わります。契約前には金融機関の正式な返済計画表でご確認ください。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

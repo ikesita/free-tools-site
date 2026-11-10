@@ -20,6 +20,56 @@
   .ans{font-size:20px;font-weight:800;color:var(--acc)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "日数計算機",
+  "url": "https://ikesita.github.io/free-tools-site/days.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "2つの日付の間の日数、今日から何日後の日付（曜日つき）、何日前の日付を計算できる無料ツールです。締め切りや記念日の計算に。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2つの日付の間の日数はどう数えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2つの日付を入力すると、その間の日数を表示します。基準日そのものは0日後（0日差）として数えます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「何日後」の日付も調べられますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。基準日と日数を入力すると、その日数後の日付を表示します。マイナスの数を入れると「○日前」の日付も計算できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力した日付は送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "いいえ。計算はブラウザ内でのみ処理され、送信されません。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -37,6 +87,15 @@
     <h2>② ○日後は 何月何日？</h2>
     <div class="row"><input id="base" type="date" value="2026-11-10"><span>の</span><input id="n" type="number" value="30"><span>日後 =</span><span class="ans" id="addOut">-</span></div>
     <p style="color:var(--sub);font-size:13px;margin:10px 0 0">マイナスの数を入れると「○日前」も計算できます。基準日そのものは0日後として数えます。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 2つの日付の間の日数はどう数えますか？</b></p>
+    <p class="note" style="margin:0 0 12px">2つの日付を入力すると、その間の日数を表示します。基準日そのものは0日後（0日差）として数えます。</p>
+    <p style="margin:0 0 4px"><b>Q. 「何日後」の日付も調べられますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。基準日と日数を入力すると、その日数後の日付を表示します。マイナスの数を入れると「○日前」の日付も計算できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力した日付は送信されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">いいえ。計算はブラウザ内でのみ処理され、送信されません。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

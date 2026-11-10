@@ -22,6 +22,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "バイト給与計算機",
+  "url": "https://ikesita.github.io/free-tools-site/baito.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "開始・終了時刻、休憩、時給から、1日の給与と月収の目安を計算できる無料ツールです。22時〜5時の深夜割増（25％）にも対応しています。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "深夜割増には対応していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。深夜割増（22時〜5時、＋25％）の「あり／なし」を選べます。実働時間と、そのうち深夜時間にあたる時間も表示し、日をまたぐ勤務にも対応しています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "月収の目安はどう計算していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "1日の給与から週給を求め、「週給 × 52 ÷ 12」で月収の目安を計算します。年収の目安もあわせて表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "残業代や税金は含まれますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "残業割増（1日8時間・週40時間超の25％）や交通費、税金・社会保険料は含まない概算です。実際の給与は勤務先の規定でご確認ください。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -53,6 +103,15 @@
       <tr><td>年収の目安</td><td class="v" id="year">-</td></tr>
     </table>
     <p class="note" style="margin-top:10px">残業割増（1日8時間・週40時間超の25％）や交通費、税金・社会保険料は含まない概算です。実際の給与は勤務先の規定でご確認ください。手取りの目安は「<a href="tedori.html">手取り計算機</a>」もご利用ください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 深夜割増には対応していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。深夜割増（22時〜5時、＋25％）の「あり／なし」を選べます。実働時間と、そのうち深夜時間にあたる時間も表示し、日をまたぐ勤務にも対応しています。</p>
+    <p style="margin:0 0 4px"><b>Q. 月収の目安はどう計算していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">1日の給与から週給を求め、「週給 × 52 ÷ 12」で月収の目安を計算します。年収の目安もあわせて表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 残業代や税金は含まれますか？</b></p>
+    <p class="note" style="margin:0 0 12px">残業割増（1日8時間・週40時間超の25％）や交通費、税金・社会保険料は含まない概算です。実際の給与は勤務先の規定でご確認ください。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>

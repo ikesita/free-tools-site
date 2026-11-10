@@ -23,6 +23,56 @@
   .note{font-size:13px;color:var(--sub)}
   footer{color:var(--sub);font-size:12.5px;margin-top:22px}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "手取り計算機（簡易試算）",
+  "url": "https://ikesita.github.io/free-tools-site/tedori.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "年収（または月給）から、社会保険料・所得税・住民税を差し引いた手取り額の目安を計算できる無料の簡易試算ツールです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "この計算機では何が分かりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "年収（額面）から社会保険料・所得税・住民税を差し引いた、手取りの年額と月額の目安を表示します。扶養家族の人数と、年齢による介護保険の有無も反映できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "計算結果は正確ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "簡易試算です。社会保険料は年収に料率を掛けて近似しており、生命保険料控除・住宅ローン控除・ふるさと納税などは反映していません。正確な金額は給与明細や源泉徴収票でご確認ください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ボーナス（賞与）はどう扱われますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "入力した年収にボーナスを含めて試算し、手取り月額は「年手取り ÷ 12」で表示します。"
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -62,6 +112,15 @@
     ・所得税は、給与所得控除・基礎控除（58万円）・社会保険料控除・扶養控除（1人38万円）を引いた課税所得に、累進税率を適用しています。<br>
     ・住民税は、基礎控除43万円で計算した課税所得の約10％＋均等割5,000円で近似しています。<br>
     ・生命保険料控除・住宅ローン控除・ふるさと納税などは反映していません。正確な金額は給与明細や源泉徴収票でご確認ください。</p>
+  </div>
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. この計算機では何が分かりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">年収（額面）から社会保険料・所得税・住民税を差し引いた、手取りの年額と月額の目安を表示します。扶養家族の人数と、年齢による介護保険の有無も反映できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 計算結果は正確ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">簡易試算です。社会保険料は年収に料率を掛けて近似しており、生命保険料控除・住宅ローン控除・ふるさと納税などは反映していません。正確な金額は給与明細や源泉徴収票でご確認ください。</p>
+    <p style="margin:0 0 4px"><b>Q. ボーナス（賞与）はどう扱われますか？</b></p>
+    <p class="note" style="margin:0 0 12px">入力した年収にボーナスを含めて試算し、手取り月額は「年手取り ÷ 12」で表示します。</p>
   </div>
 
   <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
