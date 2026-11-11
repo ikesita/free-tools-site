@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カウントダウンタイマー｜分・秒を設定してアラームでお知らせ</title>
+<meta name="description" content="時間・分・秒を設定して使う無料のオンラインカウントダウンタイマーです。プリセットボタン付きで、終了時は音とメッセージでお知らせします。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#dc2626; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "カウントダウンタイマー",
+  "url": "https://ikesita.github.io/free-tools-site/timer.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "時間・分・秒を設定して使う無料のオンラインカウントダウンタイマーです。プリセットボタン付きで、終了時は音とメッセージでお知らせします。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "終了時に音が出ない場合はどうすればよいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ブラウザの仕様で、音を出すにはページ上でのボタン操作が必要です。スタートボタンを押して開始すれば終了時に音が鳴ります。端末のミュート設定や音量もあわせてご確認ください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "タブを切り替えても正確に鳴りますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "残り時間は終了時刻との差で計算しているため、バックグラウンドで表示更新が間引かれても、終了のタイミングはほぼ正確です。ブラウザによっては数秒遅れることがあります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "最大で何時間まで設定できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "99時間59分59秒まで設定できます。日数単位の残り日数は「あと何日カウンター」をご利用ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>カウントダウンタイマー</h1>
+    <p>残り時間を測るシンプルなタイマーです。カップ麺の待ち時間から勉強・筋トレのインターバルまでご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="f"><label>時間</label><input id="th" type="number" min="0" max="99" step="1" value="0"></div>
+      <div class="f"><label>分</label><input id="tm" type="number" min="0" max="59" step="1" value="5"></div>
+      <div class="f"><label>秒</label><input id="ts" type="number" min="0" max="59" step="1" value="0"></div>
+    </div>
+    <div style="margin-top:6px">
+      <button class="sub preset" data-sec="60">1分</button>
+      <button class="sub preset" data-sec="180">3分</button>
+      <button class="sub preset" data-sec="300">5分</button>
+      <button class="sub preset" data-sec="600">10分</button>
+      <button class="sub preset" data-sec="900">15分</button>
+      <button class="sub preset" data-sec="1800">30分</button>
+      <button class="sub preset" data-sec="3600">1時間</button>
+    </div>
+    <div class="clock mono" id="remain">05:00</div>
+    <div style="text-align:center">
+      <button id="startPause">スタート</button>
+      <button id="resetBtn" class="sub">リセット</button>
+    </div>
+    <p class="note" id="msg" style="text-align:center;margin-top:10px"></p>
+  </div>
+
+  <div class="card">
+    <p class="note" style="margin:0">日付までの残り日数を知りたい場合は「<a href="countdown.html">あと何日カウンター</a>」、経過時間を測りたい場合は「<a href="stopwatch.html">ストップウォッチ</a>」もご利用ください。終了時は音とメッセージでお知らせします（音を出すにはスタートボタンの操作が必要です）。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 終了時に音が出ない場合はどうすればよいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">ブラウザの仕様で、音を出すにはページ上でのボタン操作が必要です。スタートボタンを押して開始すれば終了時に音が鳴ります。端末のミュート設定や音量もあわせてご確認ください。</p>
+    <p style="margin:0 0 4px"><b>Q. タブを切り替えても正確に鳴りますか？</b></p>
+    <p class="note" style="margin:0 0 12px">残り時間は終了時刻との差で計算しているため、バックグラウンドで表示更新が間引かれても、終了のタイミングはほぼ正確です。ブラウザによっては数秒遅れることがあります。</p>
+    <p style="margin:0 0 4px"><b>Q. 最大で何時間まで設定できますか？</b></p>
+    <p class="note" style="margin:0 0 0">99時間59分59秒まで設定できます。日数単位の残り日数は「あと何日カウンター」をご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function totalSec(h, m, s){ return h * 3600 + m * 60 + s; }
+function fmtClock(sec){
+  if(!isFinite(sec) || sec < 0) sec = 0;
+  sec = Math.floor(sec);
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  const mm = String(m).padStart(2, "0"), ss = String(s).padStart(2, "0");
+  return h > 0 ? h + ":" + mm + ":" + ss : mm + ":" + ss;
+}
+const num = v => { const n = parseInt(v); return isNaN(n) || n < 0 ? 0 : n; };
+let tmEnd = null, tmLeft = null, tmInt = null, audioCtx = null;
+function inputSec(){
+  return totalSec(Math.min(99, num(document.getElementById("th").value)),
+                  Math.min(59, num(document.getElementById("tm").value)),
+                  Math.min(59, num(document.getElementById("ts").value)));
+}
+function showRemain(sec){
+  document.getElementById("remain").textContent = fmtClock(sec);
+}
+function beep(){
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = audioCtx.currentTime;
+    for(let i = 0; i < 3; i++){
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.25, t0 + i * 0.35);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.35 + 0.3);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(t0 + i * 0.35); osc.stop(t0 + i * 0.35 + 0.3);
+    }
+  } catch(e) { /* 音が出せない環境ではメッセージのみ */ }
+}
+function finish(){
+  clearInterval(tmInt); tmInt = null; tmEnd = null;
+  showRemain(0);
+  document.getElementById("msg").textContent = "⏰ 時間です！";
+  document.getElementById("startPause").textContent = "スタート";
+  document.title = "⏰ 時間です！｜カウントダウンタイマー";
+  beep();
+}
+function tick(){
+  if(tmEnd === null) return;
+  const left = Math.max(0, Math.ceil((tmEnd - Date.now()) / 1000));
+  showRemain(left);
+  if(left <= 0) finish();
+}
+document.getElementById("startPause").addEventListener("click", () => {
+  const btn = document.getElementById("startPause");
+  if(tmInt !== null){
+    tmLeft = Math.max(0, Math.ceil((tmEnd - Date.now()) / 1000));
+    clearInterval(tmInt); tmInt = null; tmEnd = null;
+    btn.textContent = "再開";
+    return;
+  }
+  const startFrom = tmLeft !== null ? tmLeft : inputSec();
+  if(startFrom <= 0){ document.getElementById("msg").textContent = "時間を設定してください。"; return; }
+  document.getElementById("msg").textContent = "";
+  document.title = "カウントダウンタイマー｜分・秒を設定してアラーム";
+  tmEnd = Date.now() + startFrom * 1000;
+  tmLeft = null;
+  btn.textContent = "一時停止";
+  showRemain(startFrom);
+  tmInt = setInterval(tick, 200);
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  clearInterval(tmInt); tmInt = null; tmEnd = null; tmLeft = null;
+  document.getElementById("startPause").textContent = "スタート";
+  document.getElementById("msg").textContent = "";
+  document.title = "カウントダウンタイマー｜分・秒を設定してアラーム";
+  showRemain(inputSec());
+});
+document.querySelectorAll(".preset").forEach(b => b.addEventListener("click", () => {
+  const sec = parseInt(b.dataset.sec);
+  document.getElementById("th").value = Math.floor(sec / 3600);
+  document.getElementById("tm").value = Math.floor(sec % 3600 / 60);
+  document.getElementById("ts").value = sec % 60;
+  clearInterval(tmInt); tmInt = null; tmEnd = null; tmLeft = null;
+  document.getElementById("startPause").textContent = "スタート";
+  showRemain(sec);
+}));
+["th", "tm", "ts"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+  if(tmInt === null && tmLeft === null) showRemain(inputSec());
+}));
+showRemain(inputSec());
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

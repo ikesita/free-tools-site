@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サイコロツール｜オンラインでサイコロを振る（個数・面数指定）</title>
+<meta name="description" content="個数と面数を指定してオンラインでサイコロを振れる無料ツールです。出目の合計・平均・最大・最小とゾロ目判定、合計の履歴も表示します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0d9488; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "サイコロ",
+  "url": "https://ikesita.github.io/free-tools-site/dice.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "個数と面数を指定してオンラインでサイコロを振れる無料ツールです。出目の合計・平均・最大・最小とゾロ目判定、合計の履歴も表示します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "出目は公平ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "各面が等しい確率で出るよう、乱数を面数で均等に振り分けて出目を決めています。入力や結果はブラウザ内でのみ処理され、送信されません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ゾロ目が出る確率はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "6面サイコロ2個の場合、ゾロ目は6通り（1-1〜6-6）で全体36通りのうちの6通り、つまり1/6（約16.7％）です。個数が増えるほど確率は下がります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "TRPGやボードゲームでも使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "4面・8面・10面・12面・20面・100面にも対応しています。100面は1〜100の数字を出すパーセンタイル用途です。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>サイコロ</h1>
+    <p>ブラウザでそのままサイコロを振れるツールです。すごろくやTRPG、順番決めなどにご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>サイコロの個数（1〜10）</label><input id="count" type="number" min="1" max="10" step="1" value="2"></div>
+      <div class="f"><label>面の数</label>
+        <select id="sides">
+          <option value="4">4面</option>
+          <option value="6" selected>6面</option>
+          <option value="8">8面</option>
+          <option value="10">10面</option>
+          <option value="12">12面</option>
+          <option value="20">20面</option>
+          <option value="100">100面</option>
+        </select>
+      </div>
+    </div>
+    <button id="roll">サイコロを振る</button>
+    <div id="faces" style="font-size:44px;text-align:center;margin-top:14px;letter-spacing:6px">🎲</div>
+    <div class="big" id="sumOut">-</div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>出目の合計</td><td class="v" id="sumV">-</td></tr>
+      <tr><td>平均</td><td class="v" id="avgV">-</td></tr>
+      <tr><td>最大・最小</td><td class="v" id="mmV">-</td></tr>
+      <tr><td>ゾロ目</td><td class="v" id="zoroV">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">合計の履歴（直近10回）：<span id="history">-</span></p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 出目は公平ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">各面が等しい確率で出るよう、乱数を面数で均等に振り分けて出目を決めています。入力や結果はブラウザ内でのみ処理され、送信されません。</p>
+    <p style="margin:0 0 4px"><b>Q. ゾロ目が出る確率はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">6面サイコロ2個の場合、ゾロ目は6通り（1-1〜6-6）で全体36通りのうちの6通り、つまり1/6（約16.7％）です。個数が増えるほど確率は下がります。</p>
+    <p style="margin:0 0 4px"><b>Q. TRPGやボードゲームでも使えますか？</b></p>
+    <p class="note" style="margin:0 0 0">4面・8面・10面・12面・20面・100面にも対応しています。100面は1〜100の数字を出すパーセンタイル用途です。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const FACES6 = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+function rollDice(count, sides, rnd){
+  const r = rnd || Math.random;
+  const vals = [];
+  for(let i = 0; i < count; i++) vals.push(Math.floor(r() * sides) + 1);
+  return vals;
+}
+function summarize(vals){
+  const sum = vals.reduce((a, b) => a + b, 0);
+  return {
+    sum: sum,
+    avg: Math.round(sum / vals.length * 10) / 10,
+    max: Math.max.apply(null, vals),
+    min: Math.min.apply(null, vals),
+    zorome: vals.length > 1 && vals.every(v => v === vals[0])
+  };
+}
+let hist = [];
+document.getElementById("roll").addEventListener("click", () => {
+  const count = Math.min(10, Math.max(1, parseInt(document.getElementById("count").value) || 1));
+  const sides = parseInt(document.getElementById("sides").value) || 6;
+  const vals = rollDice(count, sides);
+  const s = summarize(vals);
+  document.getElementById("faces").textContent = sides === 6
+    ? vals.map(v => FACES6[v - 1]).join(" ")
+    : vals.map(v => "[" + v + "]").join(" ");
+  document.getElementById("sumOut").textContent = "合計 " + s.sum + (s.zorome ? "（ゾロ目！）" : "");
+  document.getElementById("sumV").textContent = s.sum;
+  document.getElementById("avgV").textContent = s.avg;
+  document.getElementById("mmV").textContent = s.max + " ・ " + s.min;
+  document.getElementById("zoroV").textContent = s.zorome ? "ゾロ目です！" : "—";
+  hist.unshift(s.sum);
+  hist = hist.slice(0, 10);
+  document.getElementById("history").textContent = hist.join("、 ");
+});
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>くじ引き・当選者抽選ツール｜複数人の当選と順番決めをランダムに</title>
+<meta name="description" content="参加者リストから当選人数を指定して複数人を一度に抽選できる無料のくじ引きツールです。全員の順番決めシャッフルと、おみくじも使えます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#ea580c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "くじ引き・当選者抽選ツール",
+  "url": "https://ikesita.github.io/free-tools-site/lottery.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "参加者リストから当選人数を指定して複数人を一度に抽選できる無料のくじ引きツールです。全員の順番決めシャッフルと、おみくじも使えます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "抽選は公平ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "全員が等しい確率で選ばれるよう、フィッシャー・イェーツ法という標準的なシャッフル方法で実装しています。参加者名などの入力内容はブラウザ内でのみ処理され、送信されません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "同じ名前が複数ある場合はどうなりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "1行ごとに別の参加者として扱います。同姓同名の方がいる場合は「田中（A班）」のように区別して入力してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ルーレット（乱数生成・ルーレット）との違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "乱数生成・ルーレット（random.html）は項目から1つだけを選ぶ抽選です。こちらのツールは、当選人数を指定して複数人を一度に選ぶ抽選と、全員の順番決め（シャッフル）に対応しています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "当選人数が参加者より多い場合はどうなりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "全員が当選したものとして表示します。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>くじ引き・当選者抽選ツール</h1>
+    <p>参加者の中から当選者を複数人まとめて抽選したり、全員の順番をランダムに決めたりできます。1つだけを選ぶ抽選には「乱数生成・ルーレット」もあります。</p>
+  </header>
+
+  <div class="card">
+    <h2>当選者抽選（複数人を一度に選ぶ）</h2>
+    <div class="f"><label>参加者（1行に1人）</label>
+    <textarea id="names">田中さん
+佐藤さん
+鈴木さん
+高橋さん
+伊藤さん</textarea></div>
+    <div class="f" style="max-width:220px;margin-top:10px"><label>当選人数</label><input id="winCount" type="number" min="1" step="1" value="2"></div>
+    <button id="draw">抽選する</button>
+    <div class="big" id="winners">-</div>
+    <p class="note" id="losers"></p>
+  </div>
+
+  <div class="card">
+    <h2>順番決め（全員をシャッフル）</h2>
+    <p class="note" style="margin:0 0 6px">上の参加者リストをそのまま使って、全員の順番をランダムに決めます。発表順・掃除当番などの順番決めに。</p>
+    <button id="order" style="margin-top:4px">順番を決める</button>
+    <div id="orderOut" style="margin-top:10px;font-size:16px"></div>
+  </div>
+
+  <div class="card">
+    <h2>おみくじ</h2>
+    <button id="omikujiBtn" style="margin-top:4px">おみくじを引く</button>
+    <div class="big" id="omikujiOut">-</div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 抽選は公平ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">全員が等しい確率で選ばれるよう、フィッシャー・イェーツ法という標準的なシャッフル方法で実装しています。参加者名などの入力内容はブラウザ内でのみ処理され、送信されません。</p>
+    <p style="margin:0 0 4px"><b>Q. 同じ名前が複数ある場合はどうなりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">1行ごとに別の参加者として扱います。同姓同名の方がいる場合は「田中（A班）」のように区別して入力してください。</p>
+    <p style="margin:0 0 4px"><b>Q. ルーレット（乱数生成・ルーレット）との違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">乱数生成・ルーレット（random.html）は項目から1つだけを選ぶ抽選です。こちらのツールは、当選人数を指定して複数人を一度に選ぶ抽選と、全員の順番決め（シャッフル）に対応しています。</p>
+    <p style="margin:0 0 4px"><b>Q. 当選人数が参加者より多い場合はどうなりますか？</b></p>
+    <p class="note" style="margin:0 0 0">全員が当選したものとして表示します。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function parseNames(){
+  return document.getElementById("names").value.split("\n").map(s => s.trim()).filter(Boolean);
+}
+function shuffleArr(arr, rnd){
+  const a = arr.slice();
+  const r = rnd || Math.random;
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(r() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function drawWinners(names, n, rnd){
+  const shuffled = shuffleArr(names, rnd);
+  const k = Math.max(0, Math.min(n, names.length));
+  return { winners: shuffled.slice(0, k), losers: shuffled.slice(k) };
+}
+const OMIKUJI = ["大吉", "中吉", "小吉", "吉", "末吉", "凶", "大凶"];
+function drawOmikuji(rnd){
+  const r = rnd || Math.random;
+  return OMIKUJI[Math.floor(r() * OMIKUJI.length)];
+}
+document.getElementById("draw").addEventListener("click", () => {
+  const names = parseNames();
+  const out = document.getElementById("winners");
+  const lo = document.getElementById("losers");
+  if(names.length === 0){ out.textContent = "参加者を入力してください"; lo.textContent = ""; return; }
+  let n = parseInt(document.getElementById("winCount").value) || 1;
+  const res = drawWinners(names, n);
+  out.textContent = "🎉 " + res.winners.join("、 ");
+  lo.textContent = res.losers.length ? "当選しなかった方：" + res.losers.join("、 ") : "全員が当選しました。";
+});
+document.getElementById("order").addEventListener("click", () => {
+  const names = parseNames();
+  const out = document.getElementById("orderOut");
+  if(names.length === 0){ out.textContent = "参加者を入力してください"; return; }
+  const shuffled = shuffleArr(names);
+  out.innerHTML = shuffled.map((name, i) => (i + 1) + "番：" + name).join("<br>");
+});
+document.getElementById("omikujiBtn").addEventListener("click", () => {
+  document.getElementById("omikujiOut").textContent = drawOmikuji();
+});
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

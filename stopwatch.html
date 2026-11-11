@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ストップウォッチ｜ラップタイム対応のオンラインストップウォッチ</title>
+<meta name="description" content="スタート・ストップ・ラップ・リセットができる無料のオンラインストップウォッチです。100分の1秒表示で、ラップタイムと合計タイムを一覧できます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0284c7; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ストップウォッチ",
+  "url": "https://ikesita.github.io/free-tools-site/stopwatch.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "スタート・ストップ・ラップ・リセットができる無料のオンラインストップウォッチです。100分の1秒表示で、ラップタイムと合計タイムを一覧できます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "計測の精度はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ミリ秒単位で時刻を記録し、表示は100分の1秒（センチ秒）までです。実際の精度はブラウザや端末のタイマー精度に依存します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "タブを切り替えたり画面を消したりしても計測は続きますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "経過時間は開始時刻との差で計算しているため、表示の更新が止まっても計測自体は正しく進みます。ただしページ自体を閉じると計測は終了します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ラップタイムと合計タイムの違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ラップタイムは前回のラップからの区間タイム、合計タイムはスタートからの累計です。周回ごとのペース確認にご利用ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ストップウォッチ</h1>
+    <p>ラップ計測に対応したシンプルなストップウォッチです。勉強・運動・料理の計測などにご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="clock mono" id="display">00:00.00</div>
+    <div style="text-align:center">
+      <button id="startStop">スタート</button>
+      <button id="lapBtn" class="sub">ラップ</button>
+      <button id="resetBtn" class="sub">リセット</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ラップタイム</h2>
+    <table>
+      <tr><th>ラップ</th><th>ラップタイム</th><td class="v"><b>合計タイム</b></td></tr>
+      <tbody id="laps"><tr><td colspan="3" style="color:var(--sub)">まだラップがありません</td></tr></tbody>
+    </table>
+    <p class="note" style="margin-top:10px">計測は「現在時刻との差」で計算しているため、タブを切り替えて表示更新が止まっても、戻ったときに正しい経過時間を表示します。ページを開いたままご利用ください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 計測の精度はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">ミリ秒単位で時刻を記録し、表示は100分の1秒（センチ秒）までです。実際の精度はブラウザや端末のタイマー精度に依存します。</p>
+    <p style="margin:0 0 4px"><b>Q. タブを切り替えたり画面を消したりしても計測は続きますか？</b></p>
+    <p class="note" style="margin:0 0 12px">経過時間は開始時刻との差で計算しているため、表示の更新が止まっても計測自体は正しく進みます。ただしページ自体を閉じると計測は終了します。</p>
+    <p style="margin:0 0 4px"><b>Q. ラップタイムと合計タイムの違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 0">ラップタイムは前回のラップからの区間タイム、合計タイムはスタートからの累計です。周回ごとのペース確認にご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function fmtElapsed(ms){
+  if(!isFinite(ms) || ms < 0) ms = 0;
+  const cs = Math.floor((ms % 1000) / 10);
+  const s = Math.floor(ms / 1000) % 60;
+  const m = Math.floor(ms / 60000) % 60;
+  const h = Math.floor(ms / 3600000);
+  const mm = String(m).padStart(2, "0"), ss = String(s).padStart(2, "0"), cc = String(cs).padStart(2, "0");
+  return h > 0 ? h + ":" + mm + ":" + ss + "." + cc : mm + ":" + ss + "." + cc;
+}
+function lapSplit(total, prev){ return total - prev; }
+let swAccum = 0, swStartStamp = null, swRaf = null, swLaps = [];
+function swElapsed(){
+  return swAccum + (swStartStamp !== null ? performance.now() - swStartStamp : 0);
+}
+function swRender(){
+  document.getElementById("display").textContent = fmtElapsed(swElapsed());
+}
+function swTick(){
+  swRender();
+  if(swStartStamp !== null) swRaf = requestAnimationFrame(swTick);
+}
+document.getElementById("startStop").addEventListener("click", () => {
+  const btn = document.getElementById("startStop");
+  if(swStartStamp === null){
+    swStartStamp = performance.now();
+    btn.textContent = "ストップ";
+    swRaf = requestAnimationFrame(swTick);
+  } else {
+    swAccum = swElapsed();
+    swStartStamp = null;
+    if(swRaf) cancelAnimationFrame(swRaf);
+    btn.textContent = "スタート";
+    swRender();
+  }
+});
+document.getElementById("lapBtn").addEventListener("click", () => {
+  if(swStartStamp === null && swAccum === 0) return;
+  const total = swElapsed();
+  const prev = swLaps.length ? swLaps[swLaps.length - 1].total : 0;
+  swLaps.push({ split: lapSplit(total, prev), total: total });
+  const tb = document.getElementById("laps");
+  tb.innerHTML = swLaps.map((l, i) =>
+    "<tr><td>" + (i + 1) + "</td><td>" + fmtElapsed(l.split) + '</td><td class="v">' + fmtElapsed(l.total) + "</td></tr>"
+  ).join("");
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  swAccum = 0; swStartStamp = null; swLaps = [];
+  if(swRaf) cancelAnimationFrame(swRaf);
+  document.getElementById("startStop").textContent = "スタート";
+  document.getElementById("laps").innerHTML = '<tr><td colspan="3" style="color:var(--sub)">まだラップがありません</td></tr>';
+  swRender();
+});
+swRender();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

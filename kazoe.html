@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数え年計算機｜満年齢との違いと生まれ年別の早見表</title>
+<meta name="description" content="生年月日から数え年と満年齢を計算できる無料ツールです。数え年と満年齢の違いの解説と、生まれ年別の早見表つきです。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#be185d; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "数え年・満年齢計算機",
+  "url": "https://ikesita.github.io/free-tools-site/kazoe.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "生年月日から数え年と満年齢を計算できる無料ツールです。数え年と満年齢の違いの解説と、生まれ年別の早見表つきです。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "数え年とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "生まれた年を1歳とし、元日を迎えるごとに1歳ずつ増える伝統的な年齢の数え方です。たとえば12月31日に生まれた子は、翌日の元日で数え年2歳になります。七五三や厄年、長寿祝い（還暦・古希など）の目安として今も使われています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "数え年と満年齢の差はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "今年の誕生日を迎えた後では、数え年は満年齢より1歳多くなります。誕生日を迎える前では2歳多くなります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "厄年は数え年と満年齢のどちらで数えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "多くの神社では数え年で厄年を案内しています。ただし地域や神社によって異なる場合がありますので、参拝先の案内をご確認ください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "公式書類に書く年齢はどちらですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "履歴書や公的書類では満年齢が標準です。生年月日から満年齢だけを調べる場合は「年齢計算機」もご利用ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>数え年・満年齢計算機</h1>
+    <p>生年月日を入れるだけで、数え年と満年齢を並べて計算します。厄年や七五三、長寿祝いの確認にご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="f" style="max-width:280px"><label>生年月日</label><input id="dob" type="date" value="1990-08-07"></div>
+    <table style="margin-top:14px">
+      <tr><td>数え年（今年）</td><td class="v" id="kazoeOut">-</td></tr>
+      <tr><td>満年齢（今日時点）</td><td class="v" id="manOut">-</td></tr>
+      <tr><td>差</td><td class="v" id="diffOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">数え年は、生まれた年を1歳として、元日を迎えるごとに1歳増える数え方です。誕生日の前後で変わらないため、年だけで決まります。満年齢は誕生日を迎えたら1歳増える、現在一般的な数え方です。</p>
+  </div>
+
+  <div class="card">
+    <h2>早見表：生まれ年別の数え年・満年齢（今年）</h2>
+    <div class="scroll">
+    <table>
+      <tr><th>生まれ年</th><th>数え年</th><td class="v"><b>満年齢（誕生日後）</b></td></tr>
+      <tbody id="kazoeTable"></tbody>
+    </table>
+    </div>
+    <p class="note" style="margin-top:10px">満年齢は「今年の誕生日を迎えた後」の年齢です。誕生日を迎える前は表の数字から1を引いてください。数え年は誕生日の前後で変わりません。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 数え年とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">生まれた年を1歳とし、元日を迎えるごとに1歳ずつ増える伝統的な年齢の数え方です。たとえば12月31日に生まれた子は、翌日の元日で数え年2歳になります。七五三や厄年、長寿祝い（還暦・古希など）の目安として今も使われています。</p>
+    <p style="margin:0 0 4px"><b>Q. 数え年と満年齢の差はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">今年の誕生日を迎えた後では、数え年は満年齢より1歳多くなります。誕生日を迎える前では2歳多くなります。</p>
+    <p style="margin:0 0 4px"><b>Q. 厄年は数え年と満年齢のどちらで数えますか？</b></p>
+    <p class="note" style="margin:0 0 12px">多くの神社では数え年で厄年を案内しています。ただし地域や神社によって異なる場合がありますので、参拝先の案内をご確認ください。</p>
+    <p style="margin:0 0 4px"><b>Q. 公式書類に書く年齢はどちらですか？</b></p>
+    <p class="note" style="margin:0 0 0">履歴書や公的書類では満年齢が標準です。生年月日から満年齢だけを調べる場合は「年齢計算機」もご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function kazoeAge(birthYear, refYear){ return refYear - birthYear + 1; }
+function manAge(by, bm, bd, ry, rm, rd){
+  let age = ry - by;
+  if(rm < bm || (rm === bm && rd < bd)) age--;
+  return age;
+}
+function calc(){
+  const v = document.getElementById("dob").value;
+  if(!v) return;
+  const parts = v.split("-").map(Number);
+  const by = parts[0], bm = parts[1], bd = parts[2];
+  const now = new Date();
+  const ry = now.getFullYear(), rm = now.getMonth() + 1, rd = now.getDate();
+  const kz = kazoeAge(by, ry);
+  const mn = manAge(by, bm, bd, ry, rm, rd);
+  document.getElementById("kazoeOut").textContent = kz + " 歳";
+  document.getElementById("manOut").textContent = mn + " 歳";
+  document.getElementById("diffOut").textContent = "数え年は満年齢より " + (kz - mn) + " 歳多い";
+}
+function buildTable(){
+  const thisYear = new Date().getFullYear();
+  let html = "";
+  for(let y = thisYear; y >= 1940; y--){
+    html += "<tr><td>" + y + "年</td><td>" + kazoeAge(y, thisYear) + "歳</td><td class=\"v\">" + (thisYear - y) + "歳</td></tr>";
+  }
+  document.getElementById("kazoeTable").innerHTML = html;
+}
+document.getElementById("dob").addEventListener("input", calc);
+buildTable();
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

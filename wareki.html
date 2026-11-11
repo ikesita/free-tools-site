@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>西暦・和暦変換ツール｜令和・平成・昭和への変換と早見表</title>
+<meta name="description" content="西暦と和暦（令和・平成・昭和・大正・明治）を相互に変換できる無料ツールです。日付単位の変換と、1912年〜2026年の早見表に対応しています。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#1d4ed8; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "西暦・和暦変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/wareki.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "西暦と和暦（令和・平成・昭和・大正・明治）を相互に変換できる無料ツールです。日付単位の変換と、1912年〜2026年の早見表に対応しています。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "令和元年はいつからいつまでですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2019年5月1日から2019年12月31日までです。2019年4月30日までは平成31年にあたります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "昭和64年は本当にありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "あります。1989年1月1日から1月7日までの7日間が昭和64年で、1989年1月8日から平成元年になりました。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "明治より前の日付には対応していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "このツールは明治元年（1868年1月25日）以降に対応しています。それより前の日付では「対応範囲外」と表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "和暦の年数には上限がありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "明治は45年、大正は15年、昭和は64年、平成は31年までです。上限を超えた年を入力すると、その旨を表示します。令和に上限はありません。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>西暦・和暦変換ツール</h1>
+    <p>西暦の日付を和暦に、和暦の年を西暦に、その場で変換します。履歴書や公的書類の日付記入にご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <h2>西暦 → 和暦</h2>
+    <div class="f" style="max-width:280px"><label>西暦の日付</label><input id="date" type="date" value="2026-11-11"></div>
+    <div class="big" id="warekiOut">-</div>
+  </div>
+
+  <div class="card">
+    <h2>和暦 → 西暦</h2>
+    <div class="grid">
+      <div class="f"><label>元号</label>
+        <select id="era">
+          <option value="reiwa" selected>令和</option>
+          <option value="heisei">平成</option>
+          <option value="showa">昭和</option>
+          <option value="taisho">大正</option>
+          <option value="meiji">明治</option>
+        </select>
+      </div>
+      <div class="f"><label>年（元年は1）</label><input id="eraYear" type="number" min="1" step="1" value="8"></div>
+    </div>
+    <div class="big" id="seirekiOut">-</div>
+    <p class="note" id="eraNote"></p>
+  </div>
+
+  <div class="card">
+    <h2>西暦・和暦の早見表（1912年〜2026年）</h2>
+    <div class="scroll">
+    <table>
+      <tr><th>西暦</th><td class="v"><b>和暦</b></td></tr>
+      <tbody id="warekiTable"></tbody>
+    </table>
+    </div>
+    <p class="note" style="margin-top:10px">元号が切り替わった年は、切り替え前後の両方を表示しています（例：1989年は昭和64年／平成元年）。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 令和元年はいつからいつまでですか？</b></p>
+    <p class="note" style="margin:0 0 12px">2019年5月1日から2019年12月31日までです。2019年4月30日までは平成31年にあたります。</p>
+    <p style="margin:0 0 4px"><b>Q. 昭和64年は本当にありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">あります。1989年1月1日から1月7日までの7日間が昭和64年で、1989年1月8日から平成元年になりました。</p>
+    <p style="margin:0 0 4px"><b>Q. 明治より前の日付には対応していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">このツールは明治元年（1868年1月25日）以降に対応しています。それより前の日付では「対応範囲外」と表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. 和暦の年数には上限がありますか？</b></p>
+    <p class="note" style="margin:0 0 0">明治は45年、大正は15年、昭和は64年、平成は31年までです。上限を超えた年を入力すると、その旨を表示します。令和に上限はありません。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const ERAS = {
+  reiwa:  { name: "令和", base: 2018, max: null },
+  heisei: { name: "平成", base: 1988, max: 31 },
+  showa:  { name: "昭和", base: 1925, max: 64 },
+  taisho: { name: "大正", base: 1911, max: 15 },
+  meiji:  { name: "明治", base: 1867, max: 45 }
+};
+function warekiOf(y, m, d){
+  const t = y * 10000 + m * 100 + d;
+  if(t >= 20190501) return { era: "令和", n: y - 2018 };
+  if(t >= 19890108) return { era: "平成", n: y - 1988 };
+  if(t >= 19261225) return { era: "昭和", n: y - 1925 };
+  if(t >= 19120730) return { era: "大正", n: y - 1911 };
+  if(t >= 18680125) return { era: "明治", n: y - 1867 };
+  return null;
+}
+function warekiStr(y, m, d){
+  const w = warekiOf(y, m, d);
+  if(!w) return "明治より前（対応範囲外）";
+  return w.era + (w.n === 1 ? "元年" : w.n + "年");
+}
+function seirekiOf(eraKey, n){
+  const e = ERAS[eraKey];
+  if(!e || !n || n < 1) return null;
+  if(e.max !== null && n > e.max) return null;
+  return e.base + n;
+}
+function calcTo(){
+  const v = document.getElementById("date").value;
+  if(!v) return;
+  const p = v.split("-").map(Number);
+  document.getElementById("warekiOut").textContent = warekiStr(p[0], p[1], p[2]);
+}
+function calcFrom(){
+  const key = document.getElementById("era").value;
+  const n = parseInt(document.getElementById("eraYear").value);
+  const e = ERAS[key];
+  const out = document.getElementById("seirekiOut");
+  const note = document.getElementById("eraNote");
+  const y = seirekiOf(key, n);
+  if(y === null){
+    out.textContent = "—";
+    note.textContent = e.max !== null
+      ? e.name + "は " + e.max + " 年までです。年を見直してください。"
+      : "年を入力してください。";
+    return;
+  }
+  out.textContent = "西暦 " + y + " 年";
+  note.textContent = e.max !== null ? e.name + "は 1 年から " + e.max + " 年まであります。" : e.name + "は2019年5月1日から始まりました。";
+}
+function buildTable(){
+  let html = "";
+  for(let y = 2026; y >= 1912; y--){
+    const jan = warekiOf(y, 1, 1), dec = warekiOf(y, 12, 31);
+    let label;
+    if(jan && dec && jan.era === dec.era && jan.n === dec.n){
+      label = jan.era + (jan.n === 1 ? "元年" : jan.n + "年");
+    } else {
+      label = warekiStr(y, 1, 1) + "／" + warekiStr(y, 12, 31);
+    }
+    html += "<tr><td>" + y + "年</td><td class=\"v\">" + label + "</td></tr>";
+  }
+  document.getElementById("warekiTable").innerHTML = html;
+}
+document.getElementById("date").addEventListener("input", calcTo);
+document.getElementById("era").addEventListener("input", calcFrom);
+document.getElementById("eraYear").addEventListener("input", calcFrom);
+buildTable();
+calcTo();
+calcFrom();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>干支計算・早見表｜西暦から干支と十干十二支を調べる</title>
+<meta name="description" content="西暦の年から干支（十二支）と十干十二支を計算できる無料ツールです。1924年〜2035年の早見表つきで、その年生まれの満年齢も分かります。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#a16207; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "干支（十二支）計算・早見表",
+  "url": "https://ikesita.github.io/free-tools-site/eto.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "西暦の年から干支（十二支）と十干十二支を計算できる無料ツールです。1924年〜2035年の早見表つきで、その年生まれの満年齢も分かります。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "干支は立春で切り替わるのですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "占いなどでは立春を境に切り替える考え方もありますが、一般的な干支の早見表は西暦の年（1月1日）で切り替えます。このツールも早見表の方式で表示しています。立春切り替えで見る場合は、1月1日から立春の前日までは前年の干支として読み替えてください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "十干十二支（六十干支）とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "甲・乙・丙などの十干（10種）と、子・丑・寅などの十二支（12種）の組み合わせで、全部で60通りあります。60年で一巡することから、60歳の長寿祝いを「還暦（暦が一巡して元に戻る）」と呼びます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "自分の生まれ年の干支を調べたい場合は？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "上の入力欄に生まれた年を入れてください。生年月日から現在の年齢・和暦・次の誕生日までをまとめて調べる場合は「年齢計算機」が便利です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「丙午（ひのえうま）」のような組み合わせはどう決まりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "十干と十二支はどちらも1年ずつ順に進むため、組み合わせは60年周期で繰り返します。たとえば2026年は十干が丙（ひのえ）、十二支が午（うま）で、丙午になります。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>干支（十二支）計算・早見表</h1>
+    <p>西暦の年を入れるだけで、その年の干支と十干十二支が分かります。年賀状の準備や還暦の確認などにご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="f" style="max-width:280px"><label>調べたい年（西暦）</label><input id="year" type="number" min="1" step="1" value="2026"></div>
+    <table style="margin-top:14px">
+      <tr><td>干支（十二支）</td><td class="v" id="etoOut">-</td></tr>
+      <tr><td>十干</td><td class="v" id="jikkanOut">-</td></tr>
+      <tr><td>十干十二支</td><td class="v" id="kanshiOut">-</td></tr>
+      <tr><td>六十干支の順番</td><td class="v" id="cycleOut">-</td></tr>
+      <tr><td>その年生まれの満年齢（今年・誕生日後）</td><td class="v" id="ageOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">干支の切り替えは一般的な早見表にならい西暦の年（1月1日）で計算しています。生年月日から年齢や干支をまとめて調べる場合は「<a href="age.html">年齢計算機</a>」もご利用ください。</p>
+  </div>
+
+  <div class="card">
+    <h2>干支の早見表（1924年〜2035年）</h2>
+    <div class="scroll">
+    <table>
+      <tr><th>西暦</th><th>干支</th><th>十干十二支</th><td class="v"><b>満年齢（今年）</b></td></tr>
+      <tbody id="etoTable"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 干支は立春で切り替わるのですか？</b></p>
+    <p class="note" style="margin:0 0 12px">占いなどでは立春を境に切り替える考え方もありますが、一般的な干支の早見表は西暦の年（1月1日）で切り替えます。このツールも早見表の方式で表示しています。立春切り替えで見る場合は、1月1日から立春の前日までは前年の干支として読み替えてください。</p>
+    <p style="margin:0 0 4px"><b>Q. 十干十二支（六十干支）とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">甲・乙・丙などの十干（10種）と、子・丑・寅などの十二支（12種）の組み合わせで、全部で60通りあります。60年で一巡することから、60歳の長寿祝いを「還暦（暦が一巡して元に戻る）」と呼びます。</p>
+    <p style="margin:0 0 4px"><b>Q. 自分の生まれ年の干支を調べたい場合は？</b></p>
+    <p class="note" style="margin:0 0 12px">上の入力欄に生まれた年を入れてください。生年月日から現在の年齢・和暦・次の誕生日までをまとめて調べる場合は「年齢計算機」が便利です。</p>
+    <p style="margin:0 0 4px"><b>Q. 「丙午（ひのえうま）」のような組み合わせはどう決まりますか？</b></p>
+    <p class="note" style="margin:0 0 0">十干と十二支はどちらも1年ずつ順に進むため、組み合わせは60年周期で繰り返します。たとえば2026年は十干が丙（ひのえ）、十二支が午（うま）で、丙午になります。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const ETO = [["子", "ね"], ["丑", "うし"], ["寅", "とら"], ["卯", "う"], ["辰", "たつ"], ["巳", "み"], ["午", "うま"], ["未", "ひつじ"], ["申", "さる"], ["酉", "とり"], ["戌", "いぬ"], ["亥", "い"]];
+const JIKKAN = [["甲", "きのえ"], ["乙", "きのと"], ["丙", "ひのえ"], ["丁", "ひのと"], ["戊", "つちのえ"], ["己", "つちのと"], ["庚", "かのえ"], ["辛", "かのと"], ["壬", "みずのえ"], ["癸", "みずのと"]];
+function etoIdx(y){ return ((y - 4) % 12 + 12) % 12; }
+function jikkanIdx(y){ return ((y - 4) % 10 + 10) % 10; }
+function cyclePos(y){ return ((y - 4) % 60 + 60) % 60 + 1; }
+function etoOf(y){ const e = ETO[etoIdx(y)]; return e[0] + "（" + e[1] + "）"; }
+function jikkanOf(y){ const j = JIKKAN[jikkanIdx(y)]; return j[0] + "（" + j[1] + "）"; }
+function kanshiOf(y){ return JIKKAN[jikkanIdx(y)][0] + ETO[etoIdx(y)][0]; }
+function calc(){
+  const y = parseInt(document.getElementById("year").value);
+  if(!y || y < 1){ return; }
+  const thisYear = new Date().getFullYear();
+  document.getElementById("etoOut").textContent = etoOf(y);
+  document.getElementById("jikkanOut").textContent = jikkanOf(y);
+  document.getElementById("kanshiOut").textContent = kanshiOf(y);
+  document.getElementById("cycleOut").textContent = cyclePos(y) + " 番目";
+  document.getElementById("ageOut").textContent = y <= thisYear ? (thisYear - y) + " 歳" : "—（未来の年）";
+}
+function buildTable(){
+  const thisYear = new Date().getFullYear();
+  let html = "";
+  for(let y = 1924; y <= 2035; y++){
+    const age = y <= thisYear ? (thisYear - y) + "歳" : "—";
+    html += "<tr><td>" + y + "年</td><td>" + etoOf(y) + "</td><td>" + kanshiOf(y) + '</td><td class="v">' + age + "</td></tr>";
+  }
+  document.getElementById("etoTable").innerHTML = html;
+}
+document.getElementById("year").addEventListener("input", calc);
+buildTable();
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>
