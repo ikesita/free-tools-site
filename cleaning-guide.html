@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宅配クリーニングの料金の見方｜単品料金とパック料金の比べ方</title>
+<meta name="description" content="宅配クリーニングの料金は「1点ごとの単品料金」と「◯点パック」の2方式が中心です。送料・保管オプションまで入れた合計で比べる方法と、簡単な合計計算ツールをまとめました。">
+<style>
+:root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0f766e; }
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+header h1{font-size:24px;margin:8px 0 4px;line-height:1.4}
+header p{color:var(--sub);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+.card h2{font-size:17px;margin:0 0 10px}
+.card p{margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+.f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+.note{font-size:13px;color:var(--sub)}
+.ad{border:1px dashed var(--acc);border-radius:12px;padding:14px;margin-top:12px;background:#f0fdfa}
+.ad .pr{font-size:11px;color:var(--sub);letter-spacing:.08em}
+.ad a{font-weight:800}
+footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "宅配クリーニングの料金の見方",
+  "url": "https://ikesita.github.io/free-tools-site/cleaning-guide.html",
+  "inLanguage": "ja",
+  "description": "宅配クリーニングの料金は「1点ごとの単品料金」と「◯点パック」の2方式が中心です。送料・保管オプションまで入れた合計で比べる方法と、簡単な合計計算ツールをまとめました。"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>宅配クリーニングの料金の見方</h1>
+    <p>単品料金とパック料金の違い、送料や保管オプションまで入れた合計で比べるためのガイドです。</p>
+  </header>
+
+  <div class="card">
+    <h2>料金の決まり方は大きく2方式</h2>
+    <p>宅配クリーニングの料金体系は、大きく次の2つに分かれます。</p>
+    <table>
+      <tr><td>単品（点数）方式</td><td class="v">ワイシャツ・コートなど、アイテムごとに単価が決まっている</td></tr>
+      <tr><td>パック方式</td><td class="v">「◯点まで定額」というまとめ料金。点数内ならアイテムの種類を問わないことが多い</td></tr>
+    </table>
+    <p style="margin-top:10px">単品方式は、出すものが少ないときや、単価の安いアイテムだけを出すときに有利になりやすい方式です。逆にパック方式は、コートやスーツなど単品単価が高いアイテムをまとめて出すときに、1点あたりの単価が下がりやすくなります。どちらが得かは「何を何点出すか」で変わるため、出す予定のアイテムを書き出してから両方式で試算するのが基本です。</p>
+    <p>なお、ダウンジャケットや革製品、着物などは、どちらの方式でも追加料金の対象になったり、そもそも取り扱い対象外だったりします。出す前に、対象アイテムと追加料金の有無を確認してください。</p>
+  </div>
+
+  <div class="card">
+    <h2>合計金額を計算する（単品方式の試算）</h2>
+    <div class="grid">
+      <div class="f"><label>出す点数（点）</label><input id="items" type="number" min="0" step="1" value="5"></div>
+      <div class="f"><label>1点あたりの平均単価（円）</label><input id="unit" type="number" min="0" step="50" value="1200"></div>
+      <div class="f"><label>送料（往復・円）</label><input id="ship" type="number" min="0" step="100" value="0"></div>
+      <div class="f"><label>オプション料金（保管・特殊加工など・円）</label><input id="opt" type="number" min="0" step="100" value="0"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>合計の目安</td><td class="v" id="total">-</td></tr>
+      <tr><td>1点あたり（送料・オプション込み）</td><td class="v" id="peritem">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">※ 初期値はあくまで入力例です。実際の単価はアイテムの種類とサービスごとに異なります。パック方式と比べるときは、パック料金に送料とオプションを足した額と、この合計を見比べてください。</p>
+  </div>
+
+  <div class="card">
+    <h2>送料とオプションで合計は変わる</h2>
+    <p>・<strong>送料</strong>：往復の送料が無料のサービスもあれば、利用金額などの条件付きで無料になるサービス、実費がかかるサービスもあります。「◯円以上の利用で送料無料」の条件がある場合は、出したい点数がその金額に届くかどうかも判断材料です。</p>
+    <p>・<strong>保管オプション</strong>：クリーニング後、そのまま数か月〜1年近く預かってもらえるサービスがあります。冬物コートなどをシーズンオフのあいだ預けられるため、自宅の収納を空けたい人に向いています。保管料が料金に含まれるパックもあれば、別料金のオプションになる場合もあります。</p>
+    <p>・<strong>特殊加工</strong>：撥水加工、防虫加工、汗抜き、しみ抜きなどは追加料金になることが一般的です。必要な加工だけを選ぶと、合計を抑えられます。</p>
+    <p>・<strong>仕上がりまでの日数</strong>：最短数日のサービスもあれば、混雑期は2〜3週間かかることもあります。冠婚葬祭など使う日が決まっている衣類は、日数に余裕を持って出しましょう。</p>
+
+    <div class="ad">
+      <div class="pr">PR（アフィリエイト広告）</div>
+      <a href="https://px.a8.net/svt/ejp?a8mat=4BGHVP+61B8KY+4N08+5Z6WY" rel="nofollow">サービス満足度98.6%【ポニークリーニング】</a>
+<img border="0" width="1" height="1" src="https://www12.a8.net/0.gif?a8mat=4BGHVP+61B8KY+4N08+5Z6WY" alt="">
+    </div>
+    <p class="note" style="margin-top:10px">料金やサービス内容は各社の公式情報が最新です。申し込み前に、対象アイテム・追加料金の条件・キャンセル規定も合わせてご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const count = num(itemsEl.value);
+  const t = count * num(unitEl.value) + num(shipEl.value) + num(optEl.value);
+  totalEl.textContent = yen(t);
+  peritemEl.textContent = count > 0 ? yen(t / count) + " ほど" : "-";
+}
+const itemsEl = document.getElementById("items"), unitEl = document.getElementById("unit"),
+  shipEl = document.getElementById("ship"), optEl = document.getElementById("opt");
+const totalEl = document.getElementById("total"), peritemEl = document.getElementById("peritem");
+[itemsEl, unitEl, shipEl, optEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
