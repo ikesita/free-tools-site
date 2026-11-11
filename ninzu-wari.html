@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>傾斜割り勘計算機｜飲み会の負担を係数で差をつける割り勘</title>
+<meta name="description" content="飲み会の合計金額を、役職や年齢などの区分ごとに係数で傾斜をつけて割り勘できる無料ツールです。上司は多め・若手は少なめといった負担調整や、端数の切り上げ、幹事による差額調整に対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#c2410c; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .check{display:flex;align-items:center;gap:8px;font-size:15px;padding-top:22px}
+  .check input{width:18px;height:18px}
+  .grow{display:grid;grid-template-columns:1.4fr .7fr .7fr auto;gap:8px;margin-bottom:8px;align-items:end}
+  @media(max-width:640px){.grow{grid-template-columns:1fr 1fr}}
+  .grow label{display:block;font-size:12px;color:var(--sub);margin-bottom:2px}
+  .grow input{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:8px;font-size:15px}
+  button{padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "傾斜割り勘計算機",
+  "url": "https://ikesita.github.io/free-tools-site/ninzu-wari.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "飲み会の合計金額を、役職や年齢などの区分ごとに係数で傾斜をつけて割り勘できる無料ツールです。上司は多め・若手は少なめといった負担調整や、端数の切り上げ、幹事による差額調整に対応します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "傾斜割り勘と普通の割り勘の違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "普通の割り勘は全員が同額を負担しますが、傾斜割り勘は区分ごとに係数を設定し、上司は1.5倍、若手は0.5倍のように負担額に差をつけます。全員同額でよい場合は「割り勘計算機」が向いています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "係数はどう決めればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "基準にしたい区分を1.0として、多めに払う区分は1.2〜2.0、少なめにする区分は0.5〜0.8が目安です。たとえば部長2.0・課長1.5・一般1.0・新人0.5などがよく使われます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "切り上げで出た余りはどうすればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「差額を幹事が調整する」をオンにすると、先頭の区分の1人（幹事）の支払額から余りを差し引いて、集金総額がちょうど合計金額と一致します。オフの場合は、余りを幹事が預かる運用が一般的です。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>傾斜割り勘計算機</h1>
+    <p>飲み会の合計金額を、役職・年齢などの区分ごとの「係数」で傾斜をつけて割り勘します。全員同額の割り勘には「割り勘計算機」をご利用ください。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>合計金額（円）</label><input id="total" type="number" min="0" step="100" value="30000"></div>
+      <div class="f"><label>端数の丸め単位（切り上げ）</label>
+        <select id="unit">
+          <option value="1">1円</option>
+          <option value="10">10円</option>
+          <option value="100" selected>100円</option>
+          <option value="500">500円</option>
+          <option value="1000">1,000円</option>
+        </select>
+      </div>
+      <div class="check"><input id="adjust" type="checkbox"><label for="adjust">差額（余り）を幹事が調整する（先頭の区分の1人）</label></div>
+    </div>
+    <h2 style="font-size:16px;margin:16px 0 8px">区分（名前・人数・係数）</h2>
+    <div id="groups"></div>
+    <button id="addBtn" type="button">＋ 区分を追加</button>
+    <p class="note" style="margin-top:10px">係数は「基準の区分を1.0としたときの負担の重さ」です。例：上司1.5、一般1.0、若手0.5。</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>区分</th><th>人数 × 係数</th><th>1人あたり</th><td class="v">小計</td></tr>
+      <tbody id="rows"></tbody>
+    </table>
+    <table style="margin-top:8px">
+      <tr><td>集金総額</td><td class="v" id="collectedOut">-</td></tr>
+      <tr><td>余り（集金総額 − 合計金額）</td><td class="v" id="surplusOut">-</td></tr>
+      <tr id="adjRow" style="display:none"><td>幹事（先頭の区分の1人）の調整後の支払額</td><td class="v" id="adjOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">1人あたりの金額は不足が出ないよう丸め単位へ切り上げています。切り上げで生じた余りは、幹事が預かるか、「差額を幹事が調整する」をオンにして幹事の支払額から差し引いてください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 傾斜割り勘と普通の割り勘の違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">普通の割り勘は全員が同額を負担しますが、傾斜割り勘は区分ごとに係数を設定し、上司は1.5倍、若手は0.5倍のように負担額に差をつけます。全員同額でよい場合は「割り勘計算機」が向いています。</p>
+    <p style="margin:0 0 4px"><b>Q. 係数はどう決めればいいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">基準にしたい区分を1.0として、多めに払う区分は1.2〜2.0、少なめにする区分は0.5〜0.8が目安です。たとえば部長2.0・課長1.5・一般1.0・新人0.5などがよく使われます。</p>
+    <p style="margin:0 0 4px"><b>Q. 切り上げで出た余りはどうすればいいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">「差額を幹事が調整する」をオンにすると、先頭の区分の1人（幹事）の支払額から余りを差し引いて、集金総額がちょうど合計金額と一致します。オフの場合は、余りを幹事が預かる運用が一般的です。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function ceilUnit(x, u){ return u <= 1 ? Math.ceil(x) : Math.ceil(x / u) * u; }
+const DEFAULTS = [
+  { name: "上司", n: 2, w: 1.5 },
+  { name: "一般", n: 4, w: 1.0 },
+  { name: "若手", n: 2, w: 0.5 }
+];
+const groupsEl = document.getElementById("groups");
+function addGroup(d){
+  const row = document.createElement("div");
+  row.className = "grow";
+  row.innerHTML = '<div><label>区分名</label><input class="gname" type="text"></div>' +
+    '<div><label>人数</label><input class="gn" type="number" min="0" step="1"></div>' +
+    '<div><label>係数</label><input class="gw" type="number" min="0" step="0.1"></div>' +
+    '<button type="button" class="gdel">削除</button>';
+  row.querySelector(".gname").value = d.name;
+  row.querySelector(".gn").value = d.n;
+  row.querySelector(".gw").value = d.w;
+  row.querySelector(".gdel").addEventListener("click", () => { row.remove(); calc(); });
+  row.querySelectorAll("input").forEach(i => i.addEventListener("input", calc));
+  groupsEl.appendChild(row);
+}
+function calc(){
+  const total = num(document.getElementById("total").value);
+  const unit = parseInt(document.getElementById("unit").value, 10);
+  const adjust = document.getElementById("adjust").checked;
+  const groups = [];
+  groupsEl.querySelectorAll(".grow").forEach(r => {
+    groups.push({
+      name: r.querySelector(".gname").value || "区分",
+      n: Math.floor(num(r.querySelector(".gn").value)),
+      w: num(r.querySelector(".gw").value)
+    });
+  });
+  const wsum = groups.reduce((s, g) => s + g.n * g.w, 0);
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  let collected = 0;
+  const perList = groups.map(g => {
+    if(wsum <= 0 || g.n <= 0) return 0;
+    return ceilUnit(total * g.w / wsum, unit);
+  });
+  groups.forEach((g, i) => {
+    const per = perList[i];
+    const sub = per * g.n;
+    collected += sub;
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td"); td1.textContent = g.name;
+    const td2 = document.createElement("td"); td2.textContent = g.n + "人 × " + g.w;
+    const td3 = document.createElement("td"); td3.textContent = yen(per);
+    const td4 = document.createElement("td"); td4.className = "v"; td4.textContent = yen(sub);
+    tr.append(td1, td2, td3, td4);
+    tbody.appendChild(tr);
+  });
+  const surplus = collected - total;
+  const adjRow = document.getElementById("adjRow");
+  if(adjust && surplus > 0 && groups.length > 0 && groups[0].n > 0){
+    adjRow.style.display = "";
+    document.getElementById("adjOut").textContent = yen(perList[0] - surplus) + "（他の " + groups[0].name + " は " + yen(perList[0]) + "）";
+    document.getElementById("collectedOut").textContent = yen(collected - surplus);
+    document.getElementById("surplusOut").textContent = yen(0) + "（幹事が調整）";
+  } else {
+    adjRow.style.display = "none";
+    document.getElementById("collectedOut").textContent = yen(collected);
+    document.getElementById("surplusOut").textContent = yen(surplus);
+  }
+}
+DEFAULTS.forEach(addGroup);
+document.getElementById("addBtn").addEventListener("click", () => { addGroup({ name: "区分", n: 1, w: 1.0 }); calc(); });
+["total","unit","adjust"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

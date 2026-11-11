@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宅配便の送料目安計算機｜三辺合計サイズと配送エリアから目安を計算</title>
+<meta name="description" content="荷物の縦・横・高さ（三辺合計）と重さ、配送エリア区分から宅配便の送料の目安を計算できる無料ツールです。ヤマト運輸・宅急便の公式運賃表（関東発）の代表値をもとにした目安表示で、特定業者の実額ではありません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#1d4ed8; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "宅配便の送料目安計算機",
+  "url": "https://ikesita.github.io/free-tools-site/takkyubin.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "荷物の縦・横・高さ（三辺合計）と重さ、配送エリア区分から宅配便の送料の目安を計算できる無料ツールです。ヤマト運輸・宅急便の公式運賃表（関東発）の代表値をもとにした目安表示で、特定業者の実額ではありません。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "表示される送料はどの宅配便の料金ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "特定業者の実額ではなく目安です。代表例として、ヤマト運輸「宅急便」の公式運賃表（関東発・現金・税込）の値を使って計算しています。業者や発送元によって実際の料金は異なります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "サイズはどうやって決まりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "縦・横・高さの合計（三辺合計）と重さの両方でサイズが決まり、大きい方のサイズが適用されます。たとえば三辺合計が90cmでも、重さが12kgあれば120サイズ扱いになります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "割引やオプションは含まれますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "持ち込み割引、クール便・代金引換などのオプション料金、法人契約運賃は含まれません。あくまで通常発送の目安としてご利用ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>宅配便の送料目安計算機</h1>
+    <p>荷物の三辺合計と重さ、届け先のエリア区分から、宅配便の送料の「目安」を計算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>縦（cm）</label><input id="d1" type="number" min="0" step="1" value="40"></div>
+      <div class="f"><label>横（cm）</label><input id="d2" type="number" min="0" step="1" value="30"></div>
+      <div class="f"><label>高さ（cm）</label><input id="d3" type="number" min="0" step="1" value="20"></div>
+      <div class="f"><label>重さ（kg）</label><input id="wt" type="number" min="0" step="0.1" value="3"></div>
+      <div class="f"><label>配送エリア区分（関東から発送する場合）</label>
+        <select id="area">
+          <option value="same">同一都道府県内</option>
+          <option value="near" selected>近隣（南東北・関東・信越・北陸・中部）</option>
+          <option value="mid">中距離（北東北・関西）</option>
+          <option value="far">遠距離（中国・四国）</option>
+          <option value="farthest">最遠（北海道・九州）</option>
+          <option value="okinawa">沖縄</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>三辺合計</td><td class="v" id="sumOut">-</td></tr>
+      <tr><td>適用サイズ</td><td class="v" id="sizeOut">-</td></tr>
+      <tr><td>送料の目安（税込）</td><td class="v" id="fareOut">-</td></tr>
+    </table>
+    <p class="note" id="fareNote" style="margin-top:10px">この金額は目安です。代表例としてヤマト運輸「宅急便」の公式運賃表（関東発・現金・税込）の値を使用しています。持ち込み割引（100円引き）やクール便などのオプションは含みません。実際の料金は、利用する業者・発送元・契約内容によって異なりますので、各社の公式サイトでご確認ください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">サイズと重さの上限</h2>
+    <table>
+      <tr><th>サイズ</th><th>三辺合計</th><td class="v">重さの上限</td></tr>
+      <tr><td>60サイズ</td><td>60cmまで</td><td class="v">2kg</td></tr>
+      <tr><td>80サイズ</td><td>80cmまで</td><td class="v">5kg</td></tr>
+      <tr><td>100サイズ</td><td>100cmまで</td><td class="v">10kg</td></tr>
+      <tr><td>120サイズ</td><td>120cmまで</td><td class="v">15kg</td></tr>
+      <tr><td>140サイズ</td><td>140cmまで</td><td class="v">20kg</td></tr>
+      <tr><td>160サイズ</td><td>160cmまで</td><td class="v">25kg</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">三辺合計と重さの両方からサイズを求め、大きい方が適用されます。160サイズ・25kgを超える荷物は、通常の宅配便ではなく大型らくらく便や引越し便などの対象になることがあります。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 表示される送料はどの宅配便の料金ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">特定業者の実額ではなく目安です。代表例として、ヤマト運輸「宅急便」の公式運賃表（関東発・現金・税込）の値を使って計算しています。業者や発送元によって実際の料金は異なります。</p>
+    <p style="margin:0 0 4px"><b>Q. サイズはどうやって決まりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">縦・横・高さの合計（三辺合計）と重さの両方でサイズが決まり、大きい方のサイズが適用されます。たとえば三辺合計が90cmでも、重さが12kgあれば120サイズ扱いになります。</p>
+    <p style="margin:0 0 4px"><b>Q. 割引やオプションは含まれますか？</b></p>
+    <p class="note" style="margin:0 0 12px">持ち込み割引、クール便・代金引換などのオプション料金、法人契約運賃は含まれません。あくまで通常発送の目安としてご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+const SIZES = [60,80,100,120,140,160];
+const WLIMIT = {60:2, 80:5, 100:10, 120:15, 140:20, 160:25};
+const FARES = {
+  same:     {60:790,  80:1090, 100:1410, 120:1730, 140:2090, 160:2410},
+  near:     {60:940,  80:1230, 100:1530, 120:2040, 140:2630, 160:3020},
+  mid:      {60:1060, 80:1350, 100:1650, 120:2170, 140:2780, 160:3160},
+  far:      {60:1190, 80:1480, 100:1790, 120:2310, 140:2930, 160:3320},
+  farthest: {60:1460, 80:1740, 100:2050, 120:2610, 140:3250, 160:3630},
+  okinawa:  {60:1460, 80:2070, 100:2710, 120:3360, 140:4030, 160:4680}
+};
+function calc(){
+  const sum = num(document.getElementById("d1").value) + num(document.getElementById("d2").value) + num(document.getElementById("d3").value);
+  const wt = num(document.getElementById("wt").value);
+  const area = document.getElementById("area").value;
+  document.getElementById("sumOut").textContent = sum > 0 ? sum + "cm" : "-";
+  let byDim = null, byWt = null;
+  for(const s of SIZES){ if(sum <= s){ byDim = s; break; } }
+  for(const s of SIZES){ if(wt <= WLIMIT[s]){ byWt = s; break; } }
+  if(sum <= 0 || byDim === null || byWt === null){
+    document.getElementById("sizeOut").textContent = "対象外";
+    document.getElementById("fareOut").textContent = "-";
+    return;
+  }
+  const size = Math.max(byDim, byWt);
+  document.getElementById("sizeOut").textContent = size + "サイズ（重さ上限 " + WLIMIT[size] + "kg）";
+  document.getElementById("fareOut").textContent = "約 " + yen(FARES[area][size]);
+}
+["d1","d2","d3","wt","area"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

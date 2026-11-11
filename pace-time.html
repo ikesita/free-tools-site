@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マラソンのゴールタイム予測計算機｜リーゲル式で予測</title>
+<meta name="description" content="最近のレース結果から、マラソンなど目標レースのゴールタイムをリーゲル式で予測できる無料ツールです。5km・10km・ハーフ・フルの予測タイムと目標ペースを一覧表示します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#059669; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "マラソンのゴールタイム予測計算機",
+  "url": "https://ikesita.github.io/free-tools-site/pace-time.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "最近のレース結果から、マラソンなど目標レースのゴールタイムをリーゲル式で予測できる無料ツールです。5km・10km・ハーフ・フルの予測タイムと目標ペースを一覧表示します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "リーゲル式とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ある距離のタイムから別の距離のタイムを予測する経験式で、「目標タイム = 基準タイム ×（目標距離 ÷ 基準距離）^1.06」で計算します。ランニングの世界で広く使われている予測方法です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "予測タイムの精度はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "距離が近いレース同士では比較的よく当たりますが、短い距離からフルマラソンを予測すると甘め（速め）に出やすい傾向があります。目標設定の目安として使い、実際のトレーニング量に合わせて調整してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "どのレース結果を基準にすればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "最近1〜2か月以内の、全力に近い条件で走ったレース結果が適しています。目標レースに距離が近い結果ほど予測の精度が上がります。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>マラソンのゴールタイム予測計算機</h1>
+    <p>最近のレース結果から、目標レースのゴールタイムをリーゲル式で予測します。ペース計算ツール（pace.html）とは別に、「別の距離だと何分で走れるか」を出すツールです。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>基準レースの距離</label>
+        <select id="baseDist">
+          <option value="5">5km</option>
+          <option value="10" selected>10km</option>
+          <option value="21.0975">ハーフマラソン（21.0975km）</option>
+          <option value="42.195">フルマラソン（42.195km）</option>
+          <option value="custom">カスタム（kmを入力）</option>
+        </select>
+      </div>
+      <div class="f" id="baseCustomWrap" style="display:none"><label>基準距離（km）</label><input id="baseCustom" type="number" min="0.1" step="0.1" value="15"></div>
+      <div class="f"><label>基準レースのタイム（時）</label><input id="th" type="number" min="0" step="1" value="0"></div>
+      <div class="f"><label>基準レースのタイム（分）</label><input id="tm" type="number" min="0" step="1" value="50"></div>
+      <div class="f"><label>基準レースのタイム（秒）</label><input id="ts" type="number" min="0" step="1" value="0"></div>
+      <div class="f"><label>目標レースの距離</label>
+        <select id="targetDist">
+          <option value="5">5km</option>
+          <option value="10">10km</option>
+          <option value="21.0975">ハーフマラソン（21.0975km）</option>
+          <option value="42.195" selected>フルマラソン（42.195km）</option>
+          <option value="custom">カスタム（kmを入力）</option>
+        </select>
+      </div>
+      <div class="f" id="targetCustomWrap" style="display:none"><label>目標距離（km）</label><input id="targetCustom" type="number" min="0.1" step="0.1" value="30"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>予測ゴールタイム</td><td class="v" id="predOut">-</td></tr>
+      <tr><td>目標ペース（1kmあたり）</td><td class="v" id="paceOut">-</td></tr>
+    </table>
+    <h2 style="font-size:16px;margin:16px 0 8px">主な距離の予測タイム一覧</h2>
+    <table>
+      <tr><th>距離</th><th>予測タイム</th><td class="v">ペース（/km）</td></tr>
+      <tr><td>5km</td><td id="t5">-</td><td class="v" id="p5">-</td></tr>
+      <tr><td>10km</td><td id="t10">-</td><td class="v" id="p10">-</td></tr>
+      <tr><td>ハーフ（21.0975km）</td><td id="thalf">-</td><td class="v" id="phalf">-</td></tr>
+      <tr><td>フル（42.195km）</td><td id="tfull">-</td><td class="v" id="pfull">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">リーゲル式：目標タイム = 基準タイム ×（目標距離 ÷ 基準距離）^1.06。短い距離からフルマラソンを予測すると甘めに出やすいため、目標設定の目安としてご利用ください。天候・コース・トレーニング量によって実際のタイムは変わります。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. リーゲル式とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">ある距離のタイムから別の距離のタイムを予測する経験式で、「目標タイム = 基準タイム ×（目標距離 ÷ 基準距離）^1.06」で計算します。ランニングの世界で広く使われている予測方法です。</p>
+    <p style="margin:0 0 4px"><b>Q. 予測タイムの精度はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">距離が近いレース同士では比較的よく当たりますが、短い距離からフルマラソンを予測すると甘め（速め）に出やすい傾向があります。目標設定の目安として使い、実際のトレーニング量に合わせて調整してください。</p>
+    <p style="margin:0 0 4px"><b>Q. どのレース結果を基準にすればいいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">最近1〜2か月以内の、全力に近い条件で走ったレース結果が適しています。目標レースに距離が近い結果ほど予測の精度が上がります。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+function fmtTime(sec){
+  if(!isFinite(sec) || sec <= 0) return "-";
+  sec = Math.round(sec);
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  return h > 0 ? h + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0") : m + ":" + String(s).padStart(2,"0");
+}
+function fmtPace(secPerKm){
+  if(!isFinite(secPerKm) || secPerKm <= 0) return "-";
+  secPerKm = Math.round(secPerKm);
+  return Math.floor(secPerKm / 60) + ":" + String(secPerKm % 60).padStart(2,"0") + " /km";
+}
+function distOf(selId, customId){
+  const sel = document.getElementById(selId).value;
+  return sel === "custom" ? num(document.getElementById(customId).value) : parseFloat(sel);
+}
+function calc(){
+  document.getElementById("baseCustomWrap").style.display = document.getElementById("baseDist").value === "custom" ? "block" : "none";
+  document.getElementById("targetCustomWrap").style.display = document.getElementById("targetDist").value === "custom" ? "block" : "none";
+  const d1 = distOf("baseDist", "baseCustom");
+  const d2 = distOf("targetDist", "targetCustom");
+  const t1 = num(document.getElementById("th").value) * 3600 + num(document.getElementById("tm").value) * 60 + num(document.getElementById("ts").value);
+  const predict = d => (d1 > 0 && t1 > 0) ? t1 * Math.pow(d / d1, 1.06) : NaN;
+  const t2 = predict(d2);
+  document.getElementById("predOut").textContent = fmtTime(t2);
+  document.getElementById("paceOut").textContent = d2 > 0 ? fmtPace(t2 / d2) : "-";
+  const rows = [["t5","p5",5],["t10","p10",10],["thalf","phalf",21.0975],["tfull","pfull",42.195]];
+  for(const [tid, pid, d] of rows){
+    const t = predict(d);
+    document.getElementById(tid).textContent = fmtTime(t);
+    document.getElementById(pid).textContent = fmtPace(t / d);
+  }
+}
+["baseDist","baseCustom","targetDist","targetCustom","th","tm","ts"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>借入の返済シミュレーション｜元利均等・繰上返済の効果と完済時期</title>
+<meta name="description" content="借入額・金利・返済期間から、元利均等返済の毎月返済額・総利息・完済時期を試算できる無料ツールです。毎月の繰上返済（上乗せ）の効果と年ごとの残高推移も表示します。中立の計算ツールで、特定商品の推奨はしません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#475569; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "借入の返済シミュレーション",
+  "url": "https://ikesita.github.io/free-tools-site/shakkin.html",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "借入額・金利・返済期間から、元利均等返済の毎月返済額・総利息・完済時期を試算できる無料ツールです。毎月の繰上返済（上乗せ）の効果と年ごとの残高推移も表示します。中立の計算ツールで、特定商品の推奨はしません。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "元利均等返済とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "毎月の返済額を一定にする返済方式です。返済開始直後は利息の割合が大きく、返済が進むにつれて元金の割合が増えていきます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "繰上返済をすると利息はどれくらい減りますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "毎月の返済額に上乗せすると、その分だけ元金の減りが早くなり、完済が早まって総利息も減ります。このツールでは、上乗せなしの場合と比較した短縮月数と利息の削減額を表示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "このシミュレーションに含まれないものはありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "手数料・保証料・団体信用生命保険料などは含まれません。また金利は全期間固定として計算します。実際の返済額は契約内容によって異なるため、契約書や金融機関の案内でご確認ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>借入の返済シミュレーション</h1>
+    <p>元利均等返済で、毎月返済額・総利息・完済時期を試算します。毎月の繰上返済（上乗せ）の効果と、年ごとの残高推移も分かります。これは中立な計算ツールであり、特定の金融商品を推奨するものではありません。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>借入額（円）</label><input id="principal" type="number" min="0" step="10000" value="3000000"></div>
+      <div class="f"><label>年利（％）</label><input id="rate" type="number" min="0" step="0.1" value="3.0"></div>
+      <div class="f"><label>返済期間（年）</label><input id="years" type="number" min="1" max="50" step="1" value="3"></div>
+      <div class="f"><label>毎月の繰上返済額（上乗せ・円）</label><input id="extra" type="number" min="0" step="1000" value="0"></div>
+      <div class="f"><label>返済開始（年）</label><input id="startYear" type="number" min="2000" max="2100" step="1" value="2026"></div>
+      <div class="f"><label>返済開始（月）</label><input id="startMonth" type="number" min="1" max="12" step="1" value="12"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>毎月返済額（基本）</td><td class="v" id="pmtOut">-</td></tr>
+      <tr><td>返済回数</td><td class="v" id="countOut">-</td></tr>
+      <tr><td>完済時期</td><td class="v" id="endOut">-</td></tr>
+      <tr><td>総返済額</td><td class="v" id="totalOut">-</td></tr>
+      <tr><td>総利息</td><td class="v" id="interestOut">-</td></tr>
+      <tr id="extraRow" style="display:none"><td>繰上返済の効果（短縮月数／利息の削減額）</td><td class="v" id="extraOut">-</td></tr>
+    </table>
+    <h2 style="font-size:16px;margin:16px 0 8px">年ごとの残高推移</h2>
+    <table>
+      <tr><th>年</th><th>年間返済額</th><th>うち利息</th><td class="v">年末残高</td></tr>
+      <tbody id="yearRows"></tbody>
+    </table>
+    <p class="note" style="margin-top:10px">計算条件：元利均等返済、金利は全期間固定、手数料・保証料などは含みません。毎月返済額は円単位に四捨五入し、最終回の返済額で端数を調整しています。実際の返済額・完済時期は契約内容によって異なります。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 元利均等返済とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">毎月の返済額を一定にする返済方式です。返済開始直後は利息の割合が大きく、返済が進むにつれて元金の割合が増えていきます。</p>
+    <p style="margin:0 0 4px"><b>Q. 繰上返済をすると利息はどれくらい減りますか？</b></p>
+    <p class="note" style="margin:0 0 12px">毎月の返済額に上乗せすると、その分だけ元金の減りが早くなり、完済が早まって総利息も減ります。このツールでは、上乗せなしの場合と比較した短縮月数と利息の削減額を表示します。</p>
+    <p style="margin:0 0 4px"><b>Q. このシミュレーションに含まれないものはありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">手数料・保証料・団体信用生命保険料などは含まれません。また金利は全期間固定として計算します。実際の返済額は契約内容によって異なるため、契約書や金融機関の案内でご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function simulate(P, annualRate, months, extra){
+  const r = annualRate / 100 / 12;
+  let pmt;
+  if(r > 0){ const f = Math.pow(1 + r, months); pmt = P * r * f / (f - 1); }
+  else pmt = months > 0 ? P / months : 0;
+  pmt = Math.round(pmt);
+  let bal = P, count = 0, totalInt = 0, totalPaid = 0;
+  const yearly = [];
+  while(bal > 0 && count < months * 3 + 1200){
+    const interest = bal * r;
+    let pay = pmt + extra;
+    if(pay - interest >= bal) pay = bal + interest;
+    const principalPaid = pay - interest;
+    bal -= principalPaid;
+    totalInt += interest; totalPaid += pay; count++;
+    const yi = Math.floor((count - 1) / 12);
+    if(!yearly[yi]) yearly[yi] = { pay: 0, int: 0, bal: 0 };
+    yearly[yi].pay += pay; yearly[yi].int += interest; yearly[yi].bal = bal;
+    if(principalPaid <= 0) break;
+  }
+  return { pmt, count, totalInt, totalPaid, yearly };
+}
+function calc(){
+  const P = num(document.getElementById("principal").value);
+  const rate = num(document.getElementById("rate").value);
+  const years = Math.max(1, Math.floor(num(document.getElementById("years").value)));
+  const extra = num(document.getElementById("extra").value);
+  const sy = Math.floor(num(document.getElementById("startYear").value)) || 2026;
+  const sm = Math.min(12, Math.max(1, Math.floor(num(document.getElementById("startMonth").value)) || 1));
+  const months = years * 12;
+  if(P <= 0){
+    document.getElementById("pmtOut").textContent = "-";
+    return;
+  }
+  const res = simulate(P, rate, months, extra);
+  const base = simulate(P, rate, months, 0);
+  document.getElementById("pmtOut").textContent = yen(res.pmt) + (extra > 0 ? "（＋繰上 " + yen(extra) + "）" : "");
+  document.getElementById("countOut").textContent = res.count + "回";
+  const endIdx = (sy * 12 + (sm - 1)) + (res.count - 1);
+  const ey = Math.floor(endIdx / 12), em = endIdx % 12 + 1;
+  document.getElementById("endOut").textContent = ey + "年" + em + "月";
+  document.getElementById("totalOut").textContent = yen(res.totalPaid);
+  document.getElementById("interestOut").textContent = yen(res.totalInt);
+  const row = document.getElementById("extraRow");
+  if(extra > 0){
+    row.style.display = "";
+    document.getElementById("extraOut").textContent = (base.count - res.count) + "か月短縮／" + yen(base.totalInt - res.totalInt) + " 削減";
+  } else row.style.display = "none";
+  const tbody = document.getElementById("yearRows");
+  tbody.innerHTML = "";
+  res.yearly.forEach((y, i) => {
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td"); td1.textContent = (i + 1) + "年目";
+    const td2 = document.createElement("td"); td2.textContent = yen(y.pay);
+    const td3 = document.createElement("td"); td3.textContent = yen(y.int);
+    const td4 = document.createElement("td"); td4.className = "v"; td4.textContent = yen(Math.max(0, y.bal));
+    tr.append(td1, td2, td3, td4);
+    tbody.appendChild(tr);
+  });
+}
+["principal","rate","years","extra","startYear","startMonth"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

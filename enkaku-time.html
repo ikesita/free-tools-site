@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雷までの距離計算機｜音と光の到達時間から計算</title>
+<meta name="description" content="雷が光ってから音が聞こえるまでの秒数から、雷までの距離を計算できる無料ツールです。気温による音速の補正と、光が届く時間との差も表示します。逆に距離から音の到達時間も計算できます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#7c3aed; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "雷までの距離計算機",
+  "url": "https://ikesita.github.io/free-tools-site/enkaku-time.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "雷が光ってから音が聞こえるまでの秒数から、雷までの距離を計算できる無料ツールです。気温による音速の補正と、光が届く時間との差も表示します。逆に距離から音の到達時間も計算できます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "雷までの距離はなぜ秒数で分かるのですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "光はほぼ一瞬で届きますが、音は1秒に約340mしか進まないためです。光ってから音が聞こえるまでの秒数に音速を掛けると、雷までの距離が分かります。3秒で約1kmが目安です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "音速は気温で変わりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい。音速は気温が高いほど速くなり、およそ「331.5 + 0.6×気温（℃）」m/sで計算できます。このツールでは気温を入れて補正できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "雷が近いと判断する目安はありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "光ってから10秒以内に音が聞こえる場合、雷はおよそ3.4km以内にあります。雷が近づいているときは屋外の活動を中止し、建物や車の中など安全な場所に避難してください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>雷までの距離計算機（音と光の到達時間）</h1>
+    <p>雷が光ってから音が聞こえるまでの秒数から、雷までの距離を計算します。光と音の速さの差を利用した計算です。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>計算の向き</label>
+        <select id="mode">
+          <option value="sec2dist" selected>秒数 → 雷までの距離</option>
+          <option value="dist2sec">距離 → 音が届くまでの秒数</option>
+        </select>
+      </div>
+      <div class="f"><label id="valLabel">光ってから音が聞こえるまでの秒数</label><input id="val" type="number" min="0" step="0.1" value="3"></div>
+      <div class="f"><label>気温（℃）※音速の補正に使用</label><input id="temp" type="number" step="1" value="15"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>音速（気温から計算）</td><td class="v" id="speedOut">-</td></tr>
+      <tr><td id="mainLabel">雷までの距離</td><td class="v" id="mainOut">-</td></tr>
+      <tr><td>光が届くのにかかる時間</td><td class="v" id="lightOut">-</td></tr>
+      <tr><td>音と光の到達時間の差</td><td class="v" id="diffOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">光の速さは約30万km/sで、数kmの距離なら到達時間はほぼゼロ（数マイクロ秒）です。一方、音は1秒に約340mしか進まないため、「ピカッ」と「ゴロゴロ」の時間差がそのまま距離の目安になります。なお、雷の音が聞こえる範囲は一般に10km程度までとされます。音が聞こえたら、すでに落雷の危険範囲に近いことがあるため、屋外では早めに安全な場所へ避難してください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 雷までの距離はなぜ秒数で分かるのですか？</b></p>
+    <p class="note" style="margin:0 0 12px">光はほぼ一瞬で届きますが、音は1秒に約340mしか進まないためです。光ってから音が聞こえるまでの秒数に音速を掛けると、雷までの距離が分かります。3秒で約1kmが目安です。</p>
+    <p style="margin:0 0 4px"><b>Q. 音速は気温で変わりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">はい。音速は気温が高いほど速くなり、およそ「331.5 + 0.6×気温（℃）」m/sで計算できます。このツールでは気温を入れて補正できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 雷が近いと判断する目安はありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">光ってから10秒以内に音が聞こえる場合、雷はおよそ3.4km以内にあります。雷が近づいているときは屋外の活動を中止し、建物や車の中など安全な場所に避難してください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const C = 299792458;
+function calc(){
+  const mode = document.getElementById("mode").value;
+  const val = num(document.getElementById("val").value);
+  const tempRaw = parseFloat(document.getElementById("temp").value);
+  const temp = isNaN(tempRaw) ? 15 : tempRaw;
+  const v = 331.5 + 0.6 * temp;
+  document.getElementById("speedOut").textContent = "約 " + (Math.round(v * 10) / 10) + " m/s";
+  document.getElementById("valLabel").textContent = mode === "sec2dist" ? "光ってから音が聞こえるまでの秒数" : "雷までの距離（m）";
+  document.getElementById("mainLabel").textContent = mode === "sec2dist" ? "雷までの距離" : "音が届くまでの時間";
+  let dist, sec;
+  if(mode === "sec2dist"){ sec = val; dist = v * sec; }
+  else { dist = val; sec = v > 0 ? dist / v : 0; }
+  if(mode === "sec2dist"){
+    document.getElementById("mainOut").textContent = dist >= 1000 ? "約 " + (Math.round(dist / 10) / 100) + " km（" + Math.round(dist).toLocaleString("ja-JP") + " m）" : "約 " + Math.round(dist) + " m";
+  } else {
+    document.getElementById("mainOut").textContent = "約 " + (Math.round(sec * 10) / 10) + " 秒";
+  }
+  const lightSec = dist / C;
+  document.getElementById("lightOut").textContent = "約 " + (lightSec * 1e6).toFixed(2) + " マイクロ秒";
+  document.getElementById("diffOut").textContent = "約 " + (Math.round((sec - lightSec) * 100) / 100) + " 秒（ほぼ音の到達時間そのもの）";
+}
+["mode","val","temp"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

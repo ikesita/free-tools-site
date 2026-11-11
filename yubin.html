@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>郵便料金計算機｜定形・定形外・はがき・レターパックの料金（2024年10月改定対応）</title>
+<meta name="description" content="郵便物の種類と重さから郵便料金を計算できる無料ツールです。定形郵便物・定形外郵便物（規格内）・はがき・ミニレター・レターパックライト／プラス・スマートレターに対応し、2024年10月改定後の現行料金で表示します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0f766e; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "郵便料金計算機",
+  "url": "https://ikesita.github.io/free-tools-site/yubin.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "郵便物の種類と重さから郵便料金を計算できる無料ツールです。定形郵便物・定形外郵便物（規格内）・はがき・ミニレター・レターパックライト／プラス・スマートレターに対応し、2024年10月改定後の現行料金で表示します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "郵便料金はいつ改定されましたか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2024年10月1日に改定されました。定形郵便物は50gまで110円に統一され、通常はがきは85円、レターパックライトは430円、レターパックプラスは600円になりました。このツールは改定後の現行料金で計算します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "定形郵便物で送れる上限はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "長さ14〜23.5cm、幅9〜12cm、厚さ1cmまで、重さ50gまでです。サイズや重さが超える場合は定形外郵便物になります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "レターパックライトとプラスの違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "どちらもA4サイズ・4kgまで全国一律料金です。ライト（430円）は厚さ3cmまでで郵便受けに配達され、プラス（600円）は厚さ制限がなく、対面で受け取り確認をして配達されます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>郵便料金計算機</h1>
+    <p>郵便物の種類と重さから料金を計算します。2024年10月改定後の現行料金（日本郵便の公式料金表）に基づいています。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>郵便物の種類</label>
+        <select id="type">
+          <option value="teikei">定形郵便物（長さ14〜23.5cm・幅9〜12cm・厚さ1cmまで）</option>
+          <option value="teigai" selected>定形外郵便物（規格内：長辺34cm・短辺25cm・厚さ3cmまで）</option>
+          <option value="hagaki">通常はがき</option>
+          <option value="oufuku">往復はがき</option>
+          <option value="mini">ミニレター（郵便書簡・25gまで）</option>
+          <option value="light">レターパックライト（A4・厚さ3cmまで・4kgまで）</option>
+          <option value="plus">レターパックプラス（A4・4kgまで）</option>
+          <option value="smart">スマートレター（A4・厚さ2cmまで・1kgまで）</option>
+        </select>
+      </div>
+      <div class="f" id="weightWrap"><label>重さ（g）</label><input id="weight" type="number" min="1" step="1" value="80"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><td>郵便料金</td><td class="v" id="priceOut">-</td></tr>
+      <tr><td>適用される区分</td><td class="v" id="tierOut">-</td></tr>
+    </table>
+    <p class="note" id="noteOut" style="margin-top:10px"></p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">料金表（2024年10月改定後・税込）</h2>
+    <table>
+      <tr><th>種類</th><th>重さ</th><td class="v">料金</td></tr>
+      <tr><td>定形郵便物</td><td>50g以内</td><td class="v">¥110</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>50g以内</td><td class="v">¥140</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>100g以内</td><td class="v">¥180</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>150g以内</td><td class="v">¥270</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>250g以内</td><td class="v">¥320</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>500g以内</td><td class="v">¥510</td></tr>
+      <tr><td>定形外郵便物（規格内）</td><td>1kg以内</td><td class="v">¥750</td></tr>
+      <tr><td>通常はがき</td><td>−</td><td class="v">¥85</td></tr>
+      <tr><td>往復はがき</td><td>−</td><td class="v">¥170</td></tr>
+      <tr><td>ミニレター</td><td>25g以内</td><td class="v">¥85</td></tr>
+      <tr><td>レターパックライト</td><td>4kg以内</td><td class="v">¥430</td></tr>
+      <tr><td>レターパックプラス</td><td>4kg以内</td><td class="v">¥600</td></tr>
+      <tr><td>スマートレター</td><td>1kg以内</td><td class="v">¥210</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">定形外郵便物（規格外）や、重さ・サイズが上限を超えるものは、ゆうパックなどの荷物サービスになる場合があります。速達・書留などのオプション料金は含みません。最新の料金は日本郵便の公式サイトでご確認ください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 郵便料金はいつ改定されましたか？</b></p>
+    <p class="note" style="margin:0 0 12px">2024年10月1日に改定されました。定形郵便物は50gまで110円に統一され、通常はがきは85円、レターパックライトは430円、レターパックプラスは600円になりました。このツールは改定後の現行料金で計算します。</p>
+    <p style="margin:0 0 4px"><b>Q. 定形郵便物で送れる上限はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">長さ14〜23.5cm、幅9〜12cm、厚さ1cmまで、重さ50gまでです。サイズや重さが超える場合は定形外郵便物になります。</p>
+    <p style="margin:0 0 4px"><b>Q. レターパックライトとプラスの違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">どちらもA4サイズ・4kgまで全国一律料金です。ライト（430円）は厚さ3cmまでで郵便受けに配達され、プラス（600円）は厚さ制限がなく、対面で受け取り確認をして配達されます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+const TEIGAI = [[50,140],[100,180],[150,270],[250,320],[500,510],[1000,750]];
+function calc(){
+  const t = document.getElementById("type").value;
+  const w = num(document.getElementById("weight").value);
+  const needWeight = !(t === "hagaki" || t === "oufuku");
+  document.getElementById("weightWrap").style.display = needWeight ? "block" : "none";
+  let price = null, tier = "-", note = "";
+  if(t === "teikei"){
+    if(w <= 50){ price = 110; tier = "定形郵便物 50g以内"; }
+    else note = "定形郵便物は50gまでです。50gを超える場合は定形外郵便物で計算してください。";
+  } else if(t === "teigai"){
+    for(const [lim, p] of TEIGAI){ if(w <= lim){ price = p; tier = "定形外郵便物（規格内）" + (lim >= 1000 ? "1kg以内" : lim + "g以内"); break; } }
+    if(price === null) note = "定形外郵便物（規格内）は1kgまでです。1kgを超える場合は、ゆうパックなどの荷物サービスをご検討ください。";
+  } else if(t === "hagaki"){ price = 85; tier = "通常はがき"; }
+  else if(t === "oufuku"){ price = 170; tier = "往復はがき"; }
+  else if(t === "mini"){
+    if(w <= 25){ price = 85; tier = "ミニレター 25g以内"; }
+    else note = "ミニレターは25gまでです。";
+  } else if(t === "light"){
+    if(w <= 4000){ price = 430; tier = "レターパックライト（全国一律）"; note = "専用封筒の代金に送料が含まれています。厚さ3cmまで、郵便受けに配達されます。"; }
+    else note = "レターパックは4kgまでです。";
+  } else if(t === "plus"){
+    if(w <= 4000){ price = 600; tier = "レターパックプラス（全国一律）"; note = "専用封筒の代金に送料が含まれています。厚さ制限はなく、対面で配達されます（専用箱に収まる範囲）。"; }
+    else note = "レターパックは4kgまでです。";
+  } else if(t === "smart"){
+    if(w <= 1000){ price = 210; tier = "スマートレター（全国一律）"; note = "専用封筒の代金に送料が含まれています。A4・厚さ2cmまでです。"; }
+    else note = "スマートレターは1kgまでです。";
+  }
+  document.getElementById("priceOut").textContent = price === null ? "-" : yen(price);
+  document.getElementById("tierOut").textContent = tier;
+  document.getElementById("noteOut").textContent = note;
+}
+["type","weight"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レシピの分量換算ツール｜何人分から何人分へ材料を自動換算</title>
+<meta name="description" content="レシピの材料リストを貼り付けるだけで、人分に合わせて各材料の分量を自動換算できる無料ツールです。分数（1/2など）にも対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#be185d; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:130px;line-height:1.7}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "レシピの分量換算ツール",
+  "url": "https://ikesita.github.io/free-tools-site/recipe-scale.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "レシピの材料リストを貼り付けるだけで、人分に合わせて各材料の分量を自動換算できる無料ツールです。分数（1/2など）にも対応します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "材料リストはどんな形式で入力すればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "1行に1材料、「材料名 数量 単位」の順で入力してください（例：小麦粉 200 g）。数量は小数や分数（1/2）でも入力できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「少々」や「適量」は換算されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "数量が数字で書かれていない行は換算の対象外で、そのまま表示されます。塩少々のような表現は、人数に合わせて味見しながら調整してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "調味料も人数分そのまま増やして大丈夫ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "計算上は比例換算しますが、塩・しょうゆなどの調味料は単純に倍増すると濃くなりすぎることがあります。特に大量調理では、調味料は控えめから始めて調整するのがおすすめです。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>レシピの分量換算ツール</h1>
+    <p>材料リストを貼り付けて人分を指定すると、各材料の分量を自動で換算します。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>元のレシピの人分</label><input id="from" type="number" min="0.5" step="0.5" value="2"></div>
+      <div class="f"><label>作りたい人分</label><input id="to" type="number" min="0.5" step="0.5" value="4"></div>
+      <div class="f" style="grid-column:1/-1"><label>材料リスト（1行に1材料、「材料名 数量 単位」の順）</label>
+        <textarea id="list">小麦粉 200 g
+砂糖 30 g
+卵 2 個
+牛乳 100 ml
+にんじん 1/2 本
+塩 少々</textarea>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px">倍率：<b id="ratioOut">-</b>。数量は小数・分数（1/2など）に対応します。数量が数字でない行（「塩 少々」など）はそのまま表示されます。</p>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>材料</th><th>元の分量</th><td class="v">換算後の分量</td></tr>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="note" style="margin-top:10px">換算後の数量は小数第1位まで表示します（端数は四捨五入）。調味料は比例換算すると濃くなりすぎる場合があるため、味見しながら調整してください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 材料リストはどんな形式で入力すればいいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">1行に1材料、「材料名 数量 単位」の順で入力してください（例：小麦粉 200 g）。数量は小数や分数（1/2）でも入力できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 「少々」や「適量」は換算されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">数量が数字で書かれていない行は換算の対象外で、そのまま表示されます。塩少々のような表現は、人数に合わせて味見しながら調整してください。</p>
+    <p style="margin:0 0 4px"><b>Q. 調味料も人数分そのまま増やして大丈夫ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">計算上は比例換算しますが、塩・しょうゆなどの調味料は単純に倍増すると濃くなりすぎることがあります。特に大量調理では、調味料は控えめから始めて調整するのがおすすめです。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n <= 0 ? 0 : n; };
+function fmt(n){
+  let r = Math.round(n * 10) / 10;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+function parseQty(s){
+  if(/^\d+\/\d+$/.test(s)){ const [a,b] = s.split("/").map(Number); return b !== 0 ? a / b : NaN; }
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+function calc(){
+  const from = num(document.getElementById("from").value);
+  const to = num(document.getElementById("to").value);
+  const ratio = from > 0 && to > 0 ? to / from : 0;
+  document.getElementById("ratioOut").textContent = ratio > 0 ? "×" + fmt(ratio) : "-";
+  const lines = document.getElementById("list").value.split(/\r?\n/);
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  for(const line of lines){
+    if(!line.trim()) continue;
+    const m = line.trim().match(/^(.+?)[\s　]+(\d+(?:\.\d+)?|\d+\/\d+)[\s　]*(.*)$/);
+    const tr = document.createElement("tr");
+    if(m && ratio > 0){
+      const q = parseQty(m[2]);
+      const unit = m[3] || "";
+      tr.innerHTML = "";
+      const td1 = document.createElement("td"); td1.textContent = m[1];
+      const td2 = document.createElement("td"); td2.textContent = m[2] + (unit ? " " + unit : "");
+      const td3 = document.createElement("td"); td3.className = "v"; td3.textContent = fmt(q * ratio) + (unit ? " " + unit : "");
+      tr.append(td1, td2, td3);
+    } else {
+      const td1 = document.createElement("td"); td1.textContent = line.trim();
+      const td2 = document.createElement("td"); td2.textContent = "（換算対象外）";
+      const td3 = document.createElement("td"); td3.className = "v"; td3.textContent = "そのまま";
+      tr.append(td1, td2, td3);
+    }
+    tbody.appendChild(tr);
+  }
+}
+["from","to","list"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

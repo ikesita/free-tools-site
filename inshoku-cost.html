@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>飲食店の原価率・価格設定計算機｜FLコストの目安も計算</title>
+<meta name="description" content="飲食店のメニュー原価率と推奨売価、粗利を計算できる無料ツールです。月商と食材費・人件費からFLコスト比率と営業利益の目安も計算できます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#b45309; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "飲食店の原価率・価格設定計算機",
+  "url": "https://ikesita.github.io/free-tools-site/inshoku-cost.html",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "飲食店のメニュー原価率と推奨売価、粗利を計算できる無料ツールです。月商と食材費・人件費からFLコスト比率と営業利益の目安も計算できます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "飲食店の原価率の目安はどれくらいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "業態によって異なりますが、食材原価率は30％前後が目安とされることが多いです。ドリンク中心の業態では低く、食材にこだわる業態では高くなります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "FLコストとは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Food（食材費）とLabor（人件費）の合計を売上高で割った比率です。飲食店の主要コストの指標で、60％前後が目安とされることが多いですが、業態や立地で適正値は変わります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "推奨売価はどう計算していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "1食あたりの食材原価を目標原価率で割って計算しています。たとえば原価300円で目標原価率30％なら、推奨売価は1,000円です。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>飲食店の原価率・価格設定計算機</h1>
+    <p>メニューの原価率と推奨売価の計算と、店舗全体のFLコスト比率の計算ができます。</p>
+  </header>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">メニューの原価率と価格設定</h2>
+    <div class="grid">
+      <div class="f"><label>1食あたりの食材原価（円）</label><input id="cost" type="number" min="0" step="10" value="280"></div>
+      <div class="f"><label>設定売価（円）</label><input id="price" type="number" min="0" step="10" value="1000"></div>
+      <div class="f"><label>目標原価率（％）</label><input id="targetRate" type="number" min="1" max="100" step="1" value="30"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>現在の原価率（原価 ÷ 売価）</td><td class="v" id="rateOut">-</td></tr>
+      <tr><td>1食あたりの粗利</td><td class="v" id="grossOut">-</td></tr>
+      <tr><td>粗利率</td><td class="v" id="grossRateOut">-</td></tr>
+      <tr><td>目標原価率での推奨売価</td><td class="v" id="recoOut">-</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">FLコストと利益の目安</h2>
+    <div class="grid">
+      <div class="f"><label>月の売上高（円）</label><input id="sales" type="number" min="0" step="10000" value="3000000"></div>
+      <div class="f"><label>月の食材費（円）</label><input id="food" type="number" min="0" step="10000" value="900000"></div>
+      <div class="f"><label>月の人件費（円）</label><input id="labor" type="number" min="0" step="10000" value="1050000"></div>
+      <div class="f"><label>その他の経費（円）</label><input id="other" type="number" min="0" step="10000" value="600000"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>F比率（食材費 ÷ 売上）</td><td class="v" id="fOut">-</td></tr>
+      <tr><td>L比率（人件費 ÷ 売上）</td><td class="v" id="lOut">-</td></tr>
+      <tr><td>FL比率（（食材費＋人件費）÷ 売上）</td><td class="v" id="flOut">-</td></tr>
+      <tr><td>営業利益の目安（売上 − 全経費）</td><td class="v" id="profitOut">-</td></tr>
+      <tr><td>営業利益率の目安</td><td class="v" id="profitRateOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">FL比率は60％前後が目安とされることが多いですが、業態・立地・営業時間によって適正値は大きく異なります。「その他の経費」には家賃・水道光熱費・消耗品費など、食材費と人件費以外の経費を入れてください。税金や減価償却は含まない簡易計算です。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 飲食店の原価率の目安はどれくらいですか？</b></p>
+    <p class="note" style="margin:0 0 12px">業態によって異なりますが、食材原価率は30％前後が目安とされることが多いです。ドリンク中心の業態では低く、食材にこだわる業態では高くなります。</p>
+    <p style="margin:0 0 4px"><b>Q. FLコストとは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">Food（食材費）とLabor（人件費）の合計を売上高で割った比率です。飲食店の主要コストの指標で、60％前後が目安とされることが多いですが、業態や立地で適正値は変わります。</p>
+    <p style="margin:0 0 4px"><b>Q. 推奨売価はどう計算していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">1食あたりの食材原価を目標原価率で割って計算しています。たとえば原価300円で目標原価率30％なら、推奨売価は1,000円です。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+const pct = n => (Math.round(n * 10) / 10).toLocaleString("ja-JP") + "％";
+function calc(){
+  const cost = num(document.getElementById("cost").value);
+  const price = num(document.getElementById("price").value);
+  const target = num(document.getElementById("targetRate").value);
+  document.getElementById("rateOut").textContent = price > 0 ? pct(cost / price * 100) : "-";
+  document.getElementById("grossOut").textContent = yen(price - cost);
+  document.getElementById("grossRateOut").textContent = price > 0 ? pct((price - cost) / price * 100) : "-";
+  document.getElementById("recoOut").textContent = target > 0 ? yen(cost / (target / 100)) : "-";
+  const sales = num(document.getElementById("sales").value);
+  const food = num(document.getElementById("food").value);
+  const labor = num(document.getElementById("labor").value);
+  const other = num(document.getElementById("other").value);
+  const profit = sales - food - labor - other;
+  document.getElementById("fOut").textContent = sales > 0 ? pct(food / sales * 100) : "-";
+  document.getElementById("lOut").textContent = sales > 0 ? pct(labor / sales * 100) : "-";
+  document.getElementById("flOut").textContent = sales > 0 ? pct((food + labor) / sales * 100) : "-";
+  document.getElementById("profitOut").textContent = yen(profit);
+  document.getElementById("profitRateOut").textContent = sales > 0 ? pct(profit / sales * 100) : "-";
+}
+["cost","price","targetRate","sales","food","labor","other"].forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>
