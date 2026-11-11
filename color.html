@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カラーコード変換ツール｜HEX・RGB・HSL・CMYKを相互変換</title>
+<meta name="description" content="カラーコード（HEX）をRGB・HSL・HSV・CMYKに相互変換できる無料ツールです。色のプレビューを見ながら、数値入力やカラーピッカーで色を調整できます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "カラーコード変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/color.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "カラーコード（HEX）をRGB・HSL・HSV・CMYKに相互変換できる無料ツールです。色のプレビューを見ながら、数値入力やカラーピッカーで色を調整できます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "HEXとは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "16進数カラーコードのことです。#RRGGBBの形で、赤（R）・緑（G）・青（B）の強さを00〜FFの16進数で表します。#RGBという3桁表記は、各桁を2倍にして読みます（#F00 = #FF0000）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "HSLとHSV（HSB）の違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "HSLは「色相・彩度・明度（Lightness）」、HSVは「色相・彩度・明度（Value／Brightness）」という体系で、明度の定義が異なります。同じ色でも、HSLとHSVでは彩度・明度の数値が変わります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "CMYKは印刷用の色ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "CMYKはシアン・マゼンタ・イエロー・ブラックの4色の割合で、主に印刷で使われます。このツールの変換は単純な計算による目安であり、実際の印刷の色味は用紙やインク、印刷機の設定によって変わります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力した色情報は送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>カラーコード変換ツール</h1>
+    <p>HEX・RGB・HSL・HSV・CMYKを相互に変換します。プレビューを見ながら色を調整できます。</p>
+  </header>
+
+  <div class="card">
+    <div id="preview" style="height:110px;border-radius:10px;border:1px solid var(--line);background:#4F46E5;margin-bottom:14px"></div>
+    <div class="grid">
+      <div class="f"><label>HEX（#RRGGBB）</label><input type="text" id="hexIn" value="#4F46E5" class="mono"></div>
+      <div class="f"><label>カラーピッカー</label><input type="color" id="picker" value="#4f46e5" style="height:42px;padding:2px"></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="f"><label>R（0〜255）</label><input type="number" id="rIn" min="0" max="255" value="79"></div>
+      <div class="f"><label>G（0〜255）</label><input type="number" id="gIn" min="0" max="255" value="70"></div>
+      <div class="f"><label>B（0〜255）</label><input type="number" id="bIn" min="0" max="255" value="229"></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="f"><label>H 色相（0〜360）</label><input type="number" id="hIn" min="0" max="360" value="243"></div>
+      <div class="f"><label>S 彩度 %（HSL）</label><input type="number" id="sIn" min="0" max="100" value="75"></div>
+      <div class="f"><label>L 明度 %（HSL）</label><input type="number" id="lIn" min="0" max="100" value="59"></div>
+    </div>
+    <table style="margin-top:16px">
+      <tr><th>HEX</th><td class="v mono" id="vHex">-</td><td style="text-align:right"><button class="sub copyb" data-t="vHex" style="margin:0;padding:5px 12px;font-size:13px">コピー</button></td></tr>
+      <tr><th>RGB</th><td class="v mono" id="vRgb">-</td><td style="text-align:right"><button class="sub copyb" data-t="vRgb" style="margin:0;padding:5px 12px;font-size:13px">コピー</button></td></tr>
+      <tr><th>HSL</th><td class="v mono" id="vHsl">-</td><td style="text-align:right"><button class="sub copyb" data-t="vHsl" style="margin:0;padding:5px 12px;font-size:13px">コピー</button></td></tr>
+      <tr><th>HSV</th><td class="v mono" id="vHsv">-</td><td style="text-align:right"><button class="sub copyb" data-t="vHsv" style="margin:0;padding:5px 12px;font-size:13px">コピー</button></td></tr>
+      <tr><th>CMYK</th><td class="v mono" id="vCmyk">-</td><td style="text-align:right"><button class="sub copyb" data-t="vCmyk" style="margin:0;padding:5px 12px;font-size:13px">コピー</button></td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">HEX欄は「#F00」のような3桁表記や、「#」なしの入力にも対応しています。RGB・HSL欄は、入力してフォーカスを外す（またはEnter）と反映されます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. HEXとは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">16進数カラーコードのことです。#RRGGBBの形で、赤（R）・緑（G）・青（B）の強さを00〜FFの16進数で表します。#RGBという3桁表記は、各桁を2倍にして読みます（#F00 = #FF0000）。</p>
+    <p style="margin:0 0 4px"><b>Q. HSLとHSV（HSB）の違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">HSLは「色相・彩度・明度（Lightness）」、HSVは「色相・彩度・明度（Value／Brightness）」という体系で、明度の定義が異なります。同じ色でも、HSLとHSVでは彩度・明度の数値が変わります。</p>
+    <p style="margin:0 0 4px"><b>Q. CMYKは印刷用の色ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">CMYKはシアン・マゼンタ・イエロー・ブラックの4色の割合で、主に印刷で使われます。このツールの変換は単純な計算による目安であり、実際の印刷の色味は用紙やインク、印刷機の設定によって変わります。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力した色情報は送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function clamp255(v){ return Math.min(255, Math.max(0, Math.round(v))); }
+function parseHex(str){
+  if (typeof str !== "string") return null;
+  let s = str.trim();
+  if (s.charAt(0) === "#") s = s.slice(1);
+  if (/^[0-9a-fA-F]{3}$/.test(s)) s = s.split("").map(function(c){ return c + c; }).join("");
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
+}
+function rgbToHex(r, g, b){
+  function h(v){ return clamp255(v).toString(16).padStart(2, "0").toUpperCase(); }
+  return "#" + h(r) + h(g) + h(b);
+}
+function rgbToHsl(r, g, b){
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return { h: 0, s: 0, l: l * 100 };
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h;
+  if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return { h: h * 60, s: s * 100, l: l * 100 };
+}
+function rgbToHsv(r, g, b){
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0){
+    if (max === r) h = 60 * (((g - b) / d) % 6);
+    else if (max === g) h = 60 * ((b - r) / d + 2);
+    else h = 60 * ((r - g) / d + 4);
+  }
+  if (h < 0) h += 360;
+  const s = max === 0 ? 0 : (d / max) * 100;
+  return { h: h, s: s, v: max * 100 };
+}
+function hslToRgb(h, s, l){
+  h = ((h % 360) + 360) % 360;
+  s = Math.min(100, Math.max(0, s)) / 100;
+  l = Math.min(100, Math.max(0, l)) / 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let rp = 0, gp = 0, bp = 0;
+  if (h < 60){ rp = c; gp = x; }
+  else if (h < 120){ rp = x; gp = c; }
+  else if (h < 180){ gp = c; bp = x; }
+  else if (h < 240){ gp = x; bp = c; }
+  else if (h < 300){ rp = x; bp = c; }
+  else { rp = c; bp = x; }
+  return { r: Math.round((rp + m) * 255), g: Math.round((gp + m) * 255), b: Math.round((bp + m) * 255) };
+}
+function rgbToCmyk(r, g, b){
+  const rn = r / 255, gn = g / 255, bn = b / 255;
+  const k = 1 - Math.max(rn, gn, bn);
+  if (k >= 1) return { c: 0, m: 0, y: 0, k: 100 };
+  return {
+    c: (1 - rn - k) / (1 - k) * 100,
+    m: (1 - gn - k) / (1 - k) * 100,
+    y: (1 - bn - k) / (1 - k) * 100,
+    k: k * 100
+  };
+}
+function allFromRgb(r, g, b){
+  r = clamp255(r); g = clamp255(g); b = clamp255(b);
+  return { hex: rgbToHex(r, g, b), r: r, g: g, b: b, hsl: rgbToHsl(r, g, b), hsv: rgbToHsv(r, g, b), cmyk: rgbToCmyk(r, g, b) };
+}
+/*LOGIC-END*/
+const $ = function(id){ return document.getElementById(id); };
+function render(a){
+  $("preview").style.background = a.hex;
+  $("hexIn").value = a.hex;
+  $("picker").value = a.hex.toLowerCase();
+  $("rIn").value = a.r; $("gIn").value = a.g; $("bIn").value = a.b;
+  $("hIn").value = Math.round(a.hsl.h); $("sIn").value = Math.round(a.hsl.s); $("lIn").value = Math.round(a.hsl.l);
+  $("vHex").textContent = a.hex;
+  $("vRgb").textContent = "rgb(" + a.r + ", " + a.g + ", " + a.b + ")";
+  $("vHsl").textContent = "hsl(" + Math.round(a.hsl.h) + ", " + Math.round(a.hsl.s) + "%, " + Math.round(a.hsl.l) + "%)";
+  $("vHsv").textContent = "hsv(" + Math.round(a.hsv.h) + ", " + Math.round(a.hsv.s) + "%, " + Math.round(a.hsv.v) + "%)";
+  $("vCmyk").textContent = "cmyk(" + Math.round(a.cmyk.c) + "%, " + Math.round(a.cmyk.m) + "%, " + Math.round(a.cmyk.y) + "%, " + Math.round(a.cmyk.k) + "%)";
+}
+function fromHex(){
+  const p = parseHex($("hexIn").value);
+  if (p) render(allFromRgb(p.r, p.g, p.b));
+}
+function fromRgb(){
+  render(allFromRgb(parseFloat($("rIn").value) || 0, parseFloat($("gIn").value) || 0, parseFloat($("bIn").value) || 0));
+}
+function fromHsl(){
+  const c = hslToRgb(parseFloat($("hIn").value) || 0, parseFloat($("sIn").value) || 0, parseFloat($("lIn").value) || 0);
+  render(allFromRgb(c.r, c.g, c.b));
+}
+$("hexIn").addEventListener("change", fromHex);
+$("picker").addEventListener("input", function(){ const p = parseHex($("picker").value); if (p) render(allFromRgb(p.r, p.g, p.b)); });
+["rIn", "gIn", "bIn"].forEach(function(id){ $(id).addEventListener("change", fromRgb); });
+["hIn", "sIn", "lIn"].forEach(function(id){ $(id).addEventListener("change", fromHsl); });
+document.querySelectorAll(".copyb").forEach(function(b){
+  b.addEventListener("click", function(){
+    const t = $(b.getAttribute("data-t")).textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t);
+  });
+});
+render(allFromRgb(79, 70, 229));
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

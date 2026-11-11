@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢数字変換ツール｜数字を漢数字・大字（壱・拾・萬）に変換</title>
+<meta name="description" content="数字を漢数字に変換できる無料ツールです。通常の漢数字に加え、契約書や領収書で使われる大字（壱・弐・参・拾・佰・仟・萬）にも切り替えできます。京の位まで、小数にも対応。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "漢数字変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/kanji-number.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "数字を漢数字に変換できる無料ツールです。通常の漢数字に加え、契約書や領収書で使われる大字（壱・弐・参・拾・佰・仟・萬）にも切り替えできます。京の位まで、小数にも対応。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "大字（だいじ）とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "改ざん防止のために使われる正式な漢数字です。一→壱、二→弐、三→参、十→拾、百→佰、千→仟、万→萬のように書き、契約書・領収書・小切手・戸籍などで使われます。このツールでは大字の正式な表記として、一を省略せず「壱拾」「壱仟」と表記します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "いくつまで変換できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "20桁まで（京の位まで）対応しています。小数点以下は「点」に続けて1桁ずつ読みます（例：3.14→三点一四）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "1000は「一千」ですか「千」ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "通常の漢数字では、十・百・千の前の一は省略するのが一般的で、このツールも「千」と表記します（10000は「一万」です）。大字モードでは省略せず「壱仟」となります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "金額の確認に使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "目安としてご利用いただけますが、正式な書類では金額の表記ルールが機関ごとに決まっている場合があります。提出先のルールをご確認ください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>漢数字変換ツール</h1>
+    <p>数字を漢数字に変換します。改ざん防止用の「大字」への切り替えもできます。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>変換したい数字（20桁まで・小数可）</label>
+    <input type="text" id="numIn" value="123456789" inputmode="numeric" style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px"></div>
+    <div style="margin-top:12px;font-size:15px">
+      <label><input type="checkbox" id="daiji"> 大字（壱・拾・佰・仟・萬）で表記する</label>
+    </div>
+    <button id="conv">変換する</button>
+    <div class="big" id="result" style="font-size:24px;line-height:1.5"></div>
+    <p class="note" id="err" style="color:#b91c1c"></p>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" style="margin-top:10px">通常の漢数字では、十・百・千の前の一は省略します（1000→千）。大字では省略せず「壱仟」のように書くのが正式な表記です。全角数字やカンマ入りでも入力できます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 大字（だいじ）とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">改ざん防止のために使われる正式な漢数字です。一→壱、二→弐、三→参、十→拾、百→佰、千→仟、万→萬のように書き、契約書・領収書・小切手・戸籍などで使われます。このツールでは大字の正式な表記として、一を省略せず「壱拾」「壱仟」と表記します。</p>
+    <p style="margin:0 0 4px"><b>Q. いくつまで変換できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">20桁まで（京の位まで）対応しています。小数点以下は「点」に続けて1桁ずつ読みます（例：3.14→三点一四）。</p>
+    <p style="margin:0 0 4px"><b>Q. 1000は「一千」ですか「千」ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">通常の漢数字では、十・百・千の前の一は省略するのが一般的で、このツールも「千」と表記します（10000は「一万」です）。大字モードでは省略せず「壱仟」となります。</p>
+    <p style="margin:0 0 4px"><b>Q. 金額の確認に使えますか？</b></p>
+    <p class="note" style="margin:0 0 0px">目安としてご利用いただけますが、正式な書類では金額の表記ルールが機関ごとに決まっている場合があります。提出先のルールをご確認ください。</p>
+  </div>
+
+  <footer>正式な書類に使う場合は、各機関の表記ルールもあわせてご確認ください。</footer>
+</div>
+
+<script>
+const K_DIGITS = ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+const K_SMALL = ["", "十", "百", "千"];
+const K_BIG = ["", "万", "億", "兆", "京"];
+const D_DIGITS = ["零", "壱", "弐", "参", "四", "伍", "六", "七", "八", "九"];
+const D_SMALL = ["", "拾", "佰", "仟"];
+const D_BIG = ["", "萬", "億", "兆", "京"];
+function groupKanji(g, daiji){
+  const D = daiji ? D_DIGITS : K_DIGITS;
+  const S = daiji ? D_SMALL : K_SMALL;
+  let out = "";
+  const places = [1000, 100, 10];
+  const sIdx = [3, 2, 1];
+  for (let i = 0; i < 3; i++){
+    const d = Math.floor(g / places[i]) % 10;
+    if (d === 0) continue;
+    if (d === 1 && !daiji) out += S[sIdx[i]];
+    else out += D[d] + S[sIdx[i]];
+  }
+  const ones = g % 10;
+  if (ones !== 0) out += D[ones];
+  return out;
+}
+function intKanji(intStr, daiji){
+  let s = intStr.replace(/^0+(?=\d)/, "");
+  if (s === "0") return daiji ? "零" : "〇";
+  const groups = [];
+  while (s.length > 0){ groups.unshift(s.slice(-4)); s = s.slice(0, -4); }
+  const B = daiji ? D_BIG : K_BIG;
+  let out = "";
+  for (let i = 0; i < groups.length; i++){
+    const g = parseInt(groups[i], 10);
+    if (g === 0) continue;
+    const unitIdx = groups.length - 1 - i;
+    out += groupKanji(g, daiji) + B[unitIdx];
+  }
+  return out;
+}
+function convertNumber(raw, daiji){
+  if (typeof raw !== "string") return { ok: false, error: "数字を入力してください" };
+  let s = raw.trim().replace(/,/g, "").replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/．/g, ".").replace(/－/g, "-");
+  if (s === "") return { ok: false, error: "数字を入力してください" };
+  let neg = false;
+  if (s.charAt(0) === "-"){ neg = true; s = s.slice(1); }
+  if (!/^\d+(\.\d+)?$/.test(s)) return { ok: false, error: "数字のみ入力できます（小数点は1つまで）" };
+  const parts = s.split(".");
+  const intPart = parts[0].replace(/^0+(?=\d)/, "");
+  if (intPart.length > 20) return { ok: false, error: "20桁まで対応しています" };
+  let out = intKanji(intPart, daiji);
+  if (parts.length === 2){
+    const D = daiji ? D_DIGITS : K_DIGITS;
+    out += "点";
+    for (const ch of parts[1]) out += D[parseInt(ch, 10)];
+  }
+  if (neg) out = "マイナス" + out;
+  return { ok: true, text: out };
+}
+/*LOGIC-END*/
+function run(){
+  const r = convertNumber(document.getElementById("numIn").value, document.getElementById("daiji").checked);
+  document.getElementById("result").textContent = r.ok ? r.text : "";
+  document.getElementById("err").textContent = r.ok ? "" : r.error;
+}
+document.getElementById("conv").addEventListener("click", run);
+document.getElementById("daiji").addEventListener("change", run);
+document.getElementById("copy").addEventListener("click", function(){
+  const t = document.getElementById("result").textContent;
+  if (t && navigator.clipboard) navigator.clipboard.writeText(t);
+});
+run();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

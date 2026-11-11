@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モールス信号変換ツール｜テキスト⇔モールス（欧文・和文対応）</title>
+<meta name="description" content="テキストとモールス信号を相互に変換できる無料ツールです。欧文（英字・数字・記号）と和文（カタカナ）の両方に対応し、和文の濁点・半濁点・長音も扱えます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "モールス信号変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/morse.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "テキストとモールス信号を相互に変換できる無料ツールです。欧文（英字・数字・記号）と和文（カタカナ）の両方に対応し、和文の濁点・半濁点・長音も扱えます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "モールス信号の区切りはどうなっていますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "1文字ごとの符号はスペースで区切り、単語（欧文）や文節（和文）の区切りは「 / 」で表します。復元するときも同じ区切りで入力してください。符号は「・」と「―」のほか、「.」と「-」でも入力できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "和文モールスの濁点はどう扱いますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "和文では濁点「゛」自体にも符号（・・）があり、カタカナの直後に付けます。たとえば「ガ」は「カ」の符号＋濁点の符号です。このツールもその方式で変換・復元します。小書きのャュョなどは、大文字のヤユヨとして扱います。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "対応していない文字があります。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "欧文は英字・数字と一部の記号、和文はカタカナ（ヰ・ヱを除く）に対応しています。対応外の文字は変換時にスキップされ、結果の下に注記が出ます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>モールス信号変換ツール</h1>
+    <p>テキストとモールス信号を相互に変換します。欧文・和文の両方に対応しています。</p>
+  </header>
+
+  <div class="card">
+    <div style="font-size:15px;margin-bottom:12px">
+      <label style="margin-right:14px"><input type="radio" name="mmode" value="en" checked> 欧文（英字・数字）</label>
+      <label><input type="radio" name="mmode" value="jp"> 和文（カタカナ）</label>
+    </div>
+    <div class="f"><label>変換したいテキスト（またはモールス信号）</label>
+    <textarea id="src" placeholder="例：SOS ／ ・・・ ――― ・・・">SOS</textarea></div>
+    <button id="enc">モールスに変換</button>
+    <button id="dec" class="sub">テキストに変換</button>
+    <div class="f" style="margin-top:14px"><label>変換結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます" class="mono"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" id="skipnote" style="margin-top:10px"></p>
+    <p class="note">符号は1文字ごとにスペースで区切り、単語（文節）の区切りは「 / 」です。信号は「・」「―」のほか「.」「-」でも入力できます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. モールス信号の区切りはどうなっていますか？</b></p>
+    <p class="note" style="margin:0 0 12px">1文字ごとの符号はスペースで区切り、単語（欧文）や文節（和文）の区切りは「 / 」で表します。復元するときも同じ区切りで入力してください。符号は「・」と「―」のほか、「.」と「-」でも入力できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 和文モールスの濁点はどう扱いますか？</b></p>
+    <p class="note" style="margin:0 0 12px">和文では濁点「゛」自体にも符号（・・）があり、カタカナの直後に付けます。たとえば「ガ」は「カ」の符号＋濁点の符号です。このツールもその方式で変換・復元します。小書きのャュョなどは、大文字のヤユヨとして扱います。</p>
+    <p style="margin:0 0 4px"><b>Q. 対応していない文字があります。</b></p>
+    <p class="note" style="margin:0 0 12px">欧文は英字・数字と一部の記号、和文はカタカナ（ヰ・ヱを除く）に対応しています。対応外の文字は変換時にスキップされ、結果の下に注記が出ます。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const MORSE_EN = {
+  "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....",
+  "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.",
+  "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-",
+  "Y": "-.--", "Z": "--..",
+  "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...",
+  "8": "---..", "9": "----.", "0": "-----",
+  ".": ".-.-.-", ",": "--..--", "?": "..--..", "'": ".----.", "!": "-.-.--", "/": "-..-.",
+  "(": "-.--.", ")": "-.--.-", "&": ".-...", ":": "---...", ";": "-.-.-.", "=": "-...-",
+  "+": ".-.-.", "-": "-....-", "_": "..--.-", "\"": ".-..-.", "$": "...-..-", "@": ".--.-."
+};
+const MORSE_JP = {
+  "ア": "--.--", "イ": ".-", "ウ": "..-", "エ": "-.---", "オ": ".-...",
+  "カ": ".-..", "キ": "-.-..", "ク": "...-", "ケ": "-.--", "コ": "----",
+  "サ": "-.-.-", "シ": "--.-.", "ス": "---.-", "セ": ".---.", "ソ": "---.",
+  "タ": "-.", "チ": "..-.", "ツ": ".--.", "テ": ".-.--", "ト": "..-..",
+  "ナ": ".-.", "ニ": "-.-.", "ヌ": "....", "ネ": "--.-", "ノ": "..--",
+  "ハ": "-...", "ヒ": "--..-", "フ": "--..", "ヘ": ".", "ホ": "-..",
+  "マ": "-..-", "ミ": "..-.-", "ム": "-", "メ": "-...-", "モ": "-..-.",
+  "ヤ": ".--", "ユ": "-..--", "ヨ": "--",
+  "ラ": "...", "リ": "--.", "ル": "-.--.", "レ": "---", "ロ": ".-.-",
+  "ワ": "-.-", "ヲ": ".---", "ン": ".-.-.",
+  "゛": "..", "゜": "..--.", "ー": ".--.-"
+};
+const MORSE_EN_REV = {};
+for (const k in MORSE_EN) MORSE_EN_REV[MORSE_EN[k]] = k;
+const MORSE_JP_REV = {};
+for (const k in MORSE_JP) MORSE_JP_REV[MORSE_JP[k]] = k;
+const DAKU_MAP = { "カ": "ガ", "キ": "ギ", "ク": "グ", "ケ": "ゲ", "コ": "ゴ", "サ": "ザ", "シ": "ジ", "ス": "ズ", "セ": "ゼ", "ソ": "ゾ", "タ": "ダ", "チ": "ヂ", "ツ": "ヅ", "テ": "デ", "ト": "ド", "ハ": "バ", "ヒ": "ビ", "フ": "ブ", "ヘ": "ベ", "ホ": "ポ", "ウ": "ヴ" };
+const HANDAKU_MAP = { "ハ": "パ", "ヒ": "ピ", "フ": "プ", "ヘ": "ペ", "ホ": "ポ" };
+const DAKU_REV = {};
+for (const k in DAKU_MAP) DAKU_REV[DAKU_MAP[k]] = k;
+const HANDAKU_REV = {};
+for (const k in HANDAKU_MAP) HANDAKU_REV[HANDAKU_MAP[k]] = k;
+const SMALL_KANA = { "ァ": "ア", "ィ": "イ", "ゥ": "ウ", "ェ": "エ", "ォ": "オ", "ャ": "ヤ", "ュ": "ユ", "ョ": "ヨ", "ッ": "ツ", "ヮ": "ワ" };
+function toKatakana(text){
+  let out = "";
+  for (const c of text){
+    const n = c.codePointAt(0);
+    if (n >= 0x3041 && n <= 0x3096) out += String.fromCodePoint(n + 0x60);
+    else out += c;
+  }
+  return out;
+}
+function normalizeMorse(code){
+  return code.replace(/・/g, ".").replace(/[−―－–—]/g, "-").replace(/．/g, ".");
+}
+function toDisplayMorse(code){
+  return code.replace(/\./g, "・").replace(/-/g, "―");
+}
+function textToMorse(text, mode){
+  const skipped = [];
+  if (mode === "en"){
+    const words = text.toUpperCase().split(/\s+/).filter(function(w){ return w !== ""; });
+    const outWords = words.map(function(w){
+      const toks = [];
+      for (const c of w){
+        if (MORSE_EN[c]) toks.push(MORSE_EN[c]);
+        else skipped.push(c);
+      }
+      return toks.join(" ");
+    }).filter(function(w){ return w !== ""; });
+    return { result: toDisplayMorse(outWords.join(" / ")), skipped: skipped };
+  }
+  const kata = toKatakana(text);
+  const tokens = [];
+  for (const c of kata){
+    if (c === " " || c === "　" || c === "\n" || c === "\t"){ tokens.push("/"); continue; }
+    if (DAKU_REV[c]){ tokens.push(MORSE_JP[DAKU_REV[c]]); tokens.push(MORSE_JP["゛"]); continue; }
+    if (HANDAKU_REV[c]){ tokens.push(MORSE_JP[HANDAKU_REV[c]]); tokens.push(MORSE_JP["゜"]); continue; }
+    if (SMALL_KANA[c]){ tokens.push(MORSE_JP[SMALL_KANA[c]]); continue; }
+    if (MORSE_JP[c]){ tokens.push(MORSE_JP[c]); continue; }
+    skipped.push(c);
+  }
+  let joined = tokens.join(" ").replace(/^(\/\s*)+/, "").replace(/(\s*\/)+$/, "").replace(/(\s*\/)+(\s)/g, " / ");
+  return { result: toDisplayMorse(joined), skipped: skipped };
+}
+function morseToText(code, mode){
+  const skipped = [];
+  const norm = normalizeMorse(code).trim();
+  if (norm === "") return { result: "", skipped: skipped };
+  const rawTokens = norm.split(/\s+/);
+  const words = [[]];
+  for (const t of rawTokens){
+    if (t === "/"){ words.push([]); }
+    else if (t !== "") words[words.length - 1].push(t);
+  }
+  if (mode === "en"){
+    const out = words.map(function(toks){
+      return toks.map(function(t){
+        if (MORSE_EN_REV[t]) return MORSE_EN_REV[t];
+        skipped.push(t); return "";
+      }).join("");
+    }).join(" ");
+    return { result: out, skipped: skipped };
+  }
+  const outWords = words.map(function(toks){
+    let s = "";
+    for (const t of toks){
+      if (t === MORSE_JP["゛"]){
+        const prev = s.slice(-1);
+        if (prev && DAKU_MAP[prev]) s = s.slice(0, -1) + DAKU_MAP[prev];
+        else skipped.push(t);
+        continue;
+      }
+      if (t === MORSE_JP["゜"]){
+        const prev = s.slice(-1);
+        if (prev && HANDAKU_MAP[prev]) s = s.slice(0, -1) + HANDAKU_MAP[prev];
+        else skipped.push(t);
+        continue;
+      }
+      if (MORSE_JP_REV[t]){ s += MORSE_JP_REV[t]; continue; }
+      skipped.push(t);
+    }
+    return s;
+  });
+  return { result: outWords.join(" "), skipped: skipped };
+}
+/*LOGIC-END*/
+function currentMode(){
+  const el = document.querySelector('input[name="mmode"]:checked');
+  return el ? el.value : "en";
+}
+function showSkip(skipped){
+  document.getElementById("skipnote").textContent = skipped.length ? ("対応していない文字・符号をスキップしました：" + skipped.join(" ")) : "";
+}
+document.getElementById("enc").addEventListener("click", function(){
+  const r = textToMorse(document.getElementById("src").value, currentMode());
+  document.getElementById("dst").value = r.result;
+  showSkip(r.skipped);
+});
+document.getElementById("dec").addEventListener("click", function(){
+  const r = morseToText(document.getElementById("src").value, currentMode());
+  document.getElementById("dst").value = r.result;
+  showSkip(r.skipped);
+});
+document.getElementById("copy").addEventListener("click", function(){
+  const d = document.getElementById("dst");
+  d.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(d.value);
+});
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

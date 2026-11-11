@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ひらがな・カタカナ変換ツール｜相互に一括変換（ヰヱヲ・ヶ対応）</title>
+<meta name="description" content="ひらがなとカタカナを相互に一括変換できる無料ツールです。濁点つきの文字（ゔ→ヴ）や小文字（ゖ→ヶ）、ヰヱヲなども正しく変換します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ひらがな・カタカナ変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/kana.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "ひらがなとカタカナを相互に一括変換できる無料ツールです。濁点つきの文字（ゔ→ヴ）や小文字（ゖ→ヶ）、ヰヱヲなども正しく変換します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "変換される範囲はどこまでですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ひらがな（ぁ〜ゖ、繰り返し記号のゝゞ）とカタカナ（ァ〜ヶ、ヽヾ）を相互に変換します。漢字・英数字・長音符（ー）・中点（・）はそのまま残ります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「ヶ」はどう変換されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「ヶ（小さいケ）」⇔「ゖ（小さいけ）」、「ヵ」⇔「ゕ（小さいか）」のように、小文字同士で対応します。「ゔ」は「ヴ」に変換されます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ヰ・ヱ・ヲは変換されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "されます。ヰ→ゐ、ヱ→ゑ、ヲ→をのように、対応するひらがなに変換されます。逆向きも同様です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ひらがな・カタカナ変換ツール</h1>
+    <p>ひらがな⇔カタカナを一括変換します。長音符（ー）など共通の文字はそのまま残ります。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>変換したいテキスト</label>
+    <textarea id="src" placeholder="例：ひらがな／カタカナ">がくせいの　ひらがなと、カタカナのヶ・ヰヱヲ</textarea></div>
+    <button id="toKata">カタカナに変換</button>
+    <button id="toHira" class="sub">ひらがなに変換</button>
+    <div class="f" style="margin-top:14px"><label>変換結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" style="margin-top:10px">ひらがな（ぁ〜ゖ、ゝゞ）とカタカナ（ァ〜ヶ、ヽヾ）を相互に変換します。漢字・英数字・長音符（ー）・中点（・）は変換されず、そのまま残ります。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 変換される範囲はどこまでですか？</b></p>
+    <p class="note" style="margin:0 0 12px">ひらがな（ぁ〜ゖ、繰り返し記号のゝゞ）とカタカナ（ァ〜ヶ、ヽヾ）を相互に変換します。漢字・英数字・長音符（ー）・中点（・）はそのまま残ります。</p>
+    <p style="margin:0 0 4px"><b>Q. 「ヶ」はどう変換されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">「ヶ（小さいケ）」⇔「ゖ（小さいけ）」、「ヵ」⇔「ゕ（小さいか）」のように、小文字同士で対応します。「ゔ」は「ヴ」に変換されます。</p>
+    <p style="margin:0 0 4px"><b>Q. ヰ・ヱ・ヲは変換されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">されます。ヰ→ゐ、ヱ→ゑ、ヲ→をのように、対応するひらがなに変換されます。逆向きも同様です。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function hiraToKata(text){
+  let out = "";
+  for (const c of text){
+    const n = c.codePointAt(0);
+    if ((n >= 0x3041 && n <= 0x3096) || n === 0x309D || n === 0x309E) out += String.fromCodePoint(n + 0x60);
+    else out += c;
+  }
+  return out;
+}
+function kataToHira(text){
+  let out = "";
+  for (const c of text){
+    const n = c.codePointAt(0);
+    if ((n >= 0x30A1 && n <= 0x30F6) || n === 0x30FD || n === 0x30FE) out += String.fromCodePoint(n - 0x60);
+    else out += c;
+  }
+  return out;
+}
+/*LOGIC-END*/
+document.getElementById("toKata").addEventListener("click", function(){
+  document.getElementById("dst").value = hiraToKata(document.getElementById("src").value);
+});
+document.getElementById("toHira").addEventListener("click", function(){
+  document.getElementById("dst").value = kataToHira(document.getElementById("src").value);
+});
+document.getElementById("copy").addEventListener("click", function(){
+  const d = document.getElementById("dst");
+  d.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(d.value);
+});
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

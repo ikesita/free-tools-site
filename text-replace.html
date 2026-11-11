@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>テキスト検索・置換ツール｜文字列を一括置換（件数表示・正規表現対応）</title>
+<meta name="description" content="テキストの中の文字列を一括で検索・置換できる無料ツールです。置換した件数を表示し、正規表現や大文字・小文字の区別にも対応しています。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "テキスト検索・置換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/text-replace.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "テキストの中の文字列を一括で検索・置換できる無料ツールです。置換した件数を表示し、正規表現や大文字・小文字の区別にも対応しています。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "正規表現とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "文字列のパターンを記号で表す方法です。たとえば「[0-9]+」で連続する数字、「^」で行頭などを指定できます。このツールではJavaScriptの正規表現がそのまま使えます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "置換後の文字列で $1 は使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "正規表現モードでは使えます。$1 は1番目にキャプチャした部分、$& はマッチした全体に置き換わります。通常モードでは $ もただの文字として扱われます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "置換件数が0件でした。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "検索文字列が本文に含まれていないか、大文字・小文字の区別が原因のことがあります。「大文字・小文字を区別する」を外して試してください。正規表現モードでは、記号のエスケープ不足でもマッチしません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。置換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>テキスト検索・置換ツール</h1>
+    <p>文章の中の文字列をまとめて置き換えます。置換した件数も表示します。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>元のテキスト</label>
+    <textarea id="src" placeholder="置換したいテキストを貼り付けてください">今日は晴れです。明日も晴れでしょう。晴れの日は散歩に行きます。</textarea></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="f"><label>検索する文字列</label><input type="text" id="search" value="晴れ"></div>
+      <div class="f"><label>置換後の文字列</label><input type="text" id="repl" value="雨"></div>
+    </div>
+    <div style="margin-top:12px;font-size:15px">
+      <label style="margin-right:14px"><input type="checkbox" id="regex"> 正規表現を使う</label>
+      <label><input type="checkbox" id="caseSen" checked> 大文字・小文字を区別する</label>
+    </div>
+    <button id="run">置換する</button>
+    <span class="note" id="count" style="margin-left:10px"></span>
+    <p class="note" id="err" style="color:#b91c1c"></p>
+    <div class="f" style="margin-top:10px"><label>置換結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" style="margin-top:10px">正規表現モードでは、置換後の文字列の中で $1（キャプチャした部分）や $&amp;（マッチ全体）が使えます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 正規表現とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">文字列のパターンを記号で表す方法です。たとえば「[0-9]+」で連続する数字、「^」で行頭などを指定できます。このツールではJavaScriptの正規表現がそのまま使えます。</p>
+    <p style="margin:0 0 4px"><b>Q. 置換後の文字列で $1 は使えますか？</b></p>
+    <p class="note" style="margin:0 0 12px">正規表現モードでは使えます。$1 は1番目にキャプチャした部分、$& はマッチした全体に置き換わります。通常モードでは $ もただの文字として扱われます。</p>
+    <p style="margin:0 0 4px"><b>Q. 置換件数が0件でした。</b></p>
+    <p class="note" style="margin:0 0 12px">検索文字列が本文に含まれていないか、大文字・小文字の区別が原因のことがあります。「大文字・小文字を区別する」を外して試してください。正規表現モードでは、記号のエスケープ不足でもマッチしません。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。置換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function replaceText(text, search, replacement, opts){
+  const regex = !!(opts && opts.regex);
+  const caseSensitive = !opts || opts.caseSensitive !== false;
+  if (search === "") return { result: text, count: 0, error: "検索文字列を入力してください" };
+  if (regex){
+    let re;
+    try { re = new RegExp(search, "g" + (caseSensitive ? "" : "i")); }
+    catch (e) { return { result: text, count: 0, error: "正規表現が正しくありません: " + e.message }; }
+    const m = text.match(re);
+    const count = m ? m.length : 0;
+    const result = text.replace(re, replacement);
+    return { result: result, count: count, error: null };
+  }
+  const hay = caseSensitive ? text : text.toLowerCase();
+  const needle = caseSensitive ? search : search.toLowerCase();
+  let count = 0;
+  let result = "";
+  let idx = 0;
+  while (true){
+    const p = hay.indexOf(needle, idx);
+    if (p === -1) break;
+    result += text.slice(idx, p) + replacement;
+    idx = p + search.length;
+    count++;
+  }
+  result += text.slice(idx);
+  return { result: result, count: count, error: null };
+}
+/*LOGIC-END*/
+document.getElementById("run").addEventListener("click", function(){
+  const r = replaceText(
+    document.getElementById("src").value,
+    document.getElementById("search").value,
+    document.getElementById("repl").value,
+    { regex: document.getElementById("regex").checked, caseSensitive: document.getElementById("caseSen").checked }
+  );
+  document.getElementById("dst").value = r.result;
+  document.getElementById("err").textContent = r.error ? r.error : "";
+  document.getElementById("count").textContent = r.error ? "" : (r.count + " 件を置換しました");
+});
+document.getElementById("copy").addEventListener("click", function(){
+  const d = document.getElementById("dst");
+  d.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(d.value);
+});
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

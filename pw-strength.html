@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>パスワード強度チェッカー｜エントロピーと解読時間の目安で判定</title>
+<meta name="description" content="パスワードの強さを判定できる無料ツールです。エントロピー（ビット数）と、攻撃方法ごとの解読時間の目安を表示します。入力したパスワードはブラウザの外に一切送信されません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "パスワード強度チェッカー",
+  "url": "https://ikesita.github.io/free-tools-site/pw-strength.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "パスワードの強さを判定できる無料ツールです。エントロピー（ビット数）と、攻撃方法ごとの解読時間の目安を表示します。入力したパスワードはブラウザの外に一切送信されません。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "エントロピーとは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "パスワードの「予測しにくさ」をビット数で表したものです。使える文字の種類（プール）の大きさと長さから計算し、1ビット増えるごとに総当たりの候補が2倍になります。一般に60ビット以上が強い目安とされます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "解読時間はどう計算していますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "総当たり攻撃で、平均して全体の半分を試すと当たると仮定し、攻撃方法ごとの試行速度（オンライン：100回/時、オフライン低速：1万回/秒、オフライン高速：100億回/秒）で割った目安です。実際の安全性は、パスワードの保存方法や攻撃手法によって大きく変わります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したパスワードは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。判定はすべてお使いのブラウザの中で行われます。ただし、実在のパスワードを入力する際は、周囲の視線や画面の覗き見にはご注意ください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「よくあるパスワード」と表示されました。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「123456」「password」など、流出リストや辞書によく載っている文字列は、エントロピーの計算にかかわらず即座に破られます。別の文字列に変えてください。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>パスワード強度チェッカー</h1>
+    <p>パスワードの強さを、エントロピーと解読時間の目安で判定します。作るツールではなく、測るためのツールです。</p>
+  </header>
+
+  <div class="card">
+    <div class="f"><label>判定したいパスワード</label>
+    <input type="password" id="pw" autocomplete="off" placeholder="ここに入力すると自動で判定します" style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px"></div>
+    <div style="margin-top:10px;font-size:14px">
+      <label><input type="checkbox" id="show"> パスワードを表示する</label>
+    </div>
+    <div class="big" id="label" style="font-size:24px"></div>
+    <table>
+      <tr><td>文字数</td><td class="v" id="vLen">-</td></tr>
+      <tr><td>使われている文字の種類</td><td class="v" id="vKinds">-</td></tr>
+      <tr><td>推定エントロピー</td><td class="v" id="vEnt">-</td></tr>
+      <tr><td>解読時間の目安：オンライン攻撃（100回/時）</td><td class="v" id="vOn">-</td></tr>
+      <tr><td>解読時間の目安：オフライン低速（1万回/秒）</td><td class="v" id="vSlow">-</td></tr>
+      <tr><td>解読時間の目安：オフライン高速（100億回/秒）</td><td class="v" id="vFast">-</td></tr>
+    </table>
+    <div id="warnings" style="margin-top:10px"></div>
+    <p class="note" style="margin-top:10px">解読時間は「総当たりで平均して半分試せば当たる」と仮定した目安です。よくあるパスワードや流出済みのパスワードは、計算上の強さにかかわらず即座に破られます。サイトごとに異なるパスワードを使い、パスワードマネージャーと二要素認証を併用してください。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. エントロピーとは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">パスワードの「予測しにくさ」をビット数で表したものです。使える文字の種類（プール）の大きさと長さから計算し、1ビット増えるごとに総当たりの候補が2倍になります。一般に60ビット以上が強い目安とされます。</p>
+    <p style="margin:0 0 4px"><b>Q. 解読時間はどう計算していますか？</b></p>
+    <p class="note" style="margin:0 0 12px">総当たり攻撃で、平均して全体の半分を試すと当たると仮定し、攻撃方法ごとの試行速度（オンライン：100回/時、オフライン低速：1万回/秒、オフライン高速：100億回/秒）で割った目安です。実際の安全性は、パスワードの保存方法や攻撃手法によって大きく変わります。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したパスワードは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">送信されません。判定はすべてお使いのブラウザの中で行われます。ただし、実在のパスワードを入力する際は、周囲の視線や画面の覗き見にはご注意ください。</p>
+    <p style="margin:0 0 4px"><b>Q. 「よくあるパスワード」と表示されました。</b></p>
+    <p class="note" style="margin:0 0 0px">「123456」「password」など、流出リストや辞書によく載っている文字列は、エントロピーの計算にかかわらず即座に破られます。別の文字列に変えてください。</p>
+  </div>
+
+  <footer>入力したパスワードはブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const COMMON_PASSWORDS = ["password", "123456", "123456789", "12345678", "qwerty", "abc123", "111111", "letmein", "admin", "welcome", "monkey", "dragon", "football", "iloveyou", "123123", "12345", "1234567", "sunshine", "master", "shadow", "superman", "michael", "password1", "1234567890", "passw0rd", "computer", "michelle", "jessica", "pepper", "1234", "1111", "0000", "123456a", "asdfgh", "zxcvbn", "987654321", "112233", "121212", "123321", "159753", "7777777", "654321", "555555", "222222", "333333", "888888", "999999", "159357", "753951", "147258", "258369", "963852", "741852", "102030", "12344321", "123654", "qwerty123", "password123", "sakura", "tokyo", "japan"];
+function isCommonPassword(pw){
+  return COMMON_PASSWORDS.indexOf(pw.toLowerCase()) !== -1;
+}
+function analyzePassword(pw){
+  const chars = [...pw];
+  const len = chars.length;
+  const has = { lower: false, upper: false, digit: false, symbol: false, other: false };
+  for (const c of chars){
+    if (c >= "a" && c <= "z") has.lower = true;
+    else if (c >= "A" && c <= "Z") has.upper = true;
+    else if (c >= "0" && c <= "9") has.digit = true;
+    else if (/^[!-\/:-@\[-`{-~ ]$/.test(c)) has.symbol = true;
+    else has.other = true;
+  }
+  let pool = 0;
+  if (has.lower) pool += 26;
+  if (has.upper) pool += 26;
+  if (has.digit) pool += 10;
+  if (has.symbol) pool += 33;
+  if (has.other) pool += 100;
+  const entropy = pool > 0 ? len * Math.log2(pool) : 0;
+  const common = isCommonPassword(pw);
+  const effEntropy = common ? Math.min(entropy, 10) : entropy;
+  function crackSeconds(ratePerSec){
+    if (len === 0) return 0;
+    return Math.pow(2, effEntropy - 1) / ratePerSec;
+  }
+  const times = {
+    online: crackSeconds(100 / 3600),
+    slow: crackSeconds(10000),
+    fast: crackSeconds(10000000000)
+  };
+  let label;
+  if (len === 0) label = "未入力";
+  else if (common) label = "とても弱い（よくあるパスワード）";
+  else if (entropy < 28) label = "とても弱い";
+  else if (entropy < 36) label = "弱い";
+  else if (entropy < 60) label = "普通";
+  else if (entropy < 80) label = "強い";
+  else if (entropy < 128) label = "とても強い";
+  else label = "非常に強い";
+  const warnings = [];
+  if (common) warnings.push("よく使われるパスワードのリストに載っている文字列です");
+  if (len > 0 && len < 8) warnings.push("8文字未満です。長いほど強くなります");
+  if (/(.)\1{2,}/.test(pw)) warnings.push("同じ文字の3回以上の繰り返しが含まれています");
+  if (/(012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/i.test(pw)) warnings.push("連続した文字列（123、abcなど）が含まれています");
+  const kinds = [has.lower, has.upper, has.digit, has.symbol, has.other].filter(Boolean).length;
+  if (len > 0 && kinds === 1) warnings.push("使われている文字の種類が1種類だけです");
+  return { len: len, has: has, pool: pool, entropy: entropy, common: common, times: times, label: label, warnings: warnings, kinds: kinds };
+}
+function trimNum(v){
+  if (v >= 100) return String(Math.round(v));
+  if (v >= 10) return String(Math.round(v * 10) / 10);
+  return String(Math.round(v * 100) / 100);
+}
+function formatDuration(sec){
+  if (sec === 0) return "—";
+  if (!isFinite(sec)) return "事実上解読不能";
+  if (sec < 1) return "1秒未満";
+  if (sec < 60) return "約" + Math.floor(sec) + "秒";
+  if (sec < 3600) return "約" + Math.floor(sec / 60) + "分";
+  if (sec < 86400) return "約" + Math.floor(sec / 3600) + "時間";
+  if (sec < 31557600) return "約" + Math.floor(sec / 86400) + "日";
+  const years = sec / 31557600;
+  if (years < 10000) return "約" + Math.floor(years) + "年";
+  if (years < 1e15) return "約" + trimNum(years / 10000) + "万年";
+  return "約" + years.toExponential(1).replace("e+", "×10^") + "年";
+}
+/*LOGIC-END*/
+const KIND_NAMES = { lower: "英小文字", upper: "英大文字", digit: "数字", symbol: "記号", other: "その他（日本語など）" };
+function renderPw(){
+  const a = analyzePassword(document.getElementById("pw").value);
+  document.getElementById("label").textContent = a.len ? a.label : "";
+  document.getElementById("vLen").textContent = a.len ? a.len + " 文字" : "-";
+  document.getElementById("vKinds").textContent = a.len ? Object.keys(a.has).filter(function(k){ return a.has[k]; }).map(function(k){ return KIND_NAMES[k]; }).join("・") : "-";
+  document.getElementById("vEnt").textContent = a.len ? a.entropy.toFixed(1) + " ビット" : "-";
+  document.getElementById("vOn").textContent = a.len ? formatDuration(a.times.online) : "-";
+  document.getElementById("vSlow").textContent = a.len ? formatDuration(a.times.slow) : "-";
+  document.getElementById("vFast").textContent = a.len ? formatDuration(a.times.fast) : "-";
+  document.getElementById("warnings").innerHTML = a.warnings.map(function(w){ return '<p class="note" style="color:#b91c1c;margin:2px 0">⚠ ' + w + "</p>"; }).join("");
+}
+document.getElementById("pw").addEventListener("input", renderPw);
+document.getElementById("show").addEventListener("change", function(){
+  document.getElementById("pw").type = document.getElementById("show").checked ? "text" : "password";
+});
+renderPw();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>
