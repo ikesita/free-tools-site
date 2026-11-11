@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ガソリン代計算｜走行距離・燃費・単価からガソリン代を計算（往復対応）</title>
+<meta name="description" content="走行距離・燃費・ガソリン単価から、ドライブや旅行にかかるガソリン代を計算する無料ツールです。往復の計算にも対応し、必要なガソリンの量も表示します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#d97706; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .check{display:flex;align-items:center;gap:8px;font-size:15px;margin-top:12px}
+  .check input{width:18px;height:18px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.total td{border-top:2px solid var(--line);font-size:17px;color:var(--ink);font-weight:800}
+  tr.total td.v{font-size:19px}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ガソリン代計算",
+  "url": "https://ikesita.github.io/free-tools-site/gasoline.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "走行距離・燃費・ガソリン単価から、ドライブや旅行にかかるガソリン代を計算する無料ツールです。往復の計算にも対応し、必要なガソリンの量も表示します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ガソリン代計算</h1>
+    <p>走行距離と車の燃費、ガソリン単価から、ドライブや旅行にかかるガソリン代を計算します。往復の計算にも対応しています。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>走行距離（片道・km）</label><input id="dist" type="number" min="0" step="1" value="300"></div>
+      <div class="f"><label>燃費（km/L）</label><input id="econ" type="number" min="0" step="0.1" value="15"></div>
+      <div class="f"><label>ガソリン単価（円/L）</label><input id="price" type="number" min="0" step="1" value="175"></div>
+    </div>
+    <label class="check"><input id="round" type="checkbox"> 往復で計算する（距離を2倍にする）</label>
+  </div>
+
+  <div class="card">
+    <h2>計算結果</h2>
+    <table>
+      <tr><td>走行距離</td><td class="v" id="distOut">-</td></tr>
+      <tr><td>必要なガソリンの量</td><td class="v" id="fuelOut">-</td></tr>
+      <tr><td>ガソリン代（片道）</td><td class="v" id="oneOut">-</td></tr>
+      <tr class="total"><td>ガソリン代の合計</td><td class="v" id="totalOut">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">例：片道300kmを燃費15km/Lの車で走ると、必要なガソリンは20L、単価175円/Lならガソリン代は3,500円です。往復なら7,000円です。計算式は「必要なガソリン（L）＝走行距離（km）÷燃費（km/L）」「ガソリン代＝必要なガソリン（L）×単価（円/L）」です。実際の燃費は高速道路・市街地・エアコン使用・積載量などで変わるため、あくまで目安としてご利用ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => Math.round(n).toLocaleString("ja-JP") + " 円";
+function calc(){
+  const dist = num(distEl.value);
+  const econ = num(econEl.value);
+  const price = num(priceEl.value);
+  const totalDist = roundEl.checked ? dist * 2 : dist;
+  distOutEl.textContent = totalDist.toLocaleString("ja-JP") + " km" + (roundEl.checked ? "（往復）" : "（片道）");
+  if(econ <= 0){
+    fuelOutEl.textContent = "-"; oneOutEl.textContent = "-"; totalOutEl.textContent = "-";
+    return;
+  }
+  const fuel = totalDist / econ;
+  const oneFuel = dist / econ;
+  fuelOutEl.textContent = "約 " + fuel.toFixed(1) + " L";
+  oneOutEl.textContent = yen(oneFuel * price);
+  totalOutEl.textContent = yen(fuel * price);
+}
+const distEl = document.getElementById("dist"), econEl = document.getElementById("econ"),
+      priceEl = document.getElementById("price"), roundEl = document.getElementById("round");
+const distOutEl = document.getElementById("distOut"), fuelOutEl = document.getElementById("fuelOut"),
+      oneOutEl = document.getElementById("oneOut"), totalOutEl = document.getElementById("totalOut");
+[distEl, econEl, priceEl, roundEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>
+</p>
+</div>
+</body>
+</html>

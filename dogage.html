@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>犬の年齢換算｜犬の年齢を人間の年齢に換算（小型・中型・大型犬別）</title>
+<meta name="description" content="犬の年齢を人間の年齢に換算する無料ツールです。小型犬・中型犬・大型犬別の換算表つき。環境省の目安（1歳＝15歳、2歳＝24歳）で計算します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#d97706; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .big{font-size:25px;font-weight:900;text-align:center;margin:6px 0 0}
+  .sub2{text-align:center;color:var(--sub);font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td,th{padding:6px 0;color:var(--sub);text-align:left}
+  td.v,th.v{text-align:right;color:var(--ink);font-weight:800}
+  tr.hl td{color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "犬の年齢換算",
+  "url": "https://ikesita.github.io/free-tools-site/dogage.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "犬の年齢を人間の年齢に換算する無料ツールです。小型犬・中型犬・大型犬別の換算表つき。環境省の目安（1歳＝15歳、2歳＝24歳）で計算します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>犬の年齢換算</h1>
+    <p>犬の年齢を人間の年齢に換算します。犬は最初の2年で一気におとなになり、その後は体の大きさによって年のとり方が変わります。</p>
+  </header>
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>犬の大きさ</label>
+        <select id="size">
+          <option value="small" selected>小型犬・中型犬</option>
+          <option value="large">大型犬</option>
+        </select>
+      </div>
+      <div class="f"><label>犬の年齢（歳）</label><input id="years" type="number" min="0" max="25" step="1" value="3"></div>
+      <div class="f"><label>月数（0〜11か月）</label><input id="months" type="number" min="0" max="11" step="1" value="0"></div>
+    </div>
+    <div class="big" id="big">-</div>
+    <div class="sub2" id="verdict">-</div>
+    <p class="note" style="margin-top:12px">環境省「飼い主のためのペットフード・ガイドライン」の目安で計算しています。小型・中型犬は「1歳＝15歳、2歳＝24歳、3歳以降は1年につき4歳」、大型犬は「1歳＝12歳、2歳以降は1年につき7歳」です。たとえば小型・中型犬の3歳は人間の28歳、大型犬の7歳は人間の54歳にあたります。よく言われる「×7」は目安として不正確です。</p>
+  </div>
+
+  <div class="card">
+    <h2>犬の年齢換算表（早見表）</h2>
+    <table id="ageTable">
+      <tr><th>犬の年齢</th><th class="v">小型犬</th><th class="v">中型犬</th><th class="v">大型犬</th></tr>
+    </table>
+    <p class="note" style="margin-top:10px">数値は人間の年齢（歳）の目安です。環境省の目安では小型犬と中型犬は同じ式です。品種や個体差、健康状態によっても変わるため、あくまで目安としてご利用ください。正確な健康状態はかかりつけの獣医師にご相談ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+function dogHumanYears(age, size){
+  if(size === "large"){
+    if(age < 1) return 12 * age;
+    return 12 + (age - 1) * 7;
+  }
+  if(age < 1) return 15 * age;
+  if(age <= 2) return 15 + (age - 1) * 9;
+  return 24 + (age - 2) * 4;
+}
+function fmtHuman(h){
+  const r = Math.round(h * 10) / 10;
+  return "人間の約 " + (Number.isInteger(r) ? r : r.toFixed(1)) + " 歳";
+}
+function calc(){
+  const size = sizeEl.value;
+  const y = Math.max(0, parseInt(yearsEl.value) || 0);
+  const m = Math.min(11, Math.max(0, parseInt(monthsEl.value) || 0));
+  const age = y + m / 12;
+  const h = dogHumanYears(age, size);
+  bigEl.textContent = fmtHuman(h);
+  const label = size === "large" ? "大型犬" : "小型犬・中型犬";
+  verdictEl.textContent = label + "の" + (m ? y + "歳" + m + "か月" : y + "歳") + "は、" + fmtHuman(h) + "にあたります。";
+}
+const sizeEl = document.getElementById("size"), yearsEl = document.getElementById("years"),
+      monthsEl = document.getElementById("months");
+const bigEl = document.getElementById("big"), verdictEl = document.getElementById("verdict");
+[sizeEl, yearsEl, monthsEl].forEach(e => e.addEventListener("input", calc));
+// 早見表：環境省の式で生成（小型＝中型）
+const tbl = document.getElementById("ageTable");
+[1,2,3,4,5,6,7,8,9,10,12,15].forEach(a => {
+  const tr = document.createElement("tr");
+  const sm = dogHumanYears(a, "small");
+  const lg = dogHumanYears(a, "large");
+  tr.innerHTML = "<td>" + a + "歳</td><td class=\"v\">" + sm + "歳</td><td class=\"v\">" + sm + "歳</td><td class=\"v\">" + lg + "歳</td>";
+  tbl.appendChild(tr);
+});
+calc();
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>
+</p>
+</div>
+</body>
+</html>

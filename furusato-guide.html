@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ふるさと納税の見方｜控除の仕組み・上限額・手続きの流れ</title>
+<meta name="description" content="ふるさと納税の仕組みを、控除の考え方・上限額の目安・ワンストップ特例と確定申告の手続き・2025年10月からのポイント付与禁止まで、総務省・国税庁の案内をもとにまとめました。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#0369a1; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:24px;margin:8px 0 4px;line-height:1.4}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 10px}
+  .card p{margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)} td.v{text-align:right;color:var(--ink);font-weight:800}
+  .note{font-size:13px;color:var(--sub)}
+  .ad{border:1px dashed var(--acc);border-radius:12px;padding:14px;margin-top:12px;background:#f0f7fc}
+  .ad .pr{font-size:11px;color:var(--sub);letter-spacing:.08em}
+  .ad a{font-weight:800}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ふるさと納税の見方：控除の仕組み・上限額・手続きの流れ</h1>
+    <p>ふるさと納税は、好きな自治体に寄附をすると、その分だけ所得税・住民税が軽くなる制度です。ただし「いくらでも得をする」わけではなく、控除には上限があります。このページでは、総務省・国税庁の案内をもとに、仕組みと注意点をまとめました。</p>
+  </header>
+
+  <div class="card">
+    <h2>ふるさと納税の仕組み</h2>
+    <p>ふるさと納税は、自治体への寄附金のうち2,000円を超える部分が、所得税と住民税から控除される制度です。控除の上限額の範囲内で寄附をすれば、実質的な自己負担は2,000円で済みます。自己負担の2,000円は、寄附1回ごとではなく、1年間（1月〜12月）の寄附金総額に対して1回分です。</p>
+    <table>
+      <tr><td>寄附額（例）</td><td class="v">50,000円</td></tr>
+      <tr><td>自己負担</td><td class="v">2,000円</td></tr>
+      <tr><td>控除される額の目安（上限以内の場合）</td><td class="v">48,000円</td></tr>
+    </table>
+    <p style="margin-top:10px">控除額は「所得税からの控除」「住民税の基本分」「住民税の特例分」の3つに分かれて計算されます。特例分には「住民税の所得割額の20%まで」という上限があり、これを超えて寄附した分は控除されず、そのまま自己負担になります。上限額は年収・家族構成・ほかの控除（住宅ローン控除・医療費控除など）によって人ごとに変わるため、寄附の前に目安を確認しておくことが大切です。</p>
+    <p class="note">出典：総務省 ふるさと納税ポータルサイト「ふるさと納税のしくみ」、国税庁 No.1155 ふるさと納税（寄附金控除）。</p>
+  </div>
+
+  <div class="card">
+    <h2>寄附額と控除の目安を計算する</h2>
+    <p class="note">入力欄の初期値はすべて「例」です。ここで出るのは「控除の上限額の範囲内だった場合」の目安です。上限額そのものは、年収・家族構成・ほかの控除によって変わります。正確な上限額は、お住まいの自治体や総務省の目安表・公式シミュレーターでご確認ください。</p>
+    <div class="grid">
+      <div class="f"><label>寄附額（円）※例</label><input id="donation" type="number" min="0" step="1000" value="50000"></div>
+      <div class="f"><label>控除上限額の目安（円）※例</label><input id="limit" type="number" min="0" step="1000" value="60000"></div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><td>控除される額の目安</td><td class="v" id="deduct">-</td></tr>
+      <tr><td>実質的な自己負担の目安</td><td class="v" id="burden">-</td></tr>
+    </table>
+    <p class="note" style="margin-top:10px">計算方法：控除される額＝上限額の範囲内の寄附額−2,000円。寄附額が上限額を超えた分は控除されず、自己負担に加わります。</p>
+  </div>
+
+  <div class="card">
+    <h2>手続きは2通り：ワンストップ特例と確定申告</h2>
+    <p>控除を受けるための手続きは、次のどちらかです。</p>
+    <table>
+      <tr><td>ワンストップ特例</td><td class="v">確定申告が不要な給与所得者等で、1年間の寄附先が5団体以内の人が使えます。寄附先の自治体ごとに申請書を出します。申請書の提出期限は、寄附をした年の翌年1月10日（必着）とする自治体が一般的です</td></tr>
+      <tr><td>確定申告</td><td class="v">寄附先が6団体以上の人や、医療費控除などで確定申告をする人は、翌年3月15日までの確定申告で控除を受けます。確定申告をするとワンストップ特例の申請は無効になるため、すべての寄附を申告書に書く必要があります</td></tr>
+    </table>
+    <p style="margin-top:10px">その年の分の控除を受けるには、12月31日までに寄附（入金）を済ませる必要があります。2026年分の寄附は2026年12月31日まで、ワンストップ特例の申請書は2027年1月10日必着、確定申告は2027年3月15日までが目安です。</p>
+  </div>
+
+  <div class="card">
+    <h2>返礼品とポータルサイトの選び方</h2>
+    <p>寄附のお礼として自治体から返礼品が届きます。返礼品は寄附額の3割以下の地場産品とされています。「何をもらうか」より先に、「いくらまでなら控除の上限に収まるか」を決めておくのが順番としては先です。</p>
+    <p>ふるさと納税の寄附は、自治体の公式サイトから直接申し込む方法と、複数の自治体を比べられるポータルサイトを使う方法があります。ポータルサイトを選ぶときは、扱っている自治体・返礼品の数、決済手段、申請書の取り寄せやワンストップ特例の手続きのしやすさで比べるとよいでしょう。</p>
+    <p><b>2025年10月からの注意点：</b>総務省の指定基準の改正により、2025年10月1日から、ポータルサイトが寄附に対して独自のポイントを付けることができなくなりました。いま寄附で受け取れるのは、クレジットカードの決済に伴う通常のポイントです。古い記事に書かれている「ポータル独自のポイント還元」は、現在は適用されない点にご注意ください。</p>
+
+    <div class="ad">
+      <div class="pr">PR（アフィリエイト広告）</div>
+      <p>ふるさと納税の寄附を受け付けているポータルサイトの例です。取り扱い自治体・返礼品・決済手段は公式サイトでご確認ください。</p>
+      <ul>
+      <!--A8:FURUSATO-HONPO-->
+      <!--A8:AUPAY-FURUSATO-->
+      </ul>
+    </div>
+    <p class="note" style="margin-top:10px">寄附先・返礼品・手続きの条件は自治体や時期によって変わります。申し込み前に公式情報で最新の条件をご確認ください。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。本ページの内容は2026年11月時点の総務省・国税庁の公開情報をもとにしています。税制改正等により内容が変わる場合があります。</footer>
+</div>
+
+<script>
+const num = v => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+function calc(){
+  const d = num(donationEl.value), lim = num(limitEl.value);
+  const within = Math.min(d, lim);
+  const deduct = Math.max(0, within - 2000);
+  const burden = d - deduct;
+  deductEl.textContent = yen(deduct);
+  burdenEl.textContent = yen(burden);
+}
+const donationEl = document.getElementById("donation"), limitEl = document.getElementById("limit");
+const deductEl = document.getElementById("deduct"), burdenEl = document.getElementById("burden");
+[donationEl, limitEl].forEach(e => e.addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
