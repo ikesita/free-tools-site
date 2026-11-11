@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行単位テキスト処理｜重複行の削除・並べ替え・空行除去</title>
+<meta name="description" content="テキストを行単位で処理できる無料ツールです。重複行の削除、空行の除去、並べ替え（昇順・降順・短い順）、行番号の付与などをその場で行えます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "行単位テキスト処理ツール",
+  "url": "https://ikesita.github.io/free-tools-site/linetools.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "テキストを行単位で処理できる無料ツールです。重複行の削除、空行の除去、並べ替え（昇順・降順・短い順）、行番号の付与などをその場で行えます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "重複行の削除では、どの行が残りますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "最初に現れた行が残り、2回目以降の同じ行が削除されます。行の順序は元のまま保持されます。スペースの有無など、1文字でも違う行は別の行として扱います。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "並べ替えの順序はどう決まりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "昇順・降順は日本語の文字順（localeCompare）で比較します。数字だけの行は文字列として比べるため、10より2が後に来ることがあります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "処理を取り消せますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "テキストエリア内ではブラウザの「元に戻す」（Ctrl+Z／Cmd+Z）が使えます。大切なテキストは、先にコピーして控えを残しておくことをおすすめします。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。処理はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>行単位テキスト処理ツール</h1>
+    <p>リストや文章を、行単位で整理・整形します。ボタンひとつでその場で書き換わります。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>テキスト（1行＝1件として処理します）</label>
+    <textarea id="src" style="min-height:170px">バナナ
+りんご
+バナナ
+
+みかん
+りんご</textarea></div>
+    <div style="margin-top:6px">
+      <button id="dedupe">重複行を削除</button>
+      <button id="rmEmpty" class="sub">空行を削除</button>
+      <button id="trim" class="sub">各行の前後の空白を除去</button>
+      <button id="sortAsc" class="sub">並べ替え（昇順）</button>
+      <button id="sortDesc" class="sub">並べ替え（降順）</button>
+      <button id="sortLen" class="sub">並べ替え（短い順）</button>
+      <button id="reverse" class="sub">行の順序を逆転</button>
+      <button id="number" class="sub">行番号を付ける</button>
+    </div>
+    <button id="copy" class="sub">テキストをコピー</button>
+    <p class="note" id="msg" style="margin-top:10px">ボタンを押すと、その場でテキストが書き換わります。続けて別の処理も重ねられます。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 重複行の削除では、どの行が残りますか？</b></p>
+    <p class="note" style="margin:0 0 12px">最初に現れた行が残り、2回目以降の同じ行が削除されます。行の順序は元のまま保持されます。スペースの有無など、1文字でも違う行は別の行として扱います。</p>
+    <p style="margin:0 0 4px"><b>Q. 並べ替えの順序はどう決まりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">昇順・降順は日本語の文字順（localeCompare）で比較します。数字だけの行は文字列として比べるため、10より2が後に来ることがあります。</p>
+    <p style="margin:0 0 4px"><b>Q. 処理を取り消せますか？</b></p>
+    <p class="note" style="margin:0 0 12px">テキストエリア内ではブラウザの「元に戻す」（Ctrl+Z／Cmd+Z）が使えます。大切なテキストは、先にコピーして控えを残しておくことをおすすめします。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。処理はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function toLines(text){
+  if (text === "") return [];
+  return text.replace(/\r\n?/g, "\n").split("\n");
+}
+function dedupeLines(text){
+  const seen = new Set();
+  const out = [];
+  for (const line of toLines(text)){
+    if (!seen.has(line)){ seen.add(line); out.push(line); }
+  }
+  return out.join("\n");
+}
+function removeEmptyLines(text){
+  return toLines(text).filter(l => l.trim() !== "").join("\n");
+}
+function trimLines(text){
+  return toLines(text).map(l => l.trim()).join("\n");
+}
+function sortLines(text, mode){
+  const lines = toLines(text);
+  if (mode === "asc") lines.sort((a, b) => a.localeCompare(b, "ja"));
+  else if (mode === "desc") lines.sort((a, b) => b.localeCompare(a, "ja"));
+  else if (mode === "lenAsc") lines.sort((a, b) => a.length - b.length);
+  else if (mode === "lenDesc") lines.sort((a, b) => b.length - a.length);
+  return lines.join("\n");
+}
+function reverseLines(text){
+  return toLines(text).reverse().join("\n");
+}
+function numberLines(text, start, digits){
+  return toLines(text).map((l, i) => String(start + i).padStart(digits, "0") + ". " + l).join("\n");
+}
+/*LOGIC-END*/
+function showStats(){
+  const v = document.getElementById("src").value;
+  const lines = v === "" ? 0 : v.replace(/\r\n?/g, "\n").split("\n").length;
+  document.getElementById("msg").textContent = "現在 " + lines + " 行／" + [...v].length + " 文字です。";
+}
+function applyAndReport(fn){
+  const el = document.getElementById("src");
+  const before = el.value === "" ? 0 : el.value.replace(/\r\n?/g, "\n").split("\n").length;
+  el.value = fn(el.value);
+  const after = el.value === "" ? 0 : el.value.replace(/\r\n?/g, "\n").split("\n").length;
+  document.getElementById("msg").textContent = before + " 行 → " + after + " 行に処理しました。";
+}
+document.getElementById("dedupe").addEventListener("click", () => applyAndReport(dedupeLines));
+document.getElementById("rmEmpty").addEventListener("click", () => applyAndReport(removeEmptyLines));
+document.getElementById("trim").addEventListener("click", () => applyAndReport(trimLines));
+document.getElementById("sortAsc").addEventListener("click", () => applyAndReport(t => sortLines(t, "asc")));
+document.getElementById("sortDesc").addEventListener("click", () => applyAndReport(t => sortLines(t, "desc")));
+document.getElementById("sortLen").addEventListener("click", () => applyAndReport(t => sortLines(t, "lenAsc")));
+document.getElementById("reverse").addEventListener("click", () => applyAndReport(reverseLines));
+document.getElementById("number").addEventListener("click", () => applyAndReport(t => numberLines(t, 1, 1)));
+document.getElementById("src").addEventListener("input", showStats);
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("src");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+showStats();
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

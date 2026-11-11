@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画像の回転・反転ツール｜90度回転と鏡像反転をブラウザで</title>
+<meta name="description" content="画像を90度単位で回転したり、左右・上下に反転したりできる無料ツールです。アップロードなしでブラウザ内で処理し、PNG／JPEGで保存できます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "画像の回転・反転ツール",
+  "url": "https://ikesita.github.io/free-tools-site/image-rotate.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "画像を90度単位で回転したり、左右・上下に反転したりできる無料ツールです。アップロードなしでブラウザ内で処理し、PNG／JPEGで保存できます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "画像圧縮ツールとの違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "画像圧縮ツールは画質や最大サイズを調整してファイルサイズを小さくするもので、このツールは回転と反転だけを行うものです。向きを直してから圧縮する、といった併用もできます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "90°回転すると画質は落ちますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "回転・反転そのものは画素の並べ替えで、PNGで保存すれば劣化はありません。JPEGで保存する場合は再圧縮のため、わずかに画質が変わります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "EXIFの向き情報はどうなりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ブラウザが画像を読み込む時点でEXIFの向きは反映されます。保存後の画像には向き情報は含まれず、見た目の向きがそのまま固定されます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "画像はサーバーに送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。処理はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>画像の回転・反転ツール</h1>
+    <p>画像の向きを直したり、鏡像に反転したりできます。処理はすべてブラウザの中で行われます。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>画像ファイル（JPEG / PNG / WebP など）</label>
+    <input id="file" type="file" accept="image/*"></div>
+    <div style="margin-top:12px">
+      <button id="rotL">左に90°回転</button>
+      <button id="rotR" class="sub">右に90°回転</button>
+      <button id="rot180" class="sub">180°回転</button>
+      <button id="flipH" class="sub">左右反転</button>
+      <button id="flipV" class="sub">上下反転</button>
+      <button id="reset" class="sub">リセット</button>
+    </div>
+    <div class="f" style="margin-top:12px"><label>保存形式</label>
+    <select id="format">
+      <option value="image/png" selected>PNG</option>
+      <option value="image/jpeg">JPEG</option>
+    </select></div>
+    <div style="margin-top:12px;text-align:center">
+      <canvas id="canvas" style="display:none;max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px"></canvas>
+    </div>
+    <button id="save">画像を保存</button>
+    <p class="note" id="msg" style="margin-top:10px">画像を選ぶとプレビューが表示されます。回転・反転は何度でも組み合わせられます。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 画像圧縮ツールとの違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">画像圧縮ツールは画質や最大サイズを調整してファイルサイズを小さくするもので、このツールは回転と反転だけを行うものです。向きを直してから圧縮する、といった併用もできます。</p>
+    <p style="margin:0 0 4px"><b>Q. 90°回転すると画質は落ちますか？</b></p>
+    <p class="note" style="margin:0 0 12px">回転・反転そのものは画素の並べ替えで、PNGで保存すれば劣化はありません。JPEGで保存する場合は再圧縮のため、わずかに画質が変わります。</p>
+    <p style="margin:0 0 4px"><b>Q. EXIFの向き情報はどうなりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">ブラウザが画像を読み込む時点でEXIFの向きは反映されます。保存後の画像には向き情報は含まれず、見た目の向きがそのまま固定されます。</p>
+    <p style="margin:0 0 4px"><b>Q. 画像はサーバーに送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。処理はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function normAngle(a){
+  return ((a % 360) + 360) % 360;
+}
+function outSize(w, h, angle){
+  const a = normAngle(angle);
+  if (a === 90 || a === 270) return {w: h, h: w};
+  return {w: w, h: h};
+}
+function computeTransform(w, h, angle, flipH, flipV){
+  const out = outSize(w, h, angle);
+  return {
+    outW: out.w,
+    outH: out.h,
+    cx: out.w / 2,
+    cy: out.h / 2,
+    rot: normAngle(angle) * Math.PI / 180,
+    sx: flipH ? -1 : 1,
+    sy: flipV ? -1 : 1,
+    dx: -w / 2,
+    dy: -h / 2
+  };
+}
+function formatBytes(n){
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
+}
+/*LOGIC-END*/
+let img = null;
+let state = {angle: 0, flipH: false, flipV: false};
+let lastBlob = null;
+function render(){
+  const canvas = document.getElementById("canvas");
+  const msg = document.getElementById("msg");
+  if (!img){
+    canvas.style.display = "none";
+    return;
+  }
+  const t = computeTransform(img.naturalWidth, img.naturalHeight, state.angle, state.flipH, state.flipV);
+  canvas.width = t.outW;
+  canvas.height = t.outH;
+  const ctx = canvas.getContext("2d");
+  ctx.save();
+  ctx.translate(t.cx, t.cy);
+  ctx.rotate(t.rot);
+  ctx.scale(t.sx, t.sy);
+  ctx.drawImage(img, t.dx, t.dy);
+  ctx.restore();
+  canvas.style.display = "block";
+  const type = document.getElementById("format").value;
+  canvas.toBlob(b => {
+    lastBlob = b;
+    msg.textContent = "元のサイズ：" + img.naturalWidth + "×" + img.naturalHeight + " px → 出力：" + t.outW + "×" + t.outH + " px" + (b ? "／ファイルサイズ約 " + formatBytes(b.size) : "");
+  }, type, 0.92);
+}
+document.getElementById("file").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const im = new Image();
+  im.onload = () => {
+    img = im;
+    state = {angle: 0, flipH: false, flipV: false};
+    render();
+  };
+  im.src = url;
+});
+document.getElementById("rotL").addEventListener("click", () => { state.angle -= 90; render(); });
+document.getElementById("rotR").addEventListener("click", () => { state.angle += 90; render(); });
+document.getElementById("rot180").addEventListener("click", () => { state.angle += 180; render(); });
+document.getElementById("flipH").addEventListener("click", () => { state.flipH = !state.flipH; render(); });
+document.getElementById("flipV").addEventListener("click", () => { state.flipV = !state.flipV; render(); });
+document.getElementById("reset").addEventListener("click", () => { state = {angle: 0, flipH: false, flipV: false}; render(); });
+document.getElementById("format").addEventListener("change", render);
+document.getElementById("save").addEventListener("click", () => {
+  if (!img || !lastBlob) return;
+  const type = document.getElementById("format").value;
+  const ext = type === "image/png" ? "png" : "jpg";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(lastBlob);
+  a.download = "rotated-image." + ext;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

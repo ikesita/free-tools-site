@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>テキスト差分チェック｜2つのテキストを行単位で比較</title>
+<meta name="description" content="2つのテキストを行単位で比較し、追加・削除された行を色分け表示できる無料ツールです。文章やリスト、設定ファイルの変更点の確認に使えます。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<style>
+.drow{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;padding:3px 8px;border-radius:6px;white-space:pre-wrap;word-break:break-all}
+.drow.add{background:#e7f7e7}
+.drow.del{background:#fdeaea}
+.dmark{display:inline-block;width:1.4em;color:#5b6478}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "テキスト差分チェック",
+  "url": "https://ikesita.github.io/free-tools-site/diff.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "2つのテキストを行単位で比較し、追加・削除された行を色分け表示できる無料ツールです。文章やリスト、設定ファイルの変更点の確認に使えます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "行の途中の変更も分かりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "このツールは行単位の比較です。行の中で変わった部分までは示しませんが、行全体が「削除＋追加」として表示されるため、変更のあった行は特定できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "空白や改行コードの違いはどう扱われますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "改行コード（CRLF／CR）はLFにそろえてから比較します。行頭・行末のスペースの違いは、そのまま差分として表示されます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "大きなテキストでエラーになるのはなぜですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "行同士の組み合わせをすべて比べる方式のため、行数が多すぎると計算量が膨らみます。それぞれ2,000行程度を目安に、分割してお試しください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。比較はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>テキスト差分チェック</h1>
+    <p>2つのテキストを貼り付けると、行単位の違いを色分けで表示します。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="grid">
+      <div class="f"><label>元のテキスト</label>
+      <textarea id="srcA" style="min-height:160px">りんご
+みかん
+ぶどう
+もも</textarea></div>
+      <div class="f"><label>新しいテキスト</label>
+      <textarea id="srcB" style="min-height:160px">りんご
+ぶどう
+すいか
+もも</textarea></div>
+    </div>
+    <button id="run">差分をチェック</button>
+    <p class="note" id="summary" style="margin-top:10px">行単位で比較します。追加行は緑、削除行は赤で表示します。</p>
+  </div>
+
+  <div class="card">
+    <h2>比較結果</h2>
+    <div id="out" class="scroll"></div>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 行の途中の変更も分かりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">このツールは行単位の比較です。行の中で変わった部分までは示しませんが、行全体が「削除＋追加」として表示されるため、変更のあった行は特定できます。</p>
+    <p style="margin:0 0 4px"><b>Q. 空白や改行コードの違いはどう扱われますか？</b></p>
+    <p class="note" style="margin:0 0 12px">改行コード（CRLF／CR）はLFにそろえてから比較します。行頭・行末のスペースの違いは、そのまま差分として表示されます。</p>
+    <p style="margin:0 0 4px"><b>Q. 大きなテキストでエラーになるのはなぜですか？</b></p>
+    <p class="note" style="margin:0 0 12px">行同士の組み合わせをすべて比べる方式のため、行数が多すぎると計算量が膨らみます。それぞれ2,000行程度を目安に、分割してお試しください。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。比較はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function splitLines(text){
+  if (text === "") return [];
+  return text.replace(/\r\n?/g, "\n").split("\n");
+}
+function diffLines(a, b){
+  const n = a.length, m = b.length;
+  if (n * m > 2000000){
+    return {error: "テキストが大きすぎます（行数の組み合わせ上限を超えました）。それぞれ2,000行程度までに分けてお試しください。"};
+  }
+  const dp = [];
+  for (let i = 0; i <= n; i++){ dp.push(new Uint32Array(m + 1)); }
+  for (let i = n - 1; i >= 0; i--){
+    for (let j = m - 1; j >= 0; j--){
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const ops = [];
+  let i = 0, j = 0;
+  while (i < n && j < m){
+    if (a[i] === b[j]){ ops.push({type: "same", text: a[i]}); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]){ ops.push({type: "del", text: a[i]}); i++; }
+    else { ops.push({type: "add", text: b[j]}); j++; }
+  }
+  while (i < n){ ops.push({type: "del", text: a[i]}); i++; }
+  while (j < m){ ops.push({type: "add", text: b[j]}); j++; }
+  return {ops: ops};
+}
+function diffStats(ops){
+  let add = 0, del = 0, same = 0;
+  for (const op of ops){
+    if (op.type === "add") add++;
+    else if (op.type === "del") del++;
+    else same++;
+  }
+  return {add: add, del: del, same: same};
+}
+/*LOGIC-END*/
+function escHtml(s){
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+document.getElementById("run").addEventListener("click", () => {
+  const a = splitLines(document.getElementById("srcA").value);
+  const b = splitLines(document.getElementById("srcB").value);
+  const res = diffLines(a, b);
+  const sum = document.getElementById("summary");
+  const out = document.getElementById("out");
+  if (res.error){
+    sum.textContent = res.error;
+    out.innerHTML = "";
+    return;
+  }
+  const st = diffStats(res.ops);
+  sum.textContent = "追加 " + st.add + " 行／削除 " + st.del + " 行／共通 " + st.same + " 行" + (st.add === 0 && st.del === 0 ? "（差分はありません）" : "");
+  let html = "";
+  for (const op of res.ops){
+    const mark = op.type === "add" ? "＋" : op.type === "del" ? "－" : "　";
+    html += '<div class="drow ' + op.type + '"><span class="dmark">' + mark + "</span>" + escHtml(op.text) + "</div>";
+  }
+  out.innerHTML = html || '<p class="note">両方とも空です。</p>';
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

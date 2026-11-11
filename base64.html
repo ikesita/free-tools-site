@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base64エンコード・デコード｜日本語・絵文字にも対応</title>
+<meta name="description" content="テキストをBase64にエンコード、Base64文字列をテキストにデコードできる無料ツールです。UTF-8で処理するため、日本語や絵文字も文字化けしません。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Base64エンコード・デコード",
+  "url": "https://ikesita.github.io/free-tools-site/base64.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "テキストをBase64にエンコード、Base64文字列をテキストにデコードできる無料ツールです。UTF-8で処理するため、日本語や絵文字も文字化けしません。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Base64とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "バイナリデータやテキストを、英数字と「+」「/」「=」の64種類の文字だけで表す変換方式です。メールやURL、データURLなど、限られた文字しか使えない場所でデータをやり取りするために使われます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "日本語を普通のツールでエンコードすると文字化けするのはなぜですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "多くの単純な変換は文字を1バイトとして扱うため、日本語のようなマルチバイト文字で壊れます。このツールはテキストをいったんUTF-8のバイト列に変えてから変換するので、日本語や絵文字でも正しく往復できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Base64にするとサイズはどうなりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "3バイトが4文字に変換されるため、データ量は約4/3倍（約33％増）になります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "暗号化の代わりになりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "なりません。Base64は誰でも元に戻せる単なる変換で、秘匿性はありません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Base64エンコード・デコード</h1>
+    <p>テキストとBase64文字列を相互に変換します。日本語・絵文字もUTF-8として正しく処理します。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>入力テキスト（通常のテキスト、またはBase64文字列）</label>
+    <textarea id="src" placeholder="例：こんにちは">こんにちは、世界！</textarea></div>
+    <button id="enc">Base64にエンコード</button>
+    <button id="dec" class="sub">Base64からデコード</button>
+    <button id="swap" class="sub">入出力を入れ替え</button>
+    <div class="f" style="margin-top:14px"><label>結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" id="msg" style="margin-top:10px">日本語や絵文字も、UTF-8として正しくエンコード／デコードできます。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. Base64とは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">バイナリデータやテキストを、英数字と「+」「/」「=」の64種類の文字だけで表す変換方式です。メールやURL、データURLなど、限られた文字しか使えない場所でデータをやり取りするために使われます。</p>
+    <p style="margin:0 0 4px"><b>Q. 日本語を普通のツールでエンコードすると文字化けするのはなぜですか？</b></p>
+    <p class="note" style="margin:0 0 12px">多くの単純な変換は文字を1バイトとして扱うため、日本語のようなマルチバイト文字で壊れます。このツールはテキストをいったんUTF-8のバイト列に変えてから変換するので、日本語や絵文字でも正しく往復できます。</p>
+    <p style="margin:0 0 4px"><b>Q. Base64にするとサイズはどうなりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">3バイトが4文字に変換されるため、データ量は約4/3倍（約33％増）になります。</p>
+    <p style="margin:0 0 4px"><b>Q. 暗号化の代わりになりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">なりません。Base64は誰でも元に戻せる単なる変換で、秘匿性はありません。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function b64Encode(text){
+  const bytes = new TextEncoder().encode(text);
+  let bin = "";
+  const CHUNK = 8192;
+  for (let i = 0; i < bytes.length; i += CHUNK){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+function b64Decode(b64){
+  const clean = b64.replace(/\s+/g, "");
+  const bin = atob(clean);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder("utf-8", {fatal: true}).decode(bytes);
+}
+function b64ByteLength(text){
+  return new TextEncoder().encode(text).length;
+}
+/*LOGIC-END*/
+function showMsg(t){
+  document.getElementById("msg").textContent = t;
+}
+document.getElementById("enc").addEventListener("click", () => {
+  const src = document.getElementById("src").value;
+  try {
+    const out = b64Encode(src);
+    document.getElementById("dst").value = out;
+    showMsg("エンコードしました。元のテキストは UTF-8 で " + b64ByteLength(src) + " バイト、Base64 は " + out.length + " 文字です。");
+  } catch(e){
+    showMsg("エンコードに失敗しました：" + e.message);
+  }
+});
+document.getElementById("dec").addEventListener("click", () => {
+  const src = document.getElementById("src").value;
+  try {
+    document.getElementById("dst").value = b64Decode(src);
+    showMsg("デコードしました。");
+  } catch(e){
+    showMsg("デコードに失敗しました。正しいBase64文字列か、UTF-8のテキストを表しているか確認してください。");
+  }
+});
+document.getElementById("swap").addEventListener("click", () => {
+  const s = document.getElementById("src"), d = document.getElementById("dst");
+  const t = s.value; s.value = d.value; d.value = t;
+});
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("dst");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

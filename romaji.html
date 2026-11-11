@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ローマ字変換ツール｜ひらがな・カタカナをヘボン式ローマ字に変換</title>
+<meta name="description" content="ひらがな・カタカナのテキストをヘボン式ローマ字に変換できる無料ツールです。長音の表記（ō／ou）や大文字・小文字の切り替えに対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ローマ字変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/romaji.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "ひらがな・カタカナのテキストをヘボン式ローマ字に変換できる無料ツールです。長音の表記（ō／ou）や大文字・小文字の切り替えに対応します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "ヘボン式と訓令式の違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ヘボン式は英語の発音に近い表記（し=shi、ち=chi、つ=tsu）で、パスポートや駅名表示に使われます。訓令式は日本語の音の体系に沿った表記（si、ti、tu）で、小学校で習います。このツールはヘボン式です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「おう」はどう表記されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ヘボン式モードでは長音として ō にまとめます（とうきょう → tōkyō）。ワープロ式モードでは入力どおり ou と表記します（toukyou）。パスポートの氏名表記などでは、用途に応じて使い分けてください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "漢字は変換できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "変換できません。このツールはひらがな・カタカナをローマ字に変えるものです。漢字はそのまま出力されますので、先に読み仮名へ直してからご利用ください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ローマ字変換ツール</h1>
+    <p>ひらがな・カタカナをヘボン式ローマ字に変換します。変換はすべてブラウザの中で行われます。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>変換したいテキスト（ひらがな・カタカナ）</label>
+    <textarea id="src" placeholder="例：とうきょうスカイツリー">とうきょうスカイツリーと、しんぶん</textarea></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="f"><label>長音の表記</label>
+      <select id="mode">
+        <option value="hepburn" selected>ヘボン式（ō のように母音記号で表す）</option>
+        <option value="wapuro">ワープロ式（ou のように母音を重ねる）</option>
+      </select></div>
+      <div class="f"><label>大文字・小文字</label>
+      <select id="caseMode">
+        <option value="lower" selected>すべて小文字</option>
+        <option value="capital">文頭だけ大文字</option>
+        <option value="upper">すべて大文字</option>
+      </select></div>
+    </div>
+    <button id="conv">ローマ字に変換</button>
+    <div class="f" style="margin-top:14px"><label>変換結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" style="margin-top:10px">ヘボン式を基本にしています。「ん」は、後ろが b・m・p のとき m（例：しんぶん → shimbun）、母音・y の前では n' と表記します。促音（っ）は次の音の頭文字を重ねます（例：がっこう → gakkō）。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. ヘボン式と訓令式の違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">ヘボン式は英語の発音に近い表記（し=shi、ち=chi、つ=tsu）で、パスポートや駅名表示に使われます。訓令式は日本語の音の体系に沿った表記（si、ti、tu）で、小学校で習います。このツールはヘボン式です。</p>
+    <p style="margin:0 0 4px"><b>Q. 「おう」はどう表記されますか？</b></p>
+    <p class="note" style="margin:0 0 12px">ヘボン式モードでは長音として ō にまとめます（とうきょう → tōkyō）。ワープロ式モードでは入力どおり ou と表記します（toukyou）。パスポートの氏名表記などでは、用途に応じて使い分けてください。</p>
+    <p style="margin:0 0 4px"><b>Q. 漢字は変換できますか？</b></p>
+    <p class="note" style="margin:0 0 12px">変換できません。このツールはひらがな・カタカナをローマ字に変えるものです。漢字はそのまま出力されますので、先に読み仮名へ直してからご利用ください。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const ROMA = {"あ": "a", "い": "i", "う": "u", "え": "e", "お": "o", "か": "ka", "き": "ki", "く": "ku", "け": "ke", "こ": "ko", "さ": "sa", "し": "shi", "す": "su", "せ": "se", "そ": "so", "た": "ta", "ち": "chi", "つ": "tsu", "て": "te", "と": "to", "な": "na", "に": "ni", "ぬ": "nu", "ね": "ne", "の": "no", "は": "ha", "ひ": "hi", "ふ": "fu", "へ": "he", "ほ": "ho", "ま": "ma", "み": "mi", "む": "mu", "め": "me", "も": "mo", "や": "ya", "ゆ": "yu", "よ": "yo", "ら": "ra", "り": "ri", "る": "ru", "れ": "re", "ろ": "ro", "わ": "wa", "を": "wo", "ゐ": "i", "ゑ": "e", "が": "ga", "ぎ": "gi", "ぐ": "gu", "げ": "ge", "ご": "go", "ざ": "za", "じ": "ji", "ず": "zu", "ぜ": "ze", "ぞ": "zo", "だ": "da", "ぢ": "ji", "づ": "zu", "で": "de", "ど": "do", "ば": "ba", "び": "bi", "ぶ": "bu", "べ": "be", "ぼ": "bo", "ぱ": "pa", "ぴ": "pi", "ぷ": "pu", "ぺ": "pe", "ぽ": "po", "ぁ": "a", "ぃ": "i", "ぅ": "u", "ぇ": "e", "ぉ": "o", "ゃ": "ya", "ゅ": "yu", "ょ": "yo", "ゎ": "wa", "ゖ": "ke", "きゃ": "kya", "きゅ": "kyu", "きょ": "kyo", "しゃ": "sha", "しゅ": "shu", "しょ": "sho", "ちゃ": "cha", "ちゅ": "chu", "ちょ": "cho", "にゃ": "nya", "にゅ": "nyu", "にょ": "nyo", "ひゃ": "hya", "ひゅ": "hyu", "ひょ": "hyo", "みゃ": "mya", "みゅ": "myu", "みょ": "myo", "りゃ": "rya", "りゅ": "ryu", "りょ": "ryo", "ぎゃ": "gya", "ぎゅ": "gyu", "ぎょ": "gyo", "じゃ": "ja", "じゅ": "ju", "じょ": "jo", "ぢゃ": "ja", "ぢゅ": "ju", "ぢょ": "jo", "びゃ": "bya", "びゅ": "byu", "びょ": "byo", "ぴゃ": "pya", "ぴゅ": "pyu", "ぴょ": "pyo", "ふぁ": "fa", "ふぃ": "fi", "ふぇ": "fe", "ふぉ": "fo", "うぃ": "wi", "うぇ": "we", "うぉ": "wo", "てぃ": "ti", "でぃ": "di", "とぅ": "tu", "どぅ": "du", "しぇ": "she", "ちぇ": "che", "じぇ": "je", "つぁ": "tsa", "ゔぁ": "va", "ゔぃ": "vi", "ゔ": "vu", "ゔぇ": "ve", "ゔぉ": "vo"};
+
+const MACRON = {a:"ā", i:"ī", u:"ū", e:"ē", o:"ō", A:"Ā", I:"Ī", U:"Ū", E:"Ē", O:"Ō"};
+function kataToHira(s){
+  return s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+}
+function kanaToRomaji(text, mode){
+  const s = kataToHira(text);
+  const chars = [...s];
+  let out = "";
+  let i = 0;
+  function romaAt(pos){
+    if (pos >= chars.length) return null;
+    const two = chars[pos] + (chars[pos + 1] || "");
+    if (ROMA[two]) return {r: ROMA[two], len: 2};
+    if (ROMA[chars[pos]]) return {r: ROMA[chars[pos]], len: 1};
+    return null;
+  }
+  while (i < chars.length){
+    const c = chars[i];
+    if (c === "っ" || c === "ッ"){
+      const nx = romaAt(i + 1);
+      if (nx){
+        if (nx.r.startsWith("ch")) out += "t";
+        else if (/^[bcdfghjklmnpqrstvwz]/.test(nx.r)) out += nx.r[0];
+      }
+      i++;
+      continue;
+    }
+    if (c === "ん"){
+      const nx = romaAt(i + 1);
+      if (!nx) out += "n";
+      else if (/^[aeiouy]/.test(nx.r)) out += "n'";
+      else if (/^[bmp]/.test(nx.r)) out += "m";
+      else out += "n";
+      i++;
+      continue;
+    }
+    if (c === "ー"){
+      const prev = out.slice(-1);
+      if (mode === "hepburn" && MACRON[prev]) out = out.slice(0, -1) + MACRON[prev];
+      else if (mode === "wapuro" && /[aiueo]/.test(prev)) out += prev;
+      i++;
+      continue;
+    }
+    const m = romaAt(i);
+    if (m){ out += m.r; i += m.len; continue; }
+    out += c;
+    i++;
+  }
+  if (mode === "hepburn"){
+    out = out.replace(/ou/g, "ō").replace(/oo/g, "ō").replace(/aa/g, "ā").replace(/ii/g, "ī").replace(/uu/g, "ū").replace(/ee/g, "ē");
+  }
+  return out;
+}
+function applyCase(text, mode){
+  if (mode === "upper") return text.toUpperCase();
+  if (mode === "capital") return text.replace(/(^|[。．.!?]\s*)([a-zāīūēō])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+  return text;
+}
+function toRomaji(text, mode, caseMode){
+  return applyCase(kanaToRomaji(text, mode), caseMode);
+}
+/*LOGIC-END*/
+function runRomaji(){
+  const src = document.getElementById("src").value;
+  const mode = document.getElementById("mode").value;
+  const cm = document.getElementById("caseMode").value;
+  document.getElementById("dst").value = toRomaji(src, mode, cm);
+}
+document.getElementById("conv").addEventListener("click", runRomaji);
+["mode","caseMode"].forEach(id => document.getElementById(id).addEventListener("change", runRomaji));
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("dst");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+runRomaji();
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

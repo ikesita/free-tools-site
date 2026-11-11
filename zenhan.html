@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全角・半角 変換ツール｜英数字・記号・カタカナを一括変換</title>
+<meta name="description" content="全角と半角を相互に変換できる無料ツールです。英数字・記号・スペース・カタカナを種類ごとに選んで一括変換でき、半角カタカナの濁点も正しく処理します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "全角・半角 変換ツール",
+  "url": "https://ikesita.github.io/free-tools-site/zenhan.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "全角と半角を相互に変換できる無料ツールです。英数字・記号・スペース・カタカナを種類ごとに選んで一括変換でき、半角カタカナの濁点も正しく処理します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "全角と半角はどう違うのですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "全角は日本語フォントで漢字と同じ幅で表示される文字、半角はその半分の幅で表示される文字です。英数字や記号、カタカナには両方の形があり、見た目は似ていてもコンピュータ上は別の文字として扱われます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "半角カタカナを全角にすると文字数が減るのはなぜですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "半角カタカナでは濁点・半濁点が独立した1文字（ｶ＋ﾞ）ですが、全角では濁音が1文字（ガ）になるため、その分だけ文字数が減ります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "変換されない文字があります。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ひらがな、漢字、絵文字など、全角・半角の区別がない文字はそのまま出力されます。また、対象のチェックを外した種類の文字も変換されません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>全角・半角 変換ツール</h1>
+    <p>全角⇔半角を、文字の種類を選んで一括変換します。変換はすべてブラウザの中で行われます。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>変換したいテキスト</label>
+    <textarea id="src" placeholder="例：Ｈｅｌｌｏ　ｶﾀｶﾅ 123">Ｈｅｌｌｏ　Ｗｏｒｌｄ！ ｶﾀｶﾅとカタカナ、１２３４５</textarea></div>
+    <div style="margin-top:12px;font-size:15px">
+      <label style="margin-right:14px"><input type="checkbox" id="tAlnum" checked> 英字・数字</label>
+      <label style="margin-right:14px"><input type="checkbox" id="tSymbol" checked> 記号</label>
+      <label style="margin-right:14px"><input type="checkbox" id="tSpace" checked> スペース</label>
+      <label><input type="checkbox" id="tKana" checked> カタカナ</label>
+    </div>
+    <button id="toHalf">半角に変換</button>
+    <button id="toFull" class="sub">全角に変換</button>
+    <div class="f" style="margin-top:14px"><label>変換結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" style="margin-top:10px">半角カタカナの濁点・半濁点（ｶﾞ、ﾊﾟなど）は、全角では1文字（ガ、パ）にまとまります。逆に全角の濁音・半濁音カタカナを半角にすると、2文字（ｶﾞ、ﾊﾟ）に分かれます。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. 全角と半角はどう違うのですか？</b></p>
+    <p class="note" style="margin:0 0 12px">全角は日本語フォントで漢字と同じ幅で表示される文字、半角はその半分の幅で表示される文字です。英数字や記号、カタカナには両方の形があり、見た目は似ていてもコンピュータ上は別の文字として扱われます。</p>
+    <p style="margin:0 0 4px"><b>Q. 半角カタカナを全角にすると文字数が減るのはなぜですか？</b></p>
+    <p class="note" style="margin:0 0 12px">半角カタカナでは濁点・半濁点が独立した1文字（ｶ＋ﾞ）ですが、全角では濁音が1文字（ガ）になるため、その分だけ文字数が減ります。</p>
+    <p style="margin:0 0 4px"><b>Q. 変換されない文字があります。</b></p>
+    <p class="note" style="margin:0 0 12px">ひらがな、漢字、絵文字など、全角・半角の区別がない文字はそのまま出力されます。また、対象のチェックを外した種類の文字も変換されません。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+const H2Z = {"｡": "。", "｢": "「", "｣": "」", "､": "、", "･": "・", "ｦ": "ヲ", "ｧ": "ァ", "ｨ": "ィ", "ｩ": "ゥ", "ｪ": "ェ", "ｫ": "ォ", "ｬ": "ャ", "ｭ": "ュ", "ｮ": "ョ", "ｯ": "ッ", "ｰ": "ー", "ｱ": "ア", "ｲ": "イ", "ｳ": "ウ", "ｴ": "エ", "ｵ": "オ", "ｶ": "カ", "ｷ": "キ", "ｸ": "ク", "ｹ": "ケ", "ｺ": "コ", "ｻ": "サ", "ｼ": "シ", "ｽ": "ス", "ｾ": "セ", "ｿ": "ソ", "ﾀ": "タ", "ﾁ": "チ", "ﾂ": "ツ", "ﾃ": "テ", "ﾄ": "ト", "ﾅ": "ナ", "ﾆ": "ニ", "ﾇ": "ヌ", "ﾈ": "ネ", "ﾉ": "ノ", "ﾊ": "ハ", "ﾋ": "ヒ", "ﾌ": "フ", "ﾍ": "ヘ", "ﾎ": "ホ", "ﾏ": "マ", "ﾐ": "ミ", "ﾑ": "ム", "ﾒ": "メ", "ﾓ": "モ", "ﾔ": "ヤ", "ﾕ": "ユ", "ﾖ": "ヨ", "ﾗ": "ラ", "ﾘ": "リ", "ﾙ": "ル", "ﾚ": "レ", "ﾛ": "ロ", "ﾜ": "ワ", "ﾝ": "ン"};
+const DAKU = {"カ": "ガ", "キ": "ギ", "ク": "グ", "ケ": "ゲ", "コ": "ゴ", "サ": "ザ", "シ": "ジ", "ス": "ズ", "セ": "ゼ", "ソ": "ゾ", "タ": "ダ", "チ": "ヂ", "ツ": "ヅ", "テ": "デ", "ト": "ド", "ハ": "バ", "ヒ": "ビ", "フ": "ブ", "ヘ": "ベ", "ホ": "ボ", "ウ": "ヴ"};
+const HANDAKU = {"ハ": "パ", "ヒ": "ピ", "フ": "プ", "ヘ": "ペ", "ホ": "ポ"};
+const Z2H = {};
+for (const k in H2Z) Z2H[H2Z[k]] = k;
+const DAKU_Z2H = {};
+for (const k in DAKU) DAKU_Z2H[DAKU[k]] = Z2H[k];
+const HANDAKU_Z2H = {};
+for (const k in HANDAKU) HANDAKU_Z2H[HANDAKU[k]] = Z2H[k];
+
+function isFullAlnum(c){
+  const n = c.codePointAt(0);
+  return (n >= 0xFF10 && n <= 0xFF19) || (n >= 0xFF21 && n <= 0xFF3A) || (n >= 0xFF41 && n <= 0xFF5A);
+}
+function isFullSymbol(c){
+  const n = c.codePointAt(0);
+  return (n >= 0xFF01 && n <= 0xFF0F) || (n >= 0xFF1A && n <= 0xFF20) || (n >= 0xFF3B && n <= 0xFF40) || (n >= 0xFF5B && n <= 0xFF5E);
+}
+function isHalfAlnum(c){
+  return /[0-9A-Za-z]/.test(c);
+}
+function isHalfSymbol(c){
+  return /[!-\/:-@\[-`{-~]/.test(c);
+}
+function toHalf(text, o){
+  let out = "";
+  for (const c of text){
+    const n = c.codePointAt(0);
+    if (c === "　"){ out += o.space ? " " : c; continue; }
+    if (isFullAlnum(c)){ out += o.alnum ? String.fromCharCode(n - 0xFEE0) : c; continue; }
+    if (isFullSymbol(c)){ out += o.symbol ? String.fromCharCode(n - 0xFEE0) : c; continue; }
+    if (o.kana && DAKU_Z2H[c]){ out += DAKU_Z2H[c] + "ﾞ"; continue; }
+    if (o.kana && HANDAKU_Z2H[c]){ out += HANDAKU_Z2H[c] + "ﾟ"; continue; }
+    if (o.kana && Z2H[c]){ out += Z2H[c]; continue; }
+    out += c;
+  }
+  return out;
+}
+function toFull(text, o){
+  const chars = [...text];
+  let out = "";
+  for (let i = 0; i < chars.length; i++){
+    const c = chars[i];
+    if (c === " "){ out += o.space ? "　" : c; continue; }
+    if (isHalfAlnum(c)){ out += o.alnum ? String.fromCharCode(c.codePointAt(0) + 0xFEE0) : c; continue; }
+    if (isHalfSymbol(c)){ out += o.symbol ? String.fromCharCode(c.codePointAt(0) + 0xFEE0) : c; continue; }
+    if (o.kana && H2Z[c]){
+      const base = H2Z[c];
+      const next = chars[i + 1];
+      if (next === "ﾞ" && DAKU[base]){ out += DAKU[base]; i++; continue; }
+      if (next === "ﾟ" && HANDAKU[base]){ out += HANDAKU[base]; i++; continue; }
+      out += base; continue;
+    }
+    if (o.kana && c === "ﾞ"){ out += "゛"; continue; }
+    if (o.kana && c === "ﾟ"){ out += "゜"; continue; }
+    out += c;
+  }
+  return out;
+}
+/*LOGIC-END*/
+function currentOpts(){
+  return {
+    alnum: document.getElementById("tAlnum").checked,
+    symbol: document.getElementById("tSymbol").checked,
+    space: document.getElementById("tSpace").checked,
+    kana: document.getElementById("tKana").checked
+  };
+}
+function runConv(dir){
+  const src = document.getElementById("src").value;
+  const o = currentOpts();
+  document.getElementById("dst").value = dir === "half" ? toHalf(src, o) : toFull(src, o);
+}
+document.getElementById("toHalf").addEventListener("click", () => runConv("half"));
+document.getElementById("toFull").addEventListener("click", () => runConv("full"));
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("dst");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

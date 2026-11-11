@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URLエンコード・デコード｜日本語URLのパーセント変換</title>
+<meta name="description" content="テキストをURLエンコード（パーセントエンコーディング）、エンコード済み文字列をデコードできる無料ツールです。コンポーネント用とURL全体用の2方式に対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "URLエンコード・デコード",
+  "url": "https://ikesita.github.io/free-tools-site/urlencode.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "テキストをURLエンコード（パーセントエンコーディング）、エンコード済み文字列をデコードできる無料ツールです。コンポーネント用とURL全体用の2方式に対応します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "コンポーネント用とURL全体用の違いは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "URL全体用（encodeURI）は、: / ? & = などURLの区切りとして意味を持つ記号を変換しません。コンポーネント用（encodeURIComponent）はそれらの記号も変換するため、検索キーワードなどURLの一部に入れる値を変換するときに使います。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "スペースは「+」になりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "このツールではスペースは「%20」になります。「+」への変換はフォーム送信（application/x-www-form-urlencoded）の形式で使われるもので、URLエンコードそのものとは扱いが異なります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "デコードに失敗するのはなぜですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「%」の直後に16進数2桁が続いていない、途中で文字列が切れているなどの場合に失敗します。また、二重にエンコードされた文字列は、デコードを2回行う必要があります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。変換はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>URLエンコード・デコード</h1>
+    <p>日本語や記号を含むテキストを、URLで使える形式に変換・復元します。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>入力テキスト（通常のテキスト、またはエンコード済み文字列）</label>
+    <textarea id="src" placeholder="例：https://example.com/検索?q=日本語">日本語 テキスト＆記号?</textarea></div>
+    <div class="f" style="margin-top:12px"><label>変換の対象</label>
+    <select id="mode">
+      <option value="component" selected>コンポーネント用（記号も含めてすべて変換：encodeURIComponent）</option>
+      <option value="uri">URL全体用（:// ? & = などの区切り記号は変換しない：encodeURI）</option>
+    </select></div>
+    <button id="enc">URLエンコード</button>
+    <button id="dec" class="sub">URLデコード</button>
+    <div class="f" style="margin-top:14px"><label>結果</label>
+    <textarea id="dst" readonly placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" id="msg" style="margin-top:10px">日本語などの文字は、UTF-8のバイトを「%XX」の形に置き換えて表します。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. コンポーネント用とURL全体用の違いは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">URL全体用（encodeURI）は、: / ? &amp; = などURLの区切りとして意味を持つ記号を変換しません。コンポーネント用（encodeURIComponent）はそれらの記号も変換するため、検索キーワードなどURLの一部に入れる値を変換するときに使います。</p>
+    <p style="margin:0 0 4px"><b>Q. スペースは「+」になりますか？</b></p>
+    <p class="note" style="margin:0 0 12px">このツールではスペースは「%20」になります。「+」への変換はフォーム送信（application/x-www-form-urlencoded）の形式で使われるもので、URLエンコードそのものとは扱いが異なります。</p>
+    <p style="margin:0 0 4px"><b>Q. デコードに失敗するのはなぜですか？</b></p>
+    <p class="note" style="margin:0 0 12px">「%」の直後に16進数2桁が続いていない、途中で文字列が切れているなどの場合に失敗します。また、二重にエンコードされた文字列は、デコードを2回行う必要があります。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。変換はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function urlEncode(text, mode){
+  return mode === "uri" ? encodeURI(text) : encodeURIComponent(text);
+}
+function urlDecode(text, mode){
+  return mode === "uri" ? decodeURI(text) : decodeURIComponent(text);
+}
+/*LOGIC-END*/
+function showMsg(t){
+  document.getElementById("msg").textContent = t;
+}
+function modeVal(){
+  return document.getElementById("mode").value;
+}
+document.getElementById("enc").addEventListener("click", () => {
+  try {
+    document.getElementById("dst").value = urlEncode(document.getElementById("src").value, modeVal());
+    showMsg("エンコードしました。");
+  } catch(e){
+    showMsg("エンコードに失敗しました：" + e.message);
+  }
+});
+document.getElementById("dec").addEventListener("click", () => {
+  try {
+    document.getElementById("dst").value = urlDecode(document.getElementById("src").value, modeVal());
+    showMsg("デコードしました。");
+  } catch(e){
+    showMsg("デコードに失敗しました。「%」の後に16進数2桁が続く正しい形式か確認してください。");
+  }
+});
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("dst");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>

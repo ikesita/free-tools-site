@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON整形・バリデーションツール｜エラー位置の表示つき</title>
+<meta name="description" content="JSONを見やすく整形（インデント）したり、1行に圧縮したりできる無料ツールです。文法エラーがある場合は位置の目安を表示します。キーの並べ替えにも対応します。">
+<style>
+  :root{ --bg:#f6f7f9; --card:#fff; --ink:#1c2333; --sub:#5b6478; --line:#dde1ea; --acc:#4f46e5; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+  header h1{font-size:25px;margin:8px 0 4px}
+  header p{color:var(--sub);margin:0 0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h2{font-size:17px;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .f label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+  .f input,.f select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px}
+  .f input[type=checkbox]{width:auto}
+  textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;min-height:110px}
+  button{background:var(--acc);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:15px;cursor:pointer;margin-top:12px}
+  button.sub{background:#e5e7eb;color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td{padding:6px 0;color:var(--sub)}
+  td.v{text-align:right;color:var(--ink);font-weight:800}
+  th{padding:6px 0;color:var(--sub);text-align:left;font-weight:600}
+  .big{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+  .clock{font-size:52px;font-weight:900;text-align:center;margin:10px 0;font-variant-numeric:tabular-nums;letter-spacing:1px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--sub)}
+  .scroll{max-height:420px;overflow:auto}
+  footer{color:var(--sub);font-size:12.5px;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JSON整形ツール",
+  "url": "https://ikesita.github.io/free-tools-site/jsonformat.html",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "ja",
+  "description": "JSONを見やすく整形（インデント）したり、1行に圧縮したりできる無料ツールです。文法エラーがある場合は位置の目安を表示します。キーの並べ替えにも対応します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "isAccessibleForFree": true
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "JSONとは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "データを「キーと値」の組み合わせで表すテキスト形式です。APIや設定ファイルなど、プログラム同士のデータのやり取りで広く使われます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "エラー位置がずれることはありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ブラウザが報告する位置情報をもとに目安を表示しています。エラーの種類によっては、実際に直すべき箇所が少し手前になることがあります。末尾のカンマや、ダブルクォートの不足がよくある原因です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "数値の表記が変わることはありますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JSONとして読み直してから出力するため、例えば 1.50 は 1.5 に、1e3 は 1000 になるなど、値が同じでも表記が正規化されることがあります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "入力したテキストは送信されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "送信されません。整形はすべてお使いのブラウザの中で行われます。"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>JSON整形ツール</h1>
+    <p>JSONの整形・圧縮と文法チェックを行います。エラー時は位置の目安も表示します。</p>
+  </header>
+
+
+  <div class="card">
+    <div class="f"><label>JSONテキスト</label>
+    <textarea id="src" style="min-height:130px">{"name":"山田","age":36,"tags":["読書","旅行"],"address":{"city":"四日市市","zip":"510-0076"}}</textarea></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="f"><label>インデント</label>
+      <select id="indent">
+        <option value="2" selected>スペース2つ</option>
+        <option value="4">スペース4つ</option>
+        <option value="tab">タブ</option>
+      </select></div>
+      <div class="f"><label>キーの並べ替え</label>
+      <div style="padding-top:8px"><label><input type="checkbox" id="sortKeys"> キーを名前順に並べ替える</label></div></div>
+    </div>
+    <button id="fmt">整形する</button>
+    <button id="mini" class="sub">圧縮（1行化）する</button>
+    <div class="f" style="margin-top:14px"><label>結果</label>
+    <textarea id="dst" readonly style="min-height:130px" placeholder="ここに結果が表示されます"></textarea></div>
+    <button id="copy" class="sub">結果をコピー</button>
+    <p class="note" id="msg" style="margin-top:10px">文法エラーがある場合は、エラー位置の目安も表示します。</p>
+  </div>
+
+
+  <div class="card">
+    <h2 style="font-size:18px;margin:0 0 12px">よくある質問</h2>
+    <p style="margin:0 0 4px"><b>Q. JSONとは何ですか？</b></p>
+    <p class="note" style="margin:0 0 12px">データを「キーと値」の組み合わせで表すテキスト形式です。APIや設定ファイルなど、プログラム同士のデータのやり取りで広く使われます。</p>
+    <p style="margin:0 0 4px"><b>Q. エラー位置がずれることはありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">ブラウザが報告する位置情報をもとに目安を表示しています。エラーの種類によっては、実際に直すべき箇所が少し手前になることがあります。末尾のカンマや、ダブルクォートの不足がよくある原因です。</p>
+    <p style="margin:0 0 4px"><b>Q. 数値の表記が変わることはありますか？</b></p>
+    <p class="note" style="margin:0 0 12px">JSONとして読み直してから出力するため、例えば 1.50 は 1.5 に、1e3 は 1000 になるなど、値が同じでも表記が正規化されることがあります。</p>
+    <p style="margin:0 0 4px"><b>Q. 入力したテキストは送信されますか？</b></p>
+    <p class="note" style="margin:0 0 0px">送信されません。整形はすべてお使いのブラウザの中で行われます。</p>
+  </div>
+
+  <footer>入力内容はブラウザ内でのみ処理され、送信されません。</footer>
+</div>
+
+<script>
+
+function sortKeysDeep(v){
+  if (Array.isArray(v)) return v.map(sortKeysDeep);
+  if (v !== null && typeof v === "object"){
+    const out = {};
+    for (const k of Object.keys(v).sort()) out[k] = sortKeysDeep(v[k]);
+    return out;
+  }
+  return v;
+}
+function formatJSON(text, indent, sortKeys){
+  let obj = JSON.parse(text);
+  if (sortKeys) obj = sortKeysDeep(obj);
+  const ind = indent === "tab" ? "\t" : parseInt(indent, 10);
+  return JSON.stringify(obj, null, ind);
+}
+function minifyJSON(text){
+  return JSON.stringify(JSON.parse(text));
+}
+function posToLineCol(text, pos){
+  let line = 1, col = 1;
+  for (let i = 0; i < pos && i < text.length; i++){
+    if (text[i] === "\n"){ line++; col = 1; } else col++;
+  }
+  return {line: line, col: col};
+}
+function describeJSONError(text, e){
+  const m = /position (\d+)/.exec(e.message || "");
+  if (m){
+    const pos = parseInt(m[1], 10);
+    const lc = posToLineCol(text, pos);
+    return "エラー： " + pos + " 文字目（" + lc.line + " 行目 " + lc.col + " 列目）付近に問題があります。" + e.message;
+  }
+  return "エラー： " + e.message;
+}
+/*LOGIC-END*/
+function showMsg(t){
+  document.getElementById("msg").textContent = t;
+}
+function countKeys(v){
+  if (Array.isArray(v)) return v.reduce((s, x) => s + countKeys(x), 0);
+  if (v !== null && typeof v === "object") return Object.keys(v).length + Object.values(v).reduce((s, x) => s + countKeys(x), 0);
+  return 0;
+}
+document.getElementById("fmt").addEventListener("click", () => {
+  const src = document.getElementById("src").value;
+  try {
+    const out = formatJSON(src, document.getElementById("indent").value, document.getElementById("sortKeys").checked);
+    document.getElementById("dst").value = out;
+    const obj = JSON.parse(src);
+    const kind = Array.isArray(obj) ? "配列" : (obj !== null && typeof obj === "object" ? "オブジェクト（キー総数 " + countKeys(obj) + "）" : "値");
+    showMsg("整形しました。ルートは " + kind + " です。");
+  } catch(e){
+    showMsg(describeJSONError(src, e));
+  }
+});
+document.getElementById("mini").addEventListener("click", () => {
+  const src = document.getElementById("src").value;
+  try {
+    document.getElementById("dst").value = minifyJSON(src);
+    showMsg("圧縮（1行化）しました。");
+  } catch(e){
+    showMsg(describeJSONError(src, e));
+  }
+});
+document.getElementById("copy").addEventListener("click", () => {
+  const d = document.getElementById("dst");
+  d.select();
+  navigator.clipboard && navigator.clipboard.writeText(d.value);
+});
+
+</script>
+
+<div class="card guide-nav">
+<p style="font-size:13px;color:#555;margin:0 0 8px">解説ガイド</p>
+<p style="font-size:13.5px;line-height:2;margin:0">
+<a href="hikari-guide.html">光回線の実質月額とは？</a>／<a href="sim-guide.html">格安SIMの実質月額とは？</a>／<a href="fps-guide.html">cm/360とは？</a>／<a href="writer-guide.html">ライターの実質時給とは？</a>／<a href="waterserver-guide.html">ウォーターサーバーの料金の見方</a>／<a href="eikaiwa-guide.html">オンライン英会話の料金の見方</a>／<a href="shokuhi-guide.html">食費の見方：1食単価で比べる</a>／<a href="photo-guide.html">プロフィール写真の撮影料金の見方</a>／<a href="menkyo-guide.html">運転免許の費用の見方</a>／<a href="hikkoshi-guide.html">引っ越し費用の見方</a>／<a href="travel-guide.html">海外旅行の費用の見方</a>／<a href="vpn-guide.html">VPNの料金の見方</a>／<a href="konkatsu-guide.html">婚活の費用の見方</a>／<a href="furusato-guide.html">ふるさと納税の控除上限額の見方</a>／<a href="tenshoku-guide.html">エンジニア転職の進め方と年収交渉の考え方</a>／<a href="cleaning-guide.html">宅配クリーニングの料金の見方</a>／<a href="kaitori-guide.html">本・DVDの宅配買取の見方</a>
+</p>
+</div>
+</body>
+</html>
